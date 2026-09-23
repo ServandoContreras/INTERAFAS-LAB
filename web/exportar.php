@@ -1,0 +1,5 @@
+<?php
+require __DIR__.'/includes/config.php'; lab_event('DATA_EXPORT','Exportación de datos públicos',(string)($_GET['tipo']??'proveedores'),['query'=>$_SERVER['QUERY_STRING']??''],'interafas-web','notice',0); $tipo=$_GET['tipo']??'proveedores'; header('Content-Type: text/csv; charset=utf-8'); header('Content-Disposition: attachment; filename="interafas_'.$tipo.'.csv"'); $o=fopen('php://output','w'); fwrite($o,"\xEF\xBB\xBF");
+if($tipo==='contratos'){ fputcsv($o,['Contrato','Proveedor','Objeto','Modalidad','Monto','Inicio','Fin','Origen del recurso','Estado']); $rows=db()->query('SELECT c.*,p.nombre proveedor FROM contratos c JOIN proveedores p ON p.id=c.proveedor_id ORDER BY c.id')->fetchAll(); foreach($rows as $r) fputcsv($o,[$r['numero'],$r['proveedor'],$r['objeto'],$r['modalidad'],$r['monto'],$r['fecha_inicio'],$r['fecha_fin'],$r['origen_recurso'],$r['estado']]); }
+else { fputcsv($o,['ID','Proveedor','Servicio','Estado']); foreach(db()->query('SELECT * FROM proveedores ORDER BY nombre') as $r) fputcsv($o,[$r['id'],$r['nombre'],$r['servicio'],$r['estado']]); }
+fclose($o); exit; ?>

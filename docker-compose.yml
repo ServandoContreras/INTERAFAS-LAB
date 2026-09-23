@@ -1,0 +1,78 @@
+services:
+  web:
+    build: ./web
+    ports:
+      - "${INTERAFAS_PORT:-8080}:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: interafas
+      DB_USER: interafas
+      DB_PASS: interafas_lab
+      OT_BASE_URL: http://ot-sim:8081
+      NEWS_PORT: ${NEWS_PORT:-8091}
+    depends_on:
+      db:
+        condition: service_healthy
+      ot-sim:
+        condition: service_started
+    volumes:
+      - ./web:/var/www/html
+
+  news:
+    build: ./news
+    ports:
+      - "${NEWS_PORT:-8091}:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: interafas
+      DB_USER: interafas
+      DB_PASS: interafas_lab
+      INTERAFAS_PORT: ${INTERAFAS_PORT:-8080}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./news:/var/www/html
+
+  auditor:
+    build: ./auditor
+    ports:
+      - "${AUDITOR_PORT:-8092}:80"
+    environment:
+      DB_HOST: db
+      DB_NAME: interafas
+      DB_USER: interafas
+      DB_PASS: interafas_lab
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./auditor:/var/www/html
+
+  db:
+    image: mariadb:11.4
+    environment:
+      MARIADB_DATABASE: interafas
+      MARIADB_USER: interafas
+      MARIADB_PASSWORD: interafas_lab
+      MARIADB_ROOT_PASSWORD: root_lab_only
+    healthcheck:
+      test: ["CMD", "healthcheck.sh", "--connect", "--innodb_initialized"]
+      interval: 5s
+      timeout: 5s
+      retries: 20
+    volumes:
+      - interafas_db:/var/lib/mysql
+      - ./database/init.sql:/docker-entrypoint-initdb.d/01-init.sql:ro
+
+  ot-sim:
+    build: ./ot-sim
+    expose:
+      - "8081"
+    environment:
+      PORT: 8081
+
+volumes:
+  interafas_db:

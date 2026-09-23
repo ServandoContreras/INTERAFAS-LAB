@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 620"><defs>
+ <filter id="s" x="-20%" y="-20%" width="140%" height="140%"><feDropShadow dx="0" dy="8" stdDeviation="8" flood-opacity=".12"/></filter>
+ <style>.t{font:700 18px Inter,Arial,sans-serif;fill:#0b3142}.s{font:500 12px Inter,Arial,sans-serif;fill:#5c7780}.n{font:800 16px Inter,Arial,sans-serif;fill:#0b3142}.l{font:700 11px Inter,Arial,sans-serif;fill:#0b3142}.w{font:700 12px Inter,Arial,sans-serif;fill:white}</style>
+</defs>
+<rect width="1000" height="620" rx="30" fill="#f2f7f8"/>
+<path d="M90 110 L333 70 L398 260 L310 445 L95 382 Z" fill="#cde5e9" stroke="white" stroke-width="8"/>
+<path d="M340 72 L660 88 L720 308 L580 472 L310 445 L398 260 Z" fill="#87c4cf" stroke="white" stroke-width="8"/>
+<path d="M720 308 L660 88 L901 158 L920 415 L760 526 L580 472 Z" fill="#4e9bae" stroke="white" stroke-width="8"/>
+<text x="120" y="160" class="t">Cerro de San Pablo</text><text x="120" y="186" class="s">Cobertura 92.7 %</text><text x="120" y="208" class="s">Produccion 0.76 m3/s</text><text x="120" y="230" class="s">8 sectores hidraulicos</text>
+<text x="438" y="165" class="t">Saint Louis</text><text x="438" y="191" class="s">Cobertura 96.1 %</text><text x="438" y="213" class="s">Produccion 1.12 m3/s</text><text x="438" y="235" class="s">13 sectores hidraulicos</text>
+<text x="700" y="355" class="w">Soledade</text><text x="700" y="379" style="font:500 12px Inter,Arial;fill:#eaf7f9">Cobertura 94.4 %</text><text x="700" y="401" style="font:500 12px Inter,Arial;fill:#eaf7f9">Produccion 0.60 m3/s</text><text x="700" y="423" style="font:500 12px Inter,Arial;fill:#eaf7f9">8 sectores hidraulicos</text>
+<!-- telemetry markers -->
+<g fill="#f0a13c" stroke="white" stroke-width="3"><circle cx="240" cy="300" r="9"/><circle cx="290" cy="360" r="9"/><circle cx="470" cy="310" r="9"/><circle cx="535" cy="380" r="9"/><circle cx="610" cy="250" r="9"/><circle cx="775" cy="270" r="9"/><circle cx="820" cy="455" r="9"/></g>
+<rect x="70" y="535" width="860" height="56" rx="16" fill="white" filter="url(#s)"/><circle cx="105" cy="563" r="8" fill="#f0a13c"/><text x="122" y="568" class="s">Muestra de instalacion con telemetria</text><text x="430" y="568" class="l">29 distritos hidraulicos</text><text x="660" y="568" class="l">21 con control de presion</text>
+</svg>

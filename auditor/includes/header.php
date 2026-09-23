@@ -1,0 +1,9 @@
+<?php $pageTitle = $pageTitle ?? 'Auditor INTERAFAS'; $stu=current_student(); $att=current_attempt(); ?>
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title><?=h($pageTitle)?> · Auditor INTERAFAS</title><link rel="stylesheet" href="assets/style.css"></head><body>
+<header class="topbar"><div class="brand"><div class="brand-mark">AI</div><div><strong>Auditor INTERAFAS</strong><span><?=h($stu['matricula']??'')?> · <?=h(student_full_name($stu))?></span></div></div>
+<nav><a href="index.php">Panel</a><a href="flags.php">Banderas</a><a href="history.php">Historial</a><a href="activity.php">Bitácora</a><a href="export.php?format=csv">Exportar</a><?php if(($att['status']??'')==='active'):?><button class="nav-finish" type="button" data-open-finish>Finalizar</button><?php endif;?><a href="logout.php">Salir</a></nav></header>
+<main class="shell">
+<?php if(($att['status']??'')==='finalized'):?><div class="status-banner done">Laboratorio finalizado el <strong><?=h($att['finalized_at']??'')?></strong>. La información permanece disponible en modo consulta.</div><?php endif;?>
+<dialog id="finishDialog" class="finish-dialog"><form method="dialog" class="dialog-card"><p class="eyebrow">Cierre definitivo</p><h2>¿Finalizar el laboratorio?</h2><p>Se cerrará tu intento actual, se conservará toda la bitácora y el sistema intentará enviar automáticamente el log a Telegram. Después podrás consultar y exportar la evidencia, pero ya no registrar nuevas banderas.</p><div class="dialog-actions"><button class="secondary" value="cancel">Cancelar</button><button class="danger solid" value="confirm" id="confirmFinish">Sí, finalizar</button></div></form></dialog>
+<form id="finishForm" method="post" action="finish.php" hidden><input type="hidden" name="csrf" value="<?=h(csrf_token())?>"></form>

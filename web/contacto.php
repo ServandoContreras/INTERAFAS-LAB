@@ -1,0 +1,3 @@
+<?php $pageTitle='Contacto'; include __DIR__.'/includes/header.php'; ?>
+<section class="section"><div class="wrap"><div class="eyebrow">Atención ciudadana</div><h1>Contacto</h1><p class="section-intro">Canales para atención, reportes, trámites y orientación.</p><div class="support-feature section-spacer"><img src="/assets/img/support-team.svg" alt="Equipo de atención"><div><h2>Estamos para ayudarte</h2><div class="contact-list"><div><small>Línea metropolitana</small><b>800 123 9000</b></div><div><small>WhatsApp informativo</small><b>444 000 9000</b></div><div><small>Correo</small><b>atencion@interafas.local</b></div><div><small>Horario presencial</small><b>L–V · 08:00–16:00</b></div></div></div></div></div></section>
+<?php include __DIR__.'/includes/footer.php'; ?>

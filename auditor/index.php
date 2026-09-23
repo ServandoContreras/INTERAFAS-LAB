@@ -1,0 +1,32 @@
+<?php
+require_once __DIR__.'/includes/config.php'; require_auth(); log_page_view('index.php','Panel');
+$state=scenario_state(); $stats=attempt_stats(current_attempt_id());
+$found=(int)$stats['found']; $total=(int)$stats['total']; $score=(int)$stats['score']; $maxScore=(int)$stats['max_score'];
+$q=db()->prepare("SELECT s.*,c.code_name,c.title,c.difficulty,c.weight FROM flag_submissions s JOIN flag_catalog c ON c.flag_number=s.flag_number WHERE s.attempt_id=? ORDER BY s.id DESC LIMIT 8");$q->execute([current_attempt_id()]);$recent=$q->fetchAll();
+$q=db()->prepare("SELECT COUNT(*) FROM scenario_events WHERE attempt_id=?");$q->execute([current_attempt_id()]);$phaseEvents=(int)$q->fetchColumn();
+$newsVisible=(int)db()->query("SELECT COUNT(*) FROM news_articles WHERE phase_required < (SELECT phase FROM scenario_state WHERE id=1) OR (phase_required=(SELECT phase FROM scenario_state WHERE id=1) AND delay_seconds<=TIMESTAMPDIFF(SECOND,(SELECT phase_started_at FROM scenario_state WHERE id=1),NOW()))")->fetchColumn();
+$socialVisible=(int)db()->query("SELECT COUNT(*) FROM scenario_social_posts WHERE phase_required < (SELECT phase FROM scenario_state WHERE id=1) OR (phase_required=(SELECT phase FROM scenario_state WHERE id=1) AND delay_seconds<=TIMESTAMPDIFF(SECOND,(SELECT phase_started_at FROM scenario_state WHERE id=1),NOW()))")->fetchColumn();
+$q=db()->prepare("SELECT c.difficulty,COUNT(*) total,SUM(CASE WHEN s.id IS NOT NULL THEN 1 ELSE 0 END) found FROM flag_catalog c LEFT JOIN flag_submissions s ON s.flag_number=c.flag_number AND s.attempt_id=? AND s.status='accepted' GROUP BY c.difficulty ORDER BY c.difficulty");$q->execute([current_attempt_id()]);$byDifficulty=$q->fetchAll();
+$q=db()->prepare("SELECT COUNT(*) FROM lab_activity WHERE attempt_id=?");$q->execute([current_attempt_id()]);$activityCount=(int)$q->fetchColumn();
+$q=db()->prepare("SELECT COUNT(*) FROM lab_activity WHERE attempt_id=? AND source_system IN ('interafas-web','pulso-news','ot-hmi','ot-sim')");$q->execute([current_attempt_id()]);$telemetryCount=(int)$q->fetchColumn();
+$q=db()->prepare("SELECT COUNT(*) FROM lab_activity WHERE attempt_id=? AND severity='critical'");$q->execute([current_attempt_id()]);$criticalCount=(int)$q->fetchColumn();
+$att=current_attempt(); $stu=current_student();
+$pageTitle='Panel'; include __DIR__.'/includes/header.php';
+?>
+<?php if(isset($_GET['finalized'])):?><div class="alert success">Laboratorio finalizado. La bitácora quedó cerrada y disponible para exportación. Estado de Telegram: <strong><?=h((string)($_GET['telegram']??'desconocido'))?></strong>.</div><?php endif;?>
+<section class="hero"><div><p class="eyebrow">Seguimiento del ejercicio</p><h1><?=h(student_full_name($stu))?></h1><p>Matrícula <strong><?=h($stu['matricula']??'')?></strong> · Intento #<?=current_attempt_id()?> · Inicio <?=h($att['started_at']??'')?></p></div><div class="phase-card"><span>Fase actual</span><strong>F<?= (int)$state['phase']?> · <?=h($state['phase_name'])?></strong><small>Activa desde hace <?=h(elapsed_label((int)$state['elapsed_seconds']))?></small></div></section>
+<section class="metrics">
+<div class="metric"><span>Banderas</span><strong><?=$found?> / <?=$total?></strong><small><?= $total ? round($found/$total*100) : 0 ?>% completado</small></div>
+<div class="metric"><span>Puntuación técnica</span><strong><?=$score?> / <?=$maxScore?></strong><small>Ponderación por complejidad</small></div>
+<div class="metric"><span>Actividad registrada</span><strong><?=$activityCount?></strong><small><?=$telemetryCount?> eventos web/OT · <?=$criticalCount?> críticos</small></div>
+<div class="metric"><span>Contenido visible</span><strong><?=$newsVisible?> + <?=$socialVisible?></strong><small>Noticias + publicaciones</small></div>
+</section>
+<section class="grid two"><article class="panel"><div class="panel-head"><div><p class="eyebrow">Avance</p><h2>Progreso por dificultad</h2></div></div>
+<?php foreach($byDifficulty as $r): $pct=(int)$r['total']?round(((int)$r['found']/(int)$r['total'])*100):0; ?>
+<div class="progress-row"><div><span><?=str_repeat('★',(int)$r['difficulty'])?></span><b><?= (int)$r['found']?> / <?= (int)$r['total']?></b></div><div class="bar"><i style="width:<?=$pct?>%"></i></div></div><?php endforeach;?>
+</article>
+<article class="panel"><div class="panel-head"><div><p class="eyebrow">Escenario</p><h2>Impacto público</h2></div></div><div class="scenario-grid"><div><span>Último evento</span><strong><?=h($state['last_event_code'] ?: 'Sin eventos')?></strong></div><div><span>Noticias visibles</span><strong><?=$newsVisible?></strong></div><div><span>Publicaciones sociales</span><strong><?=$socialVisible?></strong></div><div><span>Eventos de escenario</span><strong><?=$phaseEvents?></strong></div></div><p class="muted">Los hitos avanzados alimentan automáticamente la narrativa de INTERAFAS y Pulso Metropolitano.</p></article></section>
+<?php if(attempt_is_active()):?><section class="panel"><div class="panel-head"><div><p class="eyebrow">Control del ejercicio</p><h2>Acciones</h2></div></div><div class="action-row"><form method="post" action="actions.php"><input type="hidden" name="csrf" value="<?=h(csrf_token())?>"><input type="hidden" name="action" value="recover"><button class="secondary" type="submit">Iniciar recuperación</button></form><button class="danger solid" type="button" data-open-finish>Finalizar laboratorio</button></div><p class="muted">Iniciar recuperación <strong>no elimina banderas ni registros</strong>. Finalizar cierra el intento, conserva la bitácora y realiza el envío automático configurado.</p></section><?php endif;?>
+<section class="panel"><div class="panel-head"><div><p class="eyebrow">Actividad reciente</p><h2>Últimas banderas descubiertas</h2></div><a class="link" href="history.php">Ver historial del ejercicio</a></div>
+<?php if(!$recent):?><div class="empty">Todavía no hay banderas acreditadas.</div><?php else:?><div class="table-wrap"><table><thead><tr><th>#</th><th>Bandera</th><th>Reto</th><th>Dificultad</th><th>Peso</th><th>Fecha</th></tr></thead><tbody><?php foreach($recent as $r):?><tr><td><?=sprintf('%02d',$r['flag_number'])?></td><td><code><?=h($r['flag_value'])?></code></td><td><?=h($r['title'])?></td><td><?=str_repeat('★',(int)$r['difficulty'])?></td><td><?= (int)$r['weight']?></td><td><?=h($r['created_at'])?></td></tr><?php endforeach;?></tbody></table></div><?php endif;?></section>
+<?php include __DIR__.'/includes/footer.php'; ?>

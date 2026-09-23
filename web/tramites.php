@@ -1,0 +1,10 @@
+<?php $pageTitle='Trámites'; include __DIR__.'/includes/header.php'; ?>
+<section class="section"><div class="wrap"><div class="eyebrow">Servicios ciudadanos</div><h1>Trámites en línea</h1><p class="section-intro">Inicia solicitudes, adjunta la información requerida y obtén un folio de seguimiento.</p><div class="trans-grid transaction-grid">
+<a href="/tramite.php?tipo=alta"><span>01</span><h3>Alta de servicio</h3><p>Incorporación de una toma al padrón y apertura de cuenta.</p><small>Identificación · propiedad/posesión · ubicación</small></a>
+<a href="/tramite.php?tipo=titular"><span>02</span><h3>Cambio de titular</h3><p>Actualización de la persona responsable del contrato.</p><small>Cuenta · identificación · documento de vínculo</small></a>
+<a href="/tramite.php?tipo=datos"><span>03</span><h3>Actualización de datos</h3><p>Correo, teléfono, domicilio de notificación y preferencias.</p><small>Cuenta · datos de contacto</small></a>
+<a href="/tramite.php?tipo=aclaracion"><span>04</span><h3>Aclaración de consumo</h3><p>Revisión de lectura, consumo, facturación o movimientos.</p><small>Recibo · lectura · evidencia opcional</small></a>
+<a href="/tramite.php?tipo=factibilidad"><span>05</span><h3>Factibilidad de servicio</h3><p>Solicitud para nuevos desarrollos, comercios u obras.</p><small>Ubicación · demanda estimada · proyecto</small></a>
+<a href="/tramite.php?tipo=constancia"><span>06</span><h3>Solicitud de constancia</h3><p>Servicio, no adeudo o titularidad.</p><small>Cuenta · tipo de constancia</small></a>
+</div><div class="promo-inline section-spacer"><div><b>12,634</b><span>Trámites digitales realizados este año</span></div><div><b>36,240</b><span>Documentos descargados</span></div><a href="/login.php" class="btn">Entrar a Mi portal</a></div></div></section>
+<?php include __DIR__.'/includes/footer.php'; ?>

@@ -1,0 +1,28 @@
+<?php
+require __DIR__.'/includes/config.php';
+$tipos=[
+ 'alta'=>['Alta de servicio','Solicitud de incorporación al padrón','Datos del predio y persona solicitante'],
+ 'titular'=>['Cambio de titular','Actualización de responsable del servicio','Cuenta y datos del nuevo titular'],
+ 'datos'=>['Actualización de datos','Modificación de medios de contacto','Cuenta y datos actualizados'],
+ 'aclaracion'=>['Aclaración de consumo','Revisión de lectura o facturación','Cuenta, periodo y motivo de la aclaración'],
+ 'factibilidad'=>['Factibilidad de servicio','Evaluación preliminar de disponibilidad','Ubicación, uso y demanda estimada'],
+ 'constancia'=>['Solicitud de constancia','Generación de documento institucional','Cuenta y tipo de documento']
+];
+$tipo=$_GET['tipo'] ?? $_POST['tipo'] ?? 'alta'; if(!isset($tipos[$tipo])) $tipo='alta';
+$ok=null; $error=null;
+if($_SERVER['REQUEST_METHOD']==='POST'){
+ $nombre=trim($_POST['nombre']??''); $correo=trim($_POST['correo']??''); $telefono=trim($_POST['telefono']??''); $municipio=trim($_POST['municipio']??'');
+ if($nombre==='' || !filter_var($correo,FILTER_VALIDATE_EMAIL)){ $error='Completa nombre y un correo válido.'; }
+ else { $folio='TR-'.date('Ymd').'-'.strtoupper(substr(bin2hex(random_bytes(4)),0,7)); $datos=json_encode($_POST,JSON_UNESCAPED_UNICODE); $st=db()->prepare('INSERT INTO tramites_solicitudes (folio,tipo,nombre,correo,telefono,municipio,datos) VALUES (?,?,?,?,?,?,?)'); $st->execute([$folio,$tipos[$tipo][0],$nombre,$correo,$telefono,$municipio,$datos]); $ok=$folio; }
+}
+$pageTitle=$tipos[$tipo][0]; include __DIR__.'/includes/header.php'; ?>
+<section class="section"><div class="wrap form-layout"><div><div class="eyebrow">Trámite digital</div><h1><?= htmlspecialchars($tipos[$tipo][0]) ?></h1><p class="section-intro"><?= htmlspecialchars($tipos[$tipo][1]) ?>. Al enviar la solicitud se genera un folio para seguimiento.</p><div class="process-compact"><div><b>1</b><span>Captura</span></div><div><b>2</b><span>Validación</span></div><div><b>3</b><span>Folio</span></div><div><b>4</b><span>Seguimiento</span></div></div></div>
+<div class="form-card transaction-form"><?php if($ok): ?><div class="success-panel"><span>✓</span><h2>Solicitud recibida</h2><p>Conserva tu folio:</p><b><?= htmlspecialchars($ok) ?></b><a class="btn" href="/tramites.php">Volver a trámites</a></div><?php else: ?><?php if($error): ?><div class="notice"><?= htmlspecialchars($error) ?></div><?php endif; ?><form method="post" enctype="multipart/form-data"><input type="hidden" name="tipo" value="<?= htmlspecialchars($tipo) ?>"><div class="form-grid"><div class="field"><label>Nombre completo</label><input name="nombre" required></div><div class="field"><label>Correo electrónico</label><input name="correo" type="email" required></div><div class="field"><label>Teléfono</label><input name="telefono"></div><div class="field"><label>Municipio</label><select name="municipio"><option>Saint Louis</option><option>Cerro de San Pablo</option><option>Soledade</option></select></div></div>
+<?php if($tipo==='alta'): ?><div class="field"><label>Dirección del predio</label><input name="direccion" required></div><div class="form-grid"><div class="field"><label>Uso solicitado</label><select name="uso"><option>Doméstico</option><option>Comercial</option><option>Industrial</option></select></div><div class="field"><label>Documento que acredita propiedad/posesión</label><input type="file" name="doc"></div></div>
+<?php elseif($tipo==='titular'): ?><div class="form-grid"><div class="field"><label>Número de cuenta</label><input name="cuenta" required></div><div class="field"><label>Motivo</label><select name="motivo"><option>Compraventa</option><option>Arrendamiento</option><option>Sucesión</option><option>Corrección administrativa</option></select></div></div>
+<?php elseif($tipo==='datos'): ?><div class="field"><label>Número de cuenta</label><input name="cuenta" required></div><div class="field"><label>Nuevo domicilio de notificación</label><input name="domicilio"></div>
+<?php elseif($tipo==='aclaracion'): ?><div class="form-grid"><div class="field"><label>Número de cuenta</label><input name="cuenta" required></div><div class="field"><label>Periodo</label><input name="periodo" placeholder="2026-08"></div></div><div class="field"><label>Motivo de la aclaración</label><textarea name="detalle" rows="5" required></textarea></div>
+<?php elseif($tipo==='factibilidad'): ?><div class="field"><label>Ubicación del proyecto</label><input name="ubicacion" required></div><div class="form-grid"><div class="field"><label>Tipo de proyecto</label><select name="proyecto"><option>Habitacional</option><option>Comercial</option><option>Industrial</option><option>Equipamiento</option></select></div><div class="field"><label>Demanda estimada (m³/día)</label><input name="demanda" type="number" min="1"></div></div>
+<?php else: ?><div class="form-grid"><div class="field"><label>Número de cuenta</label><input name="cuenta" required></div><div class="field"><label>Tipo de constancia</label><select name="constancia"><option>Constancia de servicio</option><option>Constancia de no adeudo</option><option>Constancia de titularidad</option></select></div></div><?php endif; ?>
+<div class="field"><label>Comentarios adicionales</label><textarea name="comentarios" rows="3"></textarea></div><button class="btn btn-full">Enviar solicitud</button></form><?php endif; ?></div></div></section>
+<?php include __DIR__.'/includes/footer.php'; ?>

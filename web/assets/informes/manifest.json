@@ -1,0 +1,443 @@
+[
+  {
+    "year": 1978,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1978.pdf",
+    "era": "foundational",
+    "coverage": 62.0,
+    "users": 39200
+  },
+  {
+    "year": 1979,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1979.pdf",
+    "era": "foundational",
+    "coverage": 62.7,
+    "users": 45070
+  },
+  {
+    "year": 1980,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1980.pdf",
+    "era": "foundational",
+    "coverage": 63.4,
+    "users": 51497
+  },
+  {
+    "year": 1981,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1981.pdf",
+    "era": "foundational",
+    "coverage": 64.1,
+    "users": 55951
+  },
+  {
+    "year": 1982,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1982.pdf",
+    "era": "foundational",
+    "coverage": 64.8,
+    "users": 57718
+  },
+  {
+    "year": 1983,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1983.pdf",
+    "era": "foundational",
+    "coverage": 65.4,
+    "users": 58552
+  },
+  {
+    "year": 1984,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1984.pdf",
+    "era": "foundational",
+    "coverage": 66.1,
+    "users": 61066
+  },
+  {
+    "year": 1985,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1985.pdf",
+    "era": "foundational",
+    "coverage": 66.8,
+    "users": 66329
+  },
+  {
+    "year": 1986,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1986.pdf",
+    "era": "foundational",
+    "coverage": 67.5,
+    "users": 72881
+  },
+  {
+    "year": 1987,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1987.pdf",
+    "era": "foundational",
+    "coverage": 68.2,
+    "users": 78079
+  },
+  {
+    "year": 1988,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1988.pdf",
+    "era": "foundational",
+    "coverage": 68.9,
+    "users": 80523
+  },
+  {
+    "year": 1989,
+    "title": "Informe anual de actividades",
+    "subtitle": "Memoria administrativa del ejercicio",
+    "file": "/assets/informes/informe-anual-1989.pdf",
+    "era": "foundational",
+    "coverage": 69.6,
+    "users": 81346
+  },
+  {
+    "year": 1990,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1990.pdf",
+    "era": "administrative",
+    "coverage": 70.2,
+    "users": 83171
+  },
+  {
+    "year": 1991,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1991.pdf",
+    "era": "administrative",
+    "coverage": 70.9,
+    "users": 87700
+  },
+  {
+    "year": 1992,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1992.pdf",
+    "era": "administrative",
+    "coverage": 71.6,
+    "users": 94149
+  },
+  {
+    "year": 1993,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1993.pdf",
+    "era": "administrative",
+    "coverage": 72.3,
+    "users": 99968
+  },
+  {
+    "year": 1994,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1994.pdf",
+    "era": "administrative",
+    "coverage": 73.0,
+    "users": 103187
+  },
+  {
+    "year": 1995,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1995.pdf",
+    "era": "administrative",
+    "coverage": 73.7,
+    "users": 104227
+  },
+  {
+    "year": 1996,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1996.pdf",
+    "era": "administrative",
+    "coverage": 74.4,
+    "users": 105510
+  },
+  {
+    "year": 1997,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1997.pdf",
+    "era": "administrative",
+    "coverage": 75.1,
+    "users": 109238
+  },
+  {
+    "year": 1998,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1998.pdf",
+    "era": "administrative",
+    "coverage": 75.8,
+    "users": 115362
+  },
+  {
+    "year": 1999,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-1999.pdf",
+    "era": "administrative",
+    "coverage": 76.4,
+    "users": 121632
+  },
+  {
+    "year": 2000,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-2000.pdf",
+    "era": "administrative",
+    "coverage": 77.1,
+    "users": 125663
+  },
+  {
+    "year": 2001,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-2001.pdf",
+    "era": "administrative",
+    "coverage": 77.8,
+    "users": 127128
+  },
+  {
+    "year": 2002,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-2002.pdf",
+    "era": "administrative",
+    "coverage": 78.5,
+    "users": 128061
+  },
+  {
+    "year": 2003,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-2003.pdf",
+    "era": "administrative",
+    "coverage": 79.2,
+    "users": 130983
+  },
+  {
+    "year": 2004,
+    "title": "Informe anual de gestión",
+    "subtitle": "Resultados operativos y administrativos",
+    "file": "/assets/informes/informe-anual-2004.pdf",
+    "era": "administrative",
+    "coverage": 79.9,
+    "users": 136587
+  },
+  {
+    "year": 2005,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2005.pdf",
+    "era": "management",
+    "coverage": 80.6,
+    "users": 143101
+  },
+  {
+    "year": 2006,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2006.pdf",
+    "era": "management",
+    "coverage": 81.2,
+    "users": 147916
+  },
+  {
+    "year": 2007,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2007.pdf",
+    "era": "management",
+    "coverage": 81.9,
+    "users": 149984
+  },
+  {
+    "year": 2008,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2008.pdf",
+    "era": "management",
+    "coverage": 82.6,
+    "users": 150784
+  },
+  {
+    "year": 2009,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2009.pdf",
+    "era": "management",
+    "coverage": 83.3,
+    "users": 152960
+  },
+  {
+    "year": 2010,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2010.pdf",
+    "era": "management",
+    "coverage": 84.0,
+    "users": 157891
+  },
+  {
+    "year": 2011,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2011.pdf",
+    "era": "management",
+    "coverage": 84.7,
+    "users": 164424
+  },
+  {
+    "year": 2012,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2012.pdf",
+    "era": "management",
+    "coverage": 85.4,
+    "users": 169931
+  },
+  {
+    "year": 2013,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2013.pdf",
+    "era": "management",
+    "coverage": 86.1,
+    "users": 172730
+  },
+  {
+    "year": 2014,
+    "title": "Informe anual de resultados",
+    "subtitle": "Indicadores, obra y desempeño del servicio",
+    "file": "/assets/informes/informe-anual-2014.pdf",
+    "era": "management",
+    "coverage": 86.8,
+    "users": 173626
+  },
+  {
+    "year": 2015,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2015.pdf",
+    "era": "performance",
+    "coverage": 87.4,
+    "users": 175177
+  },
+  {
+    "year": 2016,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2016.pdf",
+    "era": "performance",
+    "coverage": 88.1,
+    "users": 179334
+  },
+  {
+    "year": 2017,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2017.pdf",
+    "era": "performance",
+    "coverage": 88.8,
+    "users": 185657
+  },
+  {
+    "year": 2018,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2018.pdf",
+    "era": "performance",
+    "coverage": 89.5,
+    "users": 191711
+  },
+  {
+    "year": 2019,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2019.pdf",
+    "era": "performance",
+    "coverage": 90.2,
+    "users": 195311
+  },
+  {
+    "year": 2020,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2020.pdf",
+    "era": "performance",
+    "coverage": 90.9,
+    "users": 196525
+  },
+  {
+    "year": 2021,
+    "title": "Informe de gestión y desempeño",
+    "subtitle": "Resultados metropolitanos y valor público",
+    "file": "/assets/informes/informe-anual-2021.pdf",
+    "era": "performance",
+    "coverage": 91.6,
+    "users": 197619
+  },
+  {
+    "year": 2022,
+    "title": "Informe Metropolitano de Resultados",
+    "subtitle": "Avances del Plan Metropolitano de Desarrollo Hídrico 2022-2026",
+    "file": "/assets/informes/informe-anual-2022.pdf",
+    "era": "plan",
+    "coverage": 92.2,
+    "users": 200965
+  },
+  {
+    "year": 2023,
+    "title": "Informe Metropolitano de Resultados",
+    "subtitle": "Avances del Plan Metropolitano de Desarrollo Hídrico 2022-2026",
+    "file": "/assets/informes/informe-anual-2023.pdf",
+    "era": "plan",
+    "coverage": 92.9,
+    "users": 206868
+  },
+  {
+    "year": 2024,
+    "title": "Informe Metropolitano de Resultados",
+    "subtitle": "Avances del Plan Metropolitano de Desarrollo Hídrico 2022-2026",
+    "file": "/assets/informes/informe-anual-2024.pdf",
+    "era": "plan",
+    "coverage": 93.6,
+    "users": 213279
+  },
+  {
+    "year": 2025,
+    "title": "Informe Metropolitano de Resultados",
+    "subtitle": "Avances del Plan Metropolitano de Desarrollo Hídrico 2022-2026",
+    "file": "/assets/informes/informe-anual-2025.pdf",
+    "era": "plan",
+    "coverage": 94.3,
+    "users": 217685
+  },
+  {
+    "year": 2026,
+    "title": "Informe Metropolitano de Resultados",
+    "subtitle": "Avances del Plan Metropolitano de Desarrollo Hídrico 2022-2026",
+    "file": "/assets/informes/informe-anual-2026.pdf",
+    "era": "plan",
+    "coverage": 95.0,
+    "users": 219414
+  }
+]

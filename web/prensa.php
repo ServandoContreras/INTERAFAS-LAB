@@ -1,0 +1,16 @@
+<?php
+$pageTitle='Sala de prensa'; require_once __DIR__.'/includes/scenario.php';
+$releases=[
+['BASE','18 SEP 2026 · MODERNIZACIÓN','INTERAFAS amplía telemetría en instalaciones estratégicas','Nuevos puntos de medición se incorporan al esquema metropolitano para mejorar seguimiento de niveles, caudales, presiones y estados de equipos.','/assets/img/operations-room.svg'],
+['BASE','15 SEP 2026 · OPERACIÓN','Mantenimiento preventivo en estaciones de bombeo','Cuadrillas técnicas realizarán trabajos programados durante horarios de baja demanda.','/assets/img/field-engineer.svg'],
+['BASE','10 SEP 2026 · CIUDADANÍA','Crece el uso del recibo digital','Más de 114 mil usuarios reciben ya notificaciones y documentos electrónicos.','/assets/img/support-team.svg'],
+['BASE','05 SEP 2026 · CULTURA','Nueva campaña de Cultura del Agua','La campaña explica pérdidas físicas, consumo per cápita y prevención de fugas domésticas.','/assets/img/water-culture.svg'],
+['FLAG_16','23 SEP 2026 · 09:12 · AVISO OPERATIVO','INTERAFAS despliega cuadrillas por variaciones de presión','Operación Hidráulica amplía la verificación de estaciones, tanques y válvulas en el corredor norte.','/assets/img/field-engineer.svg'],
+['FLAG_17','23 SEP 2026 · 10:44 · COMUNICADO EXTRAORDINARIO','INTERAFAS confirma investigación de un incidente tecnológico','Se activaron controles de contención, preservación de evidencia y canales alternos de atención.','/assets/img/operations-room.svg'],
+['FLAG_18','23 SEP 2026 · 12:31 · CONTINUIDAD','Verificación manual reforzada en instalaciones operacionales','El centro de control contrasta señales de telemetría con inspecciones físicas y restringe funciones no esenciales.','/assets/img/infrastructure-map.svg'],
+['FLAG_19','23 SEP 2026 · 14:18 · RENDICIÓN DE CUENTAS','Dirección General anuncia revisión externa de controles y contratos','INTERAFAS preservará expedientes, bitácoras y documentación técnica mientras continúan las investigaciones.','/assets/img/support-team.svg'],
+['FLAG_20','23 SEP 2026 · 16:47 · EMERGENCIA','INTERAFAS activa continuidad extraordinaria y relevo provisional de mandos','El organismo informa estabilización gradual, coordinación con protección civil y designación de encargados de despacho.','/assets/img/hero-water.svg']
+];
+$visible=[]; foreach($releases as $r){if($r[0]==='BASE'||scenario_has_event($r[0]))$visible[]=$r;} $visible=array_reverse($visible);
+include __DIR__.'/includes/header.php'; ?>
+<section class="section"><div class="wrap"><div class="eyebrow">Sala de prensa</div><h1>Actualidad institucional</h1><p class="section-intro">Boletines, avisos operativos y posicionamientos oficiales del organismo.</p><div class="press-grid"><?php foreach($visible as $i=>$r):?><article class="<?= $i===0?'press-feature':'press-card' ?>"><img src="<?=htmlspecialchars($r[4])?>" alt="Información institucional"><span class="tag tag-blue"><?=htmlspecialchars($r[1])?></span><<?= $i===0?'h2':'h3' ?>><?=htmlspecialchars($r[2])?></<?= $i===0?'h2':'h3' ?>><p><?=htmlspecialchars($r[3])?></p><?php if($r[0]!=='BASE'):?><small class="live-update-chip">Actualizado por evolución del incidente</small><?php endif;?></article><?php endforeach;?></div></div></section><script>window.INTERAFAS_SCENARIO_POLL=true;</script><?php include __DIR__.'/includes/footer.php'; ?>

@@ -1,0 +1,6 @@
+<?php
+require __DIR__.'/includes/config.php';if(empty($_SESSION['user'])){header('Location:/login.php');exit;}
+if(isset($_GET['leer'])){db()->prepare('UPDATE notificaciones SET leida=1 WHERE id=? AND usuario_id=?')->execute([(int)$_GET['leer'],$_SESSION['user']['id']]);header('Location:/notificaciones.php');exit;}
+$q=db()->prepare('SELECT * FROM notificaciones WHERE usuario_id=? ORDER BY fecha DESC');$q->execute([$_SESSION['user']['id']]);$items=$q->fetchAll();$pageTitle='Notificaciones';include __DIR__.'/includes/header.php';?>
+<section class="section account-section"><div class="wrap"><div class="eyebrow">Mi Portal</div><h1>Notificaciones</h1><p class="section-intro">Avisos de facturación, servicio, trámites y cultura del agua.</p><div class="notification-list section-spacer"><?php foreach($items as $n): ?><a class="notification-item <?= $n['leida']?'':'unread' ?>" href="/notificaciones.php?leer=<?= $n['id'] ?>"><span></span><div><small><?= htmlspecialchars($n['tipo']) ?> · <?= htmlspecialchars(substr($n['fecha'],0,16)) ?></small><h3><?= htmlspecialchars($n['titulo']) ?></h3><p><?= htmlspecialchars($n['mensaje']) ?></p></div><b><?= $n['leida']?'Leída':'Nueva' ?></b></a><?php endforeach; ?></div></div></section>
+<?php include __DIR__.'/includes/footer.php'; ?>
