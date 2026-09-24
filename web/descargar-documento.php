@@ -8,29 +8,45 @@ if (empty($_SESSION['user'])) {
 }
 
 $file = isset($_GET['file']) ? (string)$_GET['file'] : '';
-if ($file === '' || basename($file) !== $file) {
+if ($file === '') {
     http_response_code(400);
     exit('Solicitud de documento no valida.');
 }
 
-$stmt = db()->prepare('SELECT nombre FROM documentos WHERE usuario_id = ? AND nombre = ? LIMIT 1');
-$stmt->execute([$_SESSION['user']['id'], $file]);
-$doc = $stmt->fetch();
+/*
+ * VULN 09 · TOO-DEEP
+ * El nombre recibido se concatena directamente al directorio esperado.
+ * No se normaliza la ruta ni se comprueba que el archivo final permanezca
+ * dentro de assets/docs/citizen.
+ */
+$baseDir = __DIR__.'/assets/docs/citizen';
+$path = $baseDir.'/'.$file;
 
-if (!$doc) {
-    http_response_code(404);
-    exit('Documento no encontrado.');
-}
-
-$baseDir = realpath(__DIR__.'/assets/docs/citizen');
-$path = realpath(__DIR__.'/assets/docs/citizen/'.$doc['nombre']);
-
-if ($baseDir === false || $path === false || strpos($path, $baseDir . DIRECTORY_SEPARATOR) !== 0 || !is_file($path)) {
+if (!is_file($path) || !is_readable($path)) {
     http_response_code(404);
     exit('Archivo no disponible.');
 }
 
-header('Content-Type: application/pdf');
+$normalized = str_replace('\\','/',$file);
+$isTraversal = str_contains($normalized,'../');
+
+lab_event(
+    $isTraversal ? 'VULN09_PATH_TRAVERSAL' : 'DOCUMENT_DOWNLOAD',
+    $isTraversal ? 'Lectura fuera del directorio previsto' : 'Documento ciudadano consultado',
+    $file,
+    [
+        'challenge'=>9,
+        'requested_file'=>$file,
+        'base_directory'=>'assets/docs/citizen',
+        'traversal_detected'=>$isTraversal
+    ],
+    'interafas-web',
+    $isTraversal ? 'warning' : 'info',
+    0
+);
+
+$mime = mime_content_type($path) ?: 'application/octet-stream';
+header('Content-Type: '.$mime);
 header('Content-Length: '.filesize($path));
 header('Content-Disposition: inline; filename="'.basename($path).'"');
 header('X-Content-Type-Options: nosniff');
