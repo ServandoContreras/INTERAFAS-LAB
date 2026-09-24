@@ -138,9 +138,9 @@ $challengeResources=[
  ['type'=>'PHP','title'=>'realpath','url'=>'https://www.php.net/manual/en/function.realpath.php','desc'=>'Permite entender cómo debería normalizarse una ruta antes de comprobar que permanece dentro del directorio autorizado.']
 ],
 10=>[
- ['type'=>'OWASP','title'=>'Testing for Session Fixation','url'=>'https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/06-Session_Management_Testing/03-Testing_for_Session_Fixation/','desc'=>'Metodología específica para comprobar si el identificador de sesión se conserva antes y después de la autenticación y puede reutilizarse.'],
- ['type'=>'OWASP','title'=>'Session Management Testing','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/06-Session_Management_Testing/','desc'=>'Qué revisar durante creación, uso, renovación e invalidación de una sesión.'],
- ['type'=>'OWASP','title'=>'Session Management Cheat Sheet','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html','desc'=>'Buenas prácticas para rotación de identificadores, cookies y transición entre estados de autenticación.']
+ ['type'=>'OWASP WSTG v4.2','title'=>'Testing for Session Fixation','url'=>'https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/06-Session_Management_Testing/03-Testing_for_Session_Fixation/','desc'=>'Guía específica WSTG-SESS-03 para comprobar si el identificador de sesión se conserva antes y después de la autenticación y puede reutilizarse.'],
+ ['type'=>'OWASP WSTG v4.2','title'=>'Testing for Session Management Schema','url'=>'https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/06-Session_Management_Testing/01-Testing_for_Session_Management_Schema/','desc'=>'Contexto para analizar cómo la aplicación crea, transporta y valida sus identificadores de sesión.'],
+ ['type'=>'OWASP Cheat Sheet','title'=>'Session Management Cheat Sheet','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html','desc'=>'Buenas prácticas para rotación de identificadores, cookies y transición entre estados de autenticación.']
 ],
 11=>[
  ['type'=>'OWASP','title'=>'Identify Application Entry Points','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/06-Identify_Application_Entry_Points/','desc'=>'Cómo construir el mapa real de endpoints más allá de los enlaces visibles.'],
