@@ -1,7 +1,6 @@
 <?php
 require __DIR__.'/includes/config.php';
 
-// VULN 06: existe autenticación, pero falta la autorización por rol.
 if (empty($_SESSION['user'])) {
     header('Location:/login.php');
     exit;
@@ -9,7 +8,42 @@ if (empty($_SESSION['user'])) {
 
 $pdo=db();
 $uid=(int)($_SESSION['user']['id']??0);
-$currentRole=(string)($_SESSION['user']['rol']??'citizen');
+$sessionRole=(string)($_SESSION['user']['rol']??'citizen');
+$clientRole=(string)($_COOKIE['portal_role']??'');
+
+// VULN 06: autorización basada en una cookie manipulable del cliente.
+// El servidor debería autorizar con el rol almacenado en sesión/base de datos.
+if ($clientRole !== 'procurement_admin') {
+    lab_event(
+        'VULN06_ROLE_DENIED',
+        'Acceso rechazado por rol de cliente',
+        'Área de gestión de proveedores',
+        [
+            'challenge'=>6,
+            'session_user_id'=>$uid,
+            'session_role'=>$sessionRole,
+            'client_role'=>$clientRole,
+            'authorization_source'=>'client_cookie'
+        ],
+        'interafas-web',
+        'notice',
+        0
+    );
+    http_response_code(403);
+    $pageTitle='Acceso restringido';
+    include __DIR__.'/includes/header.php';
+    ?>
+    <section class="section"><div class="wrap article">
+      <div class="eyebrow">Área restringida</div>
+      <h1>Acceso no autorizado</h1>
+      <p class="section-intro">Esta función está reservada para personal de Contrataciones con permisos administrativos.</p>
+      <div class="notice section-spacer">Tu sesión está autenticada, pero no cuenta con autorización para utilizar este módulo.</div>
+      <a class="btn btn-outline" href="/proveedores.php">Volver al padrón</a>
+    </div></section>
+    <?php
+    include __DIR__.'/includes/footer.php';
+    exit;
+}
 
 if(empty($_SESSION['vuln06_csrf'])){
     $_SESSION['vuln06_csrf']=bin2hex(random_bytes(24));
@@ -36,20 +70,24 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     if($provider && in_array($action,['set-review','restore-active'],true)){
         $newState=$action==='set-review' ? 'En revisión' : 'Vigente';
 
-        // El defecto está aquí: no se comprueba que $currentRole sea procurement_admin.
+        // La autorización ya fue tomada de la cookie portal_role.
         $up=$pdo->prepare('UPDATE proveedores SET estado=? WHERE id=?');
         $up->execute([$newState,$providerId]);
 
+        $escalated=($sessionRole!=='procurement_admin' && $clientRole==='procurement_admin');
+
         lab_event(
             'VULN06_WRONG_ROLE_ACCESS',
-            'Operación privilegiada ejecutada sin validación de rol',
+            'Operación privilegiada autorizada por rol controlado por cliente',
             'Proveedor '.$provider['id'].' · '.$provider['nombre'].' → '.$newState,
             [
                 'challenge'=>6,
                 'session_user_id'=>$uid,
-                'session_role'=>$currentRole,
+                'session_role'=>$sessionRole,
+                'client_role'=>$clientRole,
                 'required_role'=>'procurement_admin',
-                'role_check_applied'=>false,
+                'authorization_source'=>'client_cookie',
+                'privilege_escalation'=>$escalated,
                 'provider_id'=>(int)$provider['id'],
                 'previous_state'=>$provider['estado'],
                 'new_state'=>$newState
@@ -61,7 +99,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 
         $msg='Estado actualizado para '.$provider['nombre'].': '.$newState.'.';
 
-        if($currentRole!=='procurement_admin'){
+        if($escalated){
             $flag='UPSLP_CNOIV-WRONG-ROLE-06';
         }
     }
@@ -76,7 +114,7 @@ include __DIR__.'/includes/header.php';
 <h1>Gestión del padrón de proveedores</h1>
 <p class="section-intro">Herramienta operativa destinada a personal autorizado de Contrataciones para revisar el estado de registros del padrón.</p>
 
-<div class="info section-spacer"><b>Sesión actual:</b> <?=htmlspecialchars($_SESSION['user']['nombre']??'')?> · rol reportado: <code><?=htmlspecialchars($currentRole)?></code> · rol esperado: <code>procurement_admin</code></div>
+<div class="info section-spacer"><b>Autorización concedida.</b> Perfil administrativo reconocido por el módulo.</div>
 
 <?php if($msg):?><div class="success-banner section-spacer"><?=htmlspecialchars($msg)?></div><?php endif;?>
 
@@ -105,8 +143,8 @@ include __DIR__.'/includes/header.php';
 <?php if($flag):?>
 <div class="form-card section-spacer">
 <div class="eyebrow">Resultado de autorización</div>
-<h2>La operación fue aceptada con un rol incorrecto</h2>
-<p>El servidor modificó un registro de gestión aunque la sesión actual no posee el rol administrativo esperado. Puedes restaurar el proveedor a <b>Vigente</b> desde la misma tabla.</p>
+<h2>Escalamiento vertical confirmado</h2>
+<p>Una sesión ciudadana consiguió ejecutar una función administrativa porque el servidor confió en un dato de rol controlado por el cliente.</p>
 <p><b>Referencia de validación:</b><br><code><?=htmlspecialchars($flag)?></code></p>
 </div>
 <?php endif;?>
