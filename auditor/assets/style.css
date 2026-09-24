@@ -30,3 +30,11 @@
 
 /* v0.5.4 — pistas integradas por reto */
 .challenge-hints{margin-top:13px;padding-top:12px;border-top:1px solid #203552}.challenge-hint-list{display:grid;gap:8px;margin-top:8px}.challenge-hint-entry{padding:9px 10px;border:1px solid rgba(240,190,99,.28);border-radius:10px;background:rgba(240,190,99,.06)}.challenge-hint-entry small{display:block;color:#d5b66d;font-size:10px}.challenge-hint-entry p{margin:4px 0 0;color:#e8edf4;font-size:12px;line-height:1.42}.challenge-hint-empty{margin:7px 0 0;color:var(--muted);font-size:11px}.challenge-hint-form{margin-top:10px}.challenge-hint-form .secondary{width:100%}.challenge-hint-locked{margin-top:9px;padding:8px 10px;border-radius:9px;background:rgba(98,214,155,.07);border:1px solid rgba(98,214,155,.25);color:#bfe8d2;font-size:11px}.flag-tools{display:block}.flag-tools .capture{max-width:none}
+
+
+/* v0.5.7 — navegación global volver arriba */
+.back-to-top{position:fixed;right:24px;bottom:24px;z-index:40;width:46px;height:46px;border:1px solid rgba(100,168,255,.42);border-radius:14px;background:rgba(14,27,46,.92);color:#dcecff;font-size:22px;font-weight:900;line-height:1;display:grid;place-items:center;cursor:pointer;box-shadow:0 14px 38px rgba(0,0,0,.28);backdrop-filter:blur(10px);opacity:0;visibility:hidden;transform:translateY(10px);transition:opacity .18s ease,transform .18s ease,visibility .18s ease,border-color .18s ease,background .18s ease}
+.back-to-top.visible{opacity:1;visibility:visible;transform:translateY(0)}
+.back-to-top:hover{background:#132843;border-color:var(--accent2);color:#fff;transform:translateY(-2px)}
+.back-to-top:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media(max-width:650px){.back-to-top{right:16px;bottom:16px;width:42px;height:42px;border-radius:12px;font-size:20px}}
