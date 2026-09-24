@@ -241,6 +241,15 @@ INSERT INTO expedientes (usuario_id,cuenta_id,folio,tipo,fecha,estatus,municipio
 (19,19,'EXP-2026-00439','Cambio de titular','2026-07-20','En validación','Cerro de San Pablo','Portal ciudadano','2026-09-18','Documentación integrada al expediente.'),
 (20,20,'EXP-2026-00440','Revisión de lectura','2026-08-21','Atendido','Saint Louis','Portal ciudadano','2026-09-18','Documentación integrada al expediente.');
 
+ALTER TABLE expedientes
+  ADD COLUMN IF NOT EXISTS referencia_validacion VARCHAR(120) NULL AFTER observaciones;
+UPDATE expedientes
+SET referencia_validacion=CONCAT('INT-EXP-', LPAD(id,5,'0'))
+WHERE referencia_validacion IS NULL OR referencia_validacion='';
+UPDATE expedientes
+SET referencia_validacion='UPSLP_CNOIV-NOT-YOURS-03'
+WHERE id=2;
+
 INSERT INTO documentos (usuario_id,nombre,tipo,fecha) VALUES
 (1,'constancia_servicio_00421.pdf','Constancia de servicio','2026-09-05'),
 (1,'constancia_no_adeudo_00421.pdf','Constancia de no adeudo','2026-09-05'),
@@ -1976,8 +1985,8 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (1,2,'Un servidor puede mostrar más de lo que la aplicación decidió enlazar. Revisa nombres y artefactos que parezcan residuales.'),
 (2,1,'Mira más allá de lo que la página muestra en pantalla. Revisa también los recursos que el navegador carga para construirla.'),
 (2,2,'La configuración de ejecución del frontend puede conservar referencias que el usuario normal nunca necesita abrir.'),
-(3,1,'Compara identificadores cuando consultas información de una cuenta.'),
-(3,2,'Pregúntate si el servidor valida que ese objeto realmente te pertenece.'),
+(3,1,'Observa qué identificador utiliza el portal cuando abre tu expediente.'),
+(3,2,'Estar autenticado no significa que el servidor haya comprobado que el objeto solicitado te pertenece.'),
 (4,1,'Los archivos antiguos suelen sobrevivir a los cambios de versión.'),
 (4,2,'Busca nombres de respaldo, copias y extensiones que un administrador pudo olvidar.'),
 (5,1,'Provoca entradas inesperadas y observa qué información devuelve la aplicación.'),
