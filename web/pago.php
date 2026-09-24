@@ -9,51 +9,26 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   $q=$pdo->prepare('SELECT * FROM cuentas_servicio WHERE cuenta=? LIMIT 1');$q->execute([$cuenta]);$cs=$q->fetch();
   if(!$cs){$error='La cuenta de servicio no existe.';} else {
    $f=null;if($postedInvoice){$q=$pdo->prepare('SELECT * FROM facturas WHERE id=? AND cuenta_id=? LIMIT 1');$q->execute([$postedInvoice,$cs['id']]);$f=$q->fetch();if(!$f)$error='El recibo seleccionado no corresponde a la cuenta.';}
-   if(!$error){try{$pdo->beginTransaction();$ref='PAY-'.date('ymd').'-'.strtoupper(substr(bin2hex(random_bytes(4)),0,6));$st=$pdo->prepare('INSERT INTO pagos (usuario_id,cuenta_id,factura_id,referencia,monto,metodo,ultimos4,estado) VALUES (?,?,?,?,?,?,?,\'Aplicado\')');$st->execute([$uid,$cs['id'],$f['id']??null,$ref,$monto,$metodo,$ultimos4?:null]);$paymentId=(int)$pdo->lastInsertId();
-   if($f){
+   if(!$error){try{$pdo->beginTransaction();$ref='PAY-'.date('ymd').'-'.strtoupper(substr(bin2hex(random_bytes(4)),0,6));$st=$pdo->prepare('INSERT INTO pagos (usuario_id,cuenta_id,factura_id,referencia,monto,metodo,ultimos4,estado) VALUES (?,?,?,?,?,?,?,\'Aplicado\')');$st->execute([$uid,$cs['id'],$f['id']??null,$ref,$monto,$metodo,$ultimos4?:null]);$paymentId=(int)$pdo->lastInsertId();if($f){
     $expectedAmount=(float)$f['saldo'];
-
-    /*
-     * VULN 13 · PAYMENT-PATH
-     * La interfaz fija el importe al saldo completo del recibo, pero el
-     * servidor no vuelve a comprobar esa regla. Cualquier importe positivo
-     * recibido en la confirmación liquida el recibo completo.
-     */
-    $pdo->prepare('UPDATE facturas SET saldo=0,estado=\'Pagada\' WHERE id=?')->execute([$f['id']]);
-
+    /* VULN 13 · PAYMENT-PATH: el servidor confía en monto y liquida el recibo. */
+    $pdo->prepare("UPDATE facturas SET saldo=0,estado='Pagada' WHERE id=?")->execute([$f['id']]);
     if($monto+0.009<$expectedAmount){
       header('X-INTERAFAS-Business-Rule: amount-not-revalidated');
       header('X-INTERAFAS-Validation: UPSLP_CNOIV-PAYMENT-PATH-13');
-      lab_event(
-        'VULN13_PAYMENT_RULE_BYPASS',
-        'Regla de liquidación de recibo omitida',
-        $ref,
-        [
-          'challenge'=>13,
-          'invoice_id'=>(int)$f['id'],
-          'expected_amount'=>$expectedAmount,
-          'submitted_amount'=>$monto,
-          'account'=>(string)$cs['cuenta']
-        ],
-        'interafas-web',
-        'warning',
-        0
-      );
+      lab_event('VULN13_PAYMENT_RULE_BYPASS','Regla de liquidación de recibo omitida',$ref,[
+        'challenge'=>13,
+        'invoice_id'=>(int)$f['id'],
+        'expected_amount'=>$expectedAmount,
+        'submitted_amount'=>$monto,
+        'account'=>(string)$cs['cuenta']
+      ],'interafas-web','warning',0);
     }
-   }
-   $q=$pdo->prepare("SELECT COALESCE(SUM(saldo),0) FROM facturas WHERE cuenta_id=? AND estado<>'Pagada'");$q->execute([$cs['id']]);$totalSaldo=(float)$q->fetchColumn();$pdo->prepare('UPDATE cuentas_servicio SET saldo=? WHERE id=?')->execute([$totalSaldo,$cs['id']]);if($uid){$pdo->prepare('INSERT INTO notificaciones (usuario_id,titulo,mensaje,tipo,leida) VALUES (?,?,?,?,0)')->execute([$uid,'Pago aplicado','Se registró un pago por 
+   }$q=$pdo->prepare("SELECT COALESCE(SUM(saldo),0) FROM facturas WHERE cuenta_id=? AND estado<>'Pagada'");$q->execute([$cs['id']]);$totalSaldo=(float)$q->fetchColumn();$pdo->prepare('UPDATE cuentas_servicio SET saldo=? WHERE id=?')->execute([$totalSaldo,$cs['id']]);if($uid){$pdo->prepare('INSERT INTO notificaciones (usuario_id,titulo,mensaje,tipo,leida) VALUES (?,?,?,?,0)')->execute([$uid,'Pago aplicado','Se registró un pago por $'.number_format($monto,2).' con referencia '.$ref.'.','facturacion']);}$pdo->commit();$success=$ref;}catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();$error='No fue posible registrar la operación.';}}
   }
  }
 }
 $pageTitle='Pago y facturación';include __DIR__.'/includes/header.php';?>
 <section class="payment-hero"><div class="wrap promo-grid"><div><div class="eyebrow">Servicios digitales</div><h1>Paga tu recibo en línea</h1><p>Consulta tu cuenta, selecciona un recibo y conserva tu historial de operaciones.</p><div class="hero-actions"><?php if($logged): ?><a class="btn" href="/facturacion.php">Mi historial</a><?php else: ?><a class="btn" href="#pagar">Pagar ahora</a><?php endif; ?><a class="btn btn-outline" href="<?= $logged?'/panel.php':'/login.php' ?>">Mi portal</a></div></div><img src="/assets/img/payment-online.svg" alt="Pago de servicios"></div></section>
 <section class="section" id="pagar"><div class="wrap payment-checkout"><div><div class="eyebrow">Pasarela de pago</div><h2>Selecciona una opción</h2><p class="section-intro">El portal registra el pago y actualiza el historial de la cuenta. Los datos completos de tarjeta no se almacenan.</p><div class="gateway-tabs" role="tablist"><button type="button" class="gateway-tab active" data-method="Tarjeta">Tarjeta</button><button type="button" class="gateway-tab" data-method="SPEI">Transferencia SPEI</button><button type="button" class="gateway-tab" data-method="Domiciliación">Domiciliación</button></div><div class="gateway-assurance"><span>🔒 Conexión cifrada</span><span>✓ Historial actualizado</span><span>↻ Comprobante digital</span></div><?php if($linked): ?><div class="payment-linked"><small>Servicio vinculado</small><b><?= htmlspecialchars($linked['cuenta']) ?></b><span><?= htmlspecialchars($linked['domicilio']) ?></span></div><?php endif; ?></div><div class="checkout-card"><?php if($success): ?><div class="success-panel"><span>✓</span><h2>Pago recibido</h2><p>Referencia de operación:</p><b><?= htmlspecialchars($success) ?></b><p>La operación quedó integrada al historial.</p><?php if($paymentId&&$logged): ?><a class="btn" href="/comprobante.php?id=<?= $paymentId ?>">Ver comprobante</a><?php endif; ?><a class="btn btn-outline" href="/pago.php">Nueva operación</a></div><?php else: ?><?php if($error): ?><div class="notice"><?= htmlspecialchars($error) ?></div><?php endif; ?><form method="post" id="payment-form"><input type="hidden" name="metodo" id="payment-method" value="Tarjeta"><input type="hidden" name="factura_id" value="<?= $invoice?$invoice['id']:'' ?>"><div class="form-grid"><div class="field"><label>Número de cuenta</label><input name="cuenta" value="<?= htmlspecialchars($_POST['cuenta']??$prefillAccount) ?>" placeholder="0001234567" required></div><div class="field"><label>Importe</label><input name="monto" type="number" min="1" step="0.01" value="<?= htmlspecialchars($_POST['monto']??$prefillAmount) ?>" placeholder="0.00" <?= $invoice?'readonly':'' ?> required></div></div><?php if($invoice): ?><div class="invoice-payment-ref"><small>Recibo seleccionado</small><b><?= htmlspecialchars($invoice['folio']) ?></b><span><?= htmlspecialchars($invoice['periodo']) ?> · saldo $<?= number_format((float)$invoice['saldo'],2) ?></span><span>Este flujo liquida el saldo completo del recibo; el importe se fija automáticamente y no admite parcialidades.</span></div><?php endif; ?><div id="card-fields"><div class="field"><label>Número de tarjeta</label><input id="card-number" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000"></div><div class="form-grid"><div class="field"><label>Vencimiento</label><input placeholder="MM/AA" autocomplete="cc-exp"></div><div class="field"><label>CVV</label><input type="password" maxlength="4" placeholder="•••" autocomplete="cc-csc"></div></div><input type="hidden" name="ultimos4" id="last4"></div><div id="spei-fields" class="gateway-panel is-hidden"><div class="bank-reference"><small>CLABE receptora</small><b>646 180 001234567890</b><span>La referencia se vincula a tu cuenta al confirmar.</span></div></div><div id="direct-fields" class="gateway-panel is-hidden"><div class="field"><label>CLABE para domiciliación</label><input name="clabe" inputmode="numeric" placeholder="18 dígitos"></div><div class="field"><label>Titular de la cuenta</label><input name="titular"></div></div><button class="btn btn-full">Confirmar pago</button></form><?php endif; ?></div></div></section>
-<?php include __DIR__.'/includes/footer.php'; ?>
-.number_format($monto,2).' con referencia '.$ref.'.','facturacion']);}$pdo->commit();$success=$ref;}catch(Throwable $e){if($pdo->inTransaction())$pdo->rollBack();$error='No fue posible registrar la operación.';}}
-  }
- }
-}
-$pageTitle='Pago y facturación';include __DIR__.'/includes/header.php';?>
-<section class="payment-hero"><div class="wrap promo-grid"><div><div class="eyebrow">Servicios digitales</div><h1>Paga tu recibo en línea</h1><p>Consulta tu cuenta, selecciona un recibo y conserva tu historial de operaciones.</p><div class="hero-actions"><?php if($logged): ?><a class="btn" href="/facturacion.php">Mi historial</a><?php else: ?><a class="btn" href="#pagar">Pagar ahora</a><?php endif; ?><a class="btn btn-outline" href="<?= $logged?'/panel.php':'/login.php' ?>">Mi portal</a></div></div><img src="/assets/img/payment-online.svg" alt="Pago de servicios"></div></section>
-<section class="section" id="pagar"><div class="wrap payment-checkout"><div><div class="eyebrow">Pasarela de pago</div><h2>Selecciona una opción</h2><p class="section-intro">El portal registra el pago y actualiza el historial de la cuenta. Los datos completos de tarjeta no se almacenan.</p><div class="gateway-tabs" role="tablist"><button type="button" class="gateway-tab active" data-method="Tarjeta">Tarjeta</button><button type="button" class="gateway-tab" data-method="SPEI">Transferencia SPEI</button><button type="button" class="gateway-tab" data-method="Domiciliación">Domiciliación</button></div><div class="gateway-assurance"><span>🔒 Conexión cifrada</span><span>✓ Historial actualizado</span><span>↻ Comprobante digital</span></div><?php if($linked): ?><div class="payment-linked"><small>Servicio vinculado</small><b><?= htmlspecialchars($linked['cuenta']) ?></b><span><?= htmlspecialchars($linked['domicilio']) ?></span></div><?php endif; ?></div><div class="checkout-card"><?php if($success): ?><div class="success-panel"><span>✓</span><h2>Pago recibido</h2><p>Referencia de operación:</p><b><?= htmlspecialchars($success) ?></b><p>La operación quedó integrada al historial.</p><?php if($paymentId&&$logged): ?><a class="btn" href="/comprobante.php?id=<?= $paymentId ?>">Ver comprobante</a><?php endif; ?><a class="btn btn-outline" href="/pago.php">Nueva operación</a></div><?php else: ?><?php if($error): ?><div class="notice"><?= htmlspecialchars($error) ?></div><?php endif; ?><form method="post" id="payment-form"><input type="hidden" name="metodo" id="payment-method" value="Tarjeta"><input type="hidden" name="factura_id" value="<?= $invoice?$invoice['id']:'' ?>"><div class="form-grid"><div class="field"><label>Número de cuenta</label><input name="cuenta" value="<?= htmlspecialchars($_POST['cuenta']??$prefillAccount) ?>" placeholder="0001234567" required></div><div class="field"><label>Importe</label><input name="monto" type="number" min="1" step="0.01" value="<?= htmlspecialchars($_POST['monto']??$prefillAmount) ?>" placeholder="0.00" required></div></div><?php if($invoice): ?><div class="invoice-payment-ref"><small>Recibo seleccionado</small><b><?= htmlspecialchars($invoice['folio']) ?></b><span><?= htmlspecialchars($invoice['periodo']) ?> · saldo $<?= number_format((float)$invoice['saldo'],2) ?></span></div><?php endif; ?><div id="card-fields"><div class="field"><label>Número de tarjeta</label><input id="card-number" inputmode="numeric" autocomplete="cc-number" placeholder="0000 0000 0000 0000"></div><div class="form-grid"><div class="field"><label>Vencimiento</label><input placeholder="MM/AA" autocomplete="cc-exp"></div><div class="field"><label>CVV</label><input type="password" maxlength="4" placeholder="•••" autocomplete="cc-csc"></div></div><input type="hidden" name="ultimos4" id="last4"></div><div id="spei-fields" class="gateway-panel is-hidden"><div class="bank-reference"><small>CLABE receptora</small><b>646 180 001234567890</b><span>La referencia se vincula a tu cuenta al confirmar.</span></div></div><div id="direct-fields" class="gateway-panel is-hidden"><div class="field"><label>CLABE para domiciliación</label><input name="clabe" inputmode="numeric" placeholder="18 dígitos"></div><div class="field"><label>Titular de la cuenta</label><input name="titular"></div></div><button class="btn btn-full">Confirmar pago</button></form><?php endif; ?></div></div></section>
 <?php include __DIR__.'/includes/footer.php'; ?>
