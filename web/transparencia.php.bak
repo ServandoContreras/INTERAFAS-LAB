@@ -1,0 +1,46 @@
+<?php
+/**
+ * INTERAFAS · Transparencia
+ * Copia previa a la reorganización del módulo.
+ *
+ * Archivo generado automáticamente antes de la publicación:
+ * transparencia.php.bak
+ * Fecha: 2026-06-11
+ *
+ * TODO despliegue:
+ * - retirar esta copia al terminar la validación;
+ * - migrar exportaciones al módulo vigente;
+ * - eliminar marcadores de QA.
+ */
+
+$release = '2026.06-transparency-r2';
+$module = 'transparencia-publica';
+$legacyExport = true;
+
+/*
+ * Marcador de validación utilizado durante la verificación de la
+ * publicación anterior. No debía permanecer dentro del document root.
+ */
+$releaseValidation = 'UPSLP_CNOIV-OLD-MEMORIES-04';
+
+$sections = [
+    'estructura',
+    'directorio',
+    'indicadores',
+    'contrataciones',
+    'licitaciones',
+    'informes'
+];
+
+function legacy_public_export(array $sections): array {
+    return [
+        'release' => '2026.06-transparency-r2',
+        'generated_by' => 'portal-publicacion',
+        'sections' => $sections,
+        'format' => 'json'
+    ];
+}
+
+// Copia conservada por seguridad antes de sustituir transparencia.php.
+// El servidor no interpreta archivos .bak como PHP.
+?>
