@@ -13,5 +13,5 @@ CREATE TABLE IF NOT EXISTS reportes_ciudadanos (
 
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (8,1,'Busca una entrada ciudadana que no solo se envíe, sino que quede almacenada y pueda consultarse después en otra vista.'),
-(8,2,'Si el contenido reaparece dentro del HTML, comprueba si el navegador lo trata como texto o como marcado ejecutable. Una ejecución JavaScript inocua es suficiente para demostrar el fallo.')
+(8,2,'Si consigues ejecutar JavaScript desde el contenido almacenado, inspecciona también el HTML de la vista de seguimiento. Puede contener información útil para acreditar la ejecución mediante una petición HTTP normal.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
