@@ -15,21 +15,23 @@ lab_event(
 );
 
 try {
-    $allowed = ['proveedores','contratos'];
-
-    if (!is_string($rawTipo) || !in_array($tipo, $allowed, true)) {
-        throw new InvalidArgumentException(
-            'Unsupported export dataset "'.(is_string($rawTipo) ? $rawTipo : gettype($rawTipo)).'". Expected one of: '.implode(', ', $allowed)
-        );
-    }
+    /*
+     * El exportador usa una selección exhaustiva de los conjuntos soportados.
+     * No existe caso "default": una entrada distinta provoca un
+     * UnhandledMatchError real de PHP.
+     */
+    $exportKind = match ($tipo) {
+        'proveedores' => 'proveedores',
+        'contratos'   => 'contratos',
+    };
 
     header('Content-Type: text/csv; charset=utf-8');
-    header('Content-Disposition: attachment; filename="interafas_'.$tipo.'.csv"');
+    header('Content-Disposition: attachment; filename="interafas_'.$exportKind.'.csv"');
 
     $o=fopen('php://output','w');
     fwrite($o,"\xEF\xBB\xBF");
 
-    if($tipo==='contratos'){
+    if($exportKind==='contratos'){
         fputcsv($o,['Contrato','Proveedor','Objeto','Modalidad','Monto','Inicio','Fin','Origen del recurso','Estado']);
         $rows=db()->query('SELECT c.*,p.nombre proveedor FROM contratos c JOIN proveedores p ON p.id=c.proveedor_id ORDER BY c.id')->fetchAll();
         foreach($rows as $r){
