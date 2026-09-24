@@ -9,7 +9,7 @@ if (session_status() !== PHP_SESSION_ACTIVE) { session_start(); }
 $current = basename($_SERVER['PHP_SELF']);
 lab_page_view($current, (string)$pageTitle);
 $servicePages = ['agua-potable.php','alcantarillado.php','saneamiento.php'];
-$citizenPages = ['tramites.php','reportes.php','pago.php','panel.php','perfil.php','expediente.php','documentos.php','cultura-agua.php','facturacion.php','factura.php','comprobante.php','notificaciones.php','registro.php','vincular-servicio.php','mis-servicios.php','lectura-medidor.php','afectaciones.php'];
+$citizenPages = ['tramites.php','reportes.php','seguimiento-reporte.php','pago.php','panel.php','perfil.php','expediente.php','documentos.php','cultura-agua.php','facturacion.php','factura.php','comprobante.php','notificaciones.php','registro.php','vincular-servicio.php','mis-servicios.php','lectura-medidor.php','afectaciones.php'];
 $institutionPages = ['quienes-somos.php','infraestructura.php','organizacion.php','directorio.php','prensa.php','redes-sociales.php','transparencia.php','observatorio.php','contacto.php','informes.php','system.php'];
 $isLogged = !empty($_SESSION['user']);
 function navActive(array $pages, string $current): string { return in_array($current, $pages, true) ? ' is-active' : ''; }
