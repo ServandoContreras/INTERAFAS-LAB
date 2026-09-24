@@ -2024,7 +2024,7 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (10,1,'Compara el valor de la cookie de sesión antes y después de iniciar sesión. Un cambio de estado de anónimo a autenticado debería ir acompañado de una rotación del identificador.'),
 (10,2,'Si el identificador se conserva, reutiliza el valor observado antes del login desde un segundo cliente HTTP y revisa tanto el acceso obtenido como los encabezados de la respuesta.'),
 (11,1,'Mi portal actualiza parte de su estado mediante solicitudes en segundo plano. Revisa Network y no te limites al HTML visible.'),
-(11,2,'Cuando encuentres una respuesta JSON relacionada con tu cuenta, inspecciona todos sus campos. Algunas APIs devuelven relaciones o enlaces que la interfaz decide no mostrar.'),
+(11,2,'En Firefox abre Red, filtra las solicitudes XHR/Fetch generadas por Mi portal y selecciona la que devuelve contexto de tu cuenta. Revisa la pestaña Respuesta completa: además de los datos visibles en pantalla, busca propiedades que representen enlaces o relaciones hacia otros recursos de la API.'),
 (12,1,'Una API también debe validar la propiedad del objeto solicitado.'),
 (12,2,'Compara respuestas al variar identificadores de cuentas de servicio.'),
 (13,1,'Sigue el flujo completo de pago, no solo el formulario visible.'),
