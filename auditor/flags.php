@@ -53,7 +53,7 @@ $challengeChecklist=[
 3=>['Compara objetos similares dentro de una misma función.','Verifica si cambiar un identificador modifica el recurso consultado.','Confirma si el servidor valida que el objeto pertenece al usuario autenticado.'],
 4=>['Revisa rastros de versiones anteriores y archivos residuales.','Comprueba si copias o respaldos quedaron accesibles.','Explica qué información adicional aporta el artefacto encontrado.'],
 5=>['Identifica una función del portal que genere una descarga dinámica y observa qué solicitud realiza el navegador.','Determina qué parámetro controla el contenido solicitado y prueba una entrada no contemplada por la interfaz.','Compara la respuesta del servidor y registra cualquier detalle técnico que no debería exponerse al usuario final.'],
-6=>['Compara funciones disponibles entre perfiles o contextos distintos.','No asumas que un botón oculto equivale a una autorización real.','Valida la autorización en el servidor para la acción observada.'],
+6=>['Identifica una función del portal indicada para personal autorizado e intenta acceder con una cuenta ciudadana autenticada.','Comprueba qué rol reporta tu sesión y si el servidor distingue entre estar autenticado y estar autorizado.','Ejecuta una operación de gestión no destructiva y documenta si el servidor valida realmente el rol requerido.'],
 7=>['Compara respuestas ante condiciones controladas y repetibles.','Busca diferencias pequeñas aunque la aplicación no muestre errores.','Documenta cómo confirmaste el comportamiento sin depender de una sola respuesta.'],
 8=>['Identifica entradas de usuario que vuelvan a mostrarse más adelante.','Comprueba si el contenido se almacena y reaparece en otra vista.','Diferencia entre texto mostrado y contenido interpretado por el navegador.'],
 9=>['Revisa cómo se construyen las solicitudes de descarga o lectura de archivos.','Comprueba si la aplicación limita correctamente la ubicación del recurso solicitado.','Conserva la petición y respuesta que demuestren el límite o su ausencia.'],
@@ -99,8 +99,9 @@ $challengeResources=[
  ['type'=>'PortSwigger','title'=>'Exploiting information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure/exploiting','desc'=>'Explica cómo los errores verbosos y las diferencias entre respuestas pueden utilizarse para obtener información sobre la aplicación.']
 ],
 6=>[
- ['type'=>'OWASP','title'=>'Testing for Bypassing Authorization Schema','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema/','desc'=>'Cómo comprobar si una función está realmente protegida por el servidor.'],
- ['type'=>'OWASP API','title'=>'Broken Function Level Authorization','url'=>'https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/','desc'=>'Diferencia entre ocultar funciones y aplicar autorización efectiva.']
+ ['type'=>'OWASP','title'=>'Testing for Bypassing Authorization Schema','url'=>'https://wstg.owasp.org/v4.2/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema/','desc'=>'Cómo comprobar si una función protegida valida realmente permisos y roles en el servidor.'],
+ ['type'=>'OWASP API','title'=>'Broken Function Level Authorization','url'=>'https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/','desc'=>'Explica el acceso indebido a funciones administrativas o privilegiadas cuando la autorización por función falla.'],
+ ['type'=>'PortSwigger','title'=>'Access control vulnerabilities','url'=>'https://portswigger.net/web-security/access-control','desc'=>'Diferencia entre autenticación, control de acceso vertical y horizontal, y cómo probar funciones destinadas a otros roles.']
 ],
 7=>[
  ['type'=>'PortSwigger','title'=>'Blind SQL injection','url'=>'https://portswigger.net/web-security/sql-injection/blind','desc'=>'Inferencia mediante diferencias de respuesta cuando la aplicación no muestra resultados ni errores SQL.'],
