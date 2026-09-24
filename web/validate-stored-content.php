@@ -14,8 +14,15 @@ $proof=(string)($_GET['proof']??'');
 $referer=(string)($_SERVER['HTTP_REFERER']??'');
 $fetchDest=strtolower((string)($_SERVER['HTTP_SEC_FETCH_DEST']??''));
 
-$expectedPath='/seguimiento-reporte.php?id='.$id;
-$refererOk=$referer!=='' && str_contains($referer,$expectedPath);
+$refererOk=false;
+if($referer!==''){
+    $parts=parse_url($referer);
+    $refPath=(string)($parts['path']??'');
+    $refQuery=[];
+    parse_str((string)($parts['query']??''),$refQuery);
+    $refererOk=$refPath==='/seguimiento-reporte.php' && (int)($refQuery['id']??0)===$id;
+}
+
 $fetchOk=$fetchDest==='empty';
 
 if(!$refererOk || !$fetchOk){
