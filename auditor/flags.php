@@ -67,13 +67,97 @@ $challengeChecklist=[
 19=>['Relaciona hallazgos previos en lugar de buscar una vulnerabilidad aislada.','Construye la secuencia de pasos que conecta web, arquitectura y entorno operacional.','Conserva evidencia de cada salto de la cadena.'],
 20=>['Define primero cuál es el impacto operacional simulado que debes demostrar.','Comprueba qué prerrequisitos de la cadena anterior habilitan la acción final.','Registra estado antes/después, alarmas y evidencia de recuperación del simulador.']
 ];
+
+$challengeResources=[
+1=>[
+ ['type'=>'OWASP','title'=>'Information Gathering','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/00-Information_Gathering_Overview/','desc'=>'Reconocimiento inicial y descubrimiento de superficies que no siempre aparecen en la navegación.'],
+ ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Cómo archivos, respaldos y configuraciones expuestas pueden revelar información no prevista.']
+],
+2=>[
+ ['type'=>'OWASP','title'=>'Review Web Page Content for Information Leakage','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/05-Review_Web_Page_Content_for_Information_Leakage/','desc'=>'Revisión de HTML, JavaScript y recursos recibidos por el navegador para detectar información expuesta.'],
+ ['type'=>'MDN','title'=>'Source maps y recursos del frontend','url'=>'https://developer.mozilla.org/en-US/docs/Glossary/Source_map','desc'=>'Concepto de artefactos auxiliares del frontend y por qué pueden revelar detalles que no son visibles en la interfaz.'],
+ ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Casos prácticos de información sensible expuesta por configuración, archivos o código del cliente.']
+],
+3=>[
+ ['type'=>'OWASP','title'=>'Testing for IDOR','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/04-Testing_for_Insecure_Direct_Object_References/','desc'=>'Qué es una referencia directa insegura y cómo comprobar autorización por objeto.'],
+ ['type'=>'PortSwigger','title'=>'Access control vulnerabilities','url'=>'https://portswigger.net/web-security/access-control','desc'=>'Metodología práctica para analizar controles de acceso horizontales y verticales.']
+],
+4=>[
+ ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Exposición mediante copias temporales, respaldos y archivos residuales.'],
+ ['type'=>'OWASP','title'=>'Review Old Backup and Unreferenced Files','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/04-Review_Old_Backup_and_Unreferenced_Files_for_Sensitive_Information/','desc'=>'Qué buscar en archivos antiguos, respaldos y recursos no referenciados.']
+],
+5=>[
+ ['type'=>'OWASP','title'=>'Testing for Error Code','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/01-Testing_for_Error_Code/','desc'=>'Cómo los errores verbosos pueden revelar tecnología, rutas, consultas o configuración.'],
+ ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Ejemplos de mensajes y respuestas que filtran información técnica útil para un atacante.']
+],
+6=>[
+ ['type'=>'OWASP','title'=>'Testing for Bypassing Authorization Schema','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema/','desc'=>'Cómo comprobar si una función está realmente protegida por el servidor.'],
+ ['type'=>'OWASP API','title'=>'Broken Function Level Authorization','url'=>'https://owasp.org/API-Security/editions/2023/en/0xa5-broken-function-level-authorization/','desc'=>'Diferencia entre ocultar funciones y aplicar autorización efectiva.']
+],
+7=>[
+ ['type'=>'PortSwigger','title'=>'Blind SQL injection','url'=>'https://portswigger.net/web-security/sql-injection/blind','desc'=>'Inferencia mediante diferencias de respuesta cuando la aplicación no muestra resultados ni errores SQL.'],
+ ['type'=>'OWASP','title'=>'Testing for SQL Injection','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/05-Testing_for_SQL_Injection/','desc'=>'Fundamentos y metodología de pruebas de inyección SQL.']
+],
+8=>[
+ ['type'=>'OWASP','title'=>'Testing for Stored XSS','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/02-Testing_for_Stored_Cross_Site_Scripting/','desc'=>'Cómo identificar entradas persistentes que después interpreta otro navegador.'],
+ ['type'=>'PortSwigger','title'=>'Cross-site scripting','url'=>'https://portswigger.net/web-security/cross-site-scripting','desc'=>'Conceptos, contextos de ejecución y metodología práctica para XSS.']
+],
+9=>[
+ ['type'=>'PortSwigger','title'=>'Path traversal','url'=>'https://portswigger.net/web-security/file-path-traversal','desc'=>'Cómo parámetros de archivo mal validados pueden escapar del directorio previsto.'],
+ ['type'=>'OWASP','title'=>'Testing Directory Traversal File Include','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/07-Input_Validation_Testing/11.1-Testing_for_File_Inclusion/','desc'=>'Metodología de pruebas para inclusión y manipulación de rutas de archivos.']
+],
+10=>[
+ ['type'=>'OWASP','title'=>'Session Management Testing','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/06-Session_Management_Testing/','desc'=>'Qué revisar durante creación, uso, renovación e invalidación de una sesión.'],
+ ['type'=>'OWASP','title'=>'Session Management Cheat Sheet','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Session_Management_Cheat_Sheet.html','desc'=>'Propiedades esperadas de cookies, tokens e invalidación de sesiones.']
+],
+11=>[
+ ['type'=>'OWASP','title'=>'Identify Application Entry Points','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/06-Identify_Application_Entry_Points/','desc'=>'Cómo construir el mapa real de endpoints más allá de los enlaces visibles.'],
+ ['type'=>'PortSwigger','title'=>'API testing','url'=>'https://portswigger.net/web-security/api-testing','desc'=>'Descubrimiento de endpoints, documentación y superficies API no evidentes.']
+],
+12=>[
+ ['type'=>'OWASP API','title'=>'Broken Object Level Authorization','url'=>'https://owasp.org/API-Security/editions/2023/en/0xa1-broken-object-level-authorization/','desc'=>'Por qué cada objeto solicitado por una API debe comprobar autorización.'],
+ ['type'=>'OWASP WSTG','title'=>'API BOLA Testing','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/12-API_Testing/02-API_Broken_Object_Level_Authorization/','desc'=>'Metodología específica para comprobar BOLA en APIs.']
+],
+13=>[
+ ['type'=>'OWASP','title'=>'Business Logic Security','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Business_Logic_Security_Cheat_Sheet.html','desc'=>'Cómo analizar supuestos del flujo y controles que el servidor debe volver a validar.'],
+ ['type'=>'PortSwigger','title'=>'Business logic vulnerabilities','url'=>'https://portswigger.net/web-security/logic-flaws','desc'=>'Ejemplos y metodología para detectar abusos de flujo y validaciones insuficientes.']
+],
+14=>[
+ ['type'=>'OWASP','title'=>'Business Logic Testing','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/10-Business_Logic_Testing/','desc'=>'Pruebas sobre reglas de negocio, relaciones entre entidades y secuencias previstas.'],
+ ['type'=>'OWASP','title'=>'Authorization Testing Automation','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Testing_Automation_Cheat_Sheet.html','desc'=>'Cómo pensar autorización como actor, recurso y acción.']
+],
+15=>[
+ ['type'=>'OWASP','title'=>'Information Leakage','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/05-Review_Web_Page_Content_for_Information_Leakage/','desc'=>'Identificación de nombres internos, rutas, comentarios y configuración expuesta.'],
+ ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Cómo pequeños datos técnicos pueden combinarse para revelar arquitectura interna.']
+],
+16=>[
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Remote Services','url'=>'https://attack.mitre.org/techniques/T0886/','desc'=>'Contexto sobre servicios remotos y cruces de frontera hacia entornos ICS/OT.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'ICS Matrix','url'=>'https://attack.mitre.org/matrices/ics/','desc'=>'Mapa general de tácticas y técnicas relevantes en ambientes industriales.']
+],
+17=>[
+ ['type'=>'MITRE ATT&CK ICS','title'=>'ICS Matrix','url'=>'https://attack.mitre.org/matrices/ics/','desc'=>'Referencia para comprender supervisión, operación y acciones adversarias en ICS.'],
+ ['type'=>'CISA','title'=>'ICS Recommended Practices','url'=>'https://www.cisa.gov/topics/industrial-control-systems','desc'=>'Contexto defensivo sobre segmentación, acceso remoto y protección de sistemas de control.']
+],
+18=>[
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Modify Program / Firmware concepts','url'=>'https://attack.mitre.org/techniques/ics/','desc'=>'Técnicas ICS relacionadas con modificación de software, lógica y firmware.'],
+ ['type'=>'CWE','title'=>'CWE-494: Download of Code Without Integrity Check','url'=>'https://cwe.mitre.org/data/definitions/494.html','desc'=>'Por qué una actualización debe verificar integridad y autenticidad antes de aceptarse.']
+],
+19=>[
+ ['type'=>'MITRE ATT&CK ICS','title'=>'ICS Matrix','url'=>'https://attack.mitre.org/matrices/ics/','desc'=>'Úsala para ordenar el encadenamiento entre acceso, descubrimiento, movimiento e impacto.'],
+ ['type'=>'OWASP','title'=>'Web Security Testing Guide','url'=>'https://wstg.owasp.org/','desc'=>'Referencia para relacionar hallazgos web individuales dentro de una evaluación completa.']
+],
+20=>[
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Impact','url'=>'https://attack.mitre.org/tactics/TA0105/','desc'=>'Marco para comprender qué significa impacto sobre un proceso industrial sin confundirlo con simple acceso.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Inhibit Response Function','url'=>'https://attack.mitre.org/tactics/TA0107/','desc'=>'Contexto sobre acciones que afectan supervisión, respuesta y funciones de protección en ICS.']
+]
+];
 $pageTitle='Banderas'; include __DIR__.'/includes/header.php';
 ?>
 <section class="hero compact"><div><p class="eyebrow">Captura y validación</p><h1>Banderas descubiertas</h1><p>El catálogo permanece oculto. Aquí puedes validar banderas, seguir una ruta de comprobación por reto y solicitar pistas progresivas sin revelar la solución.</p></div></section>
 <?php if($msg):?><div class="alert success"><?=h($msg)?></div><?php endif;?><?php if($err):?><div class="alert error"><?=h($err)?></div><?php endif;?><?php if($hintMsg):?><div class="alert hint-alert"><?=h($hintMsg)?></div><?php endif;?>
 <?php if(attempt_is_active()):?><section class="grid two flag-tools"><article class="panel capture"><div class="panel-head"><div><p class="eyebrow">Validación</p><h2>Registrar bandera</h2></div></div><form method="post"><input type="hidden" name="csrf" value="<?=h(csrf_token())?>"><input type="hidden" name="action" value="flag"><label>Bandera<input name="flag" placeholder="UPSLP_CNOIV-..." autocomplete="off" required></label><label>Nota <span class="optional">opcional</span><textarea name="note" rows="2" placeholder="Observación o referencia del hallazgo"></textarea></label><button class="primary" type="submit">Validar y registrar</button></form></article>
 <article class="panel hint-panel"><div class="panel-head"><div><p class="eyebrow">Apoyo opcional</p><h2>Solicitar una pista</h2></div></div><p class="muted">Las pistas son breves y progresivas. No muestran la bandera ni la solución. Cada consulta queda registrada en tu bitácora.</p><form method="post" class="hint-form"><input type="hidden" name="csrf" value="<?=h(csrf_token())?>"><input type="hidden" name="action" value="hint"><label>Número de reto<select name="hint_flag" required><?php for($i=1;$i<=20;$i++):?><option value="<?=$i?>" <?=$selectedHintFlag===$i?'selected':''?>>Reto <?=sprintf('%02d',$i)?></option><?php endfor;?></select></label><button class="secondary" type="submit">Mostrar siguiente pista</button></form></article></section><?php endif;?>
-<section class="panel guide-panel"><div class="panel-head"><div><p class="eyebrow">Ruta de validación</p><h2>Checklist de trabajo por reto</h2></div></div><p class="muted">No es un solucionario. Marca cada comprobación conforme la realices. El avance se guarda automáticamente en tu intento y permanece al volver a ingresar.</p><div class="challenge-guide-grid"><?php foreach($challengeChecklist as $no=>$items): $done=false; foreach($obtained as $of){if((int)$of['flag_number']===$no){$done=true;break;}} ?><article class="challenge-guide <?=$done?'done':''?>"><div class="guide-head"><b>Reto <?=sprintf('%02d',$no)?></b><span><?=$done?'Acreditado':'Pendiente'?></span></div><div class="checklist-items"><?php foreach($items as $idx=>$item): $checked=!empty($checkState[$no][$idx]); ?><label class="checklist-row <?=$checked?'checked':''?>"><input type="checkbox" class="challenge-check" data-flag="<?=$no?>" data-item="<?=$idx?>" <?=$checked?'checked':''?>> <span><?=h($item)?></span></label><?php endforeach;?></div></article><?php endforeach;?></div></section><script>window.INTERAFAS_CSRF=<?=json_encode(csrf_token())?>;</script>
+<section class="panel guide-panel"><div class="panel-head"><div><p class="eyebrow">Ruta de validación</p><h2>Checklist de trabajo por reto</h2></div></div><p class="muted">No es un solucionario. Marca cada comprobación conforme la realices. El avance se guarda automáticamente en tu intento y permanece al volver a ingresar.</p><div class="challenge-guide-grid"><?php foreach($challengeChecklist as $no=>$items): $done=false; foreach($obtained as $of){if((int)$of['flag_number']===$no){$done=true;break;}} ?><article class="challenge-guide <?=$done?'done':''?>"><div class="guide-head"><b>Reto <?=sprintf('%02d',$no)?></b><span><?=$done?'Acreditado':'Pendiente'?></span></div><div class="checklist-items"><?php foreach($items as $idx=>$item): $checked=!empty($checkState[$no][$idx]); ?><label class="checklist-row <?=$checked?'checked':''?>"><input type="checkbox" class="challenge-check" data-flag="<?=$no?>" data-item="<?=$idx?>" <?=$checked?'checked':''?>> <span><?=h($item)?></span></label><?php endforeach;?></div><?php if(!empty($challengeResources[$no])):?><div class="research-resources"><div class="research-title"><span>⌕</span><b>Recursos para investigar</b></div><p>No contienen la solución de INTERAFAS. Úsalos para comprender el concepto y decidir qué comprobar.</p><?php foreach($challengeResources[$no] as $res):?><a class="research-link" href="<?=h($res['url'])?>" target="_blank" rel="noopener noreferrer"><span class="resource-type"><?=h($res['type'])?></span><span><b><?=h($res['title'])?></b><small><?=h($res['desc'])?></small></span><span class="external-mark">↗</span></a><?php endforeach;?></div><?php endif;?></article><?php endforeach;?></div></section><script>window.INTERAFAS_CSRF=<?=json_encode(csrf_token())?>;</script>
 <section class="panel"><div class="panel-head"><div><p class="eyebrow">Hallazgos acreditados</p><h2><?=count($obtained)?> banderas descubiertas</h2></div></div>
 <?php if(!$obtained):?><div class="empty">Todavía no has acreditado ninguna bandera.</div><?php else:?><div class="flag-grid discovered"><?php foreach($obtained as $f):?><article class="flag-card done"><div class="flag-no"><?=sprintf('%02d',$f['flag_number'])?></div><div><span class="pill"><?=str_repeat('★',(int)$f['difficulty'])?> · <?=$f['weight']?> pt</span><h3><?=h($f['code_name'])?></h3><p><?=h($f['title'])?></p><small><?=h($f['category'])?><?= $f['triggers_phase'] ? ' · disparó F'.$f['triggers_phase'] : '' ?></small><b class="obtained">✓ <?=h($f['obtained_at'])?></b></div></article><?php endforeach;?></div><?php endif;?></section>
 <section class="panel hint-history"><div class="panel-head"><div><p class="eyebrow">Archivo de apoyo</p><h2>Pistas solicitadas por reto</h2></div><span class="pill"><?=count($usedHints)?> consultas</span></div><?php if(!$usedHints):?><div class="empty">Aún no has solicitado pistas. Cuando lo hagas, quedarán almacenadas aquí con su reto, nivel y fecha.</div><?php else:?><?php $grouped=[]; foreach($usedHints as $uh){$grouped[(int)$uh['flag_number']][]=$uh;} ksort($grouped); ?><div class="hint-groups"><?php foreach($grouped as $flagNo=>$rows):?><article class="hint-group"><div class="hint-group-title"><b>Reto <?=sprintf('%02d',$flagNo)?></b><span><?=count($rows)?> pista<?=count($rows)===1?'':'s'?></span></div><?php foreach(array_reverse($rows) as $h):?><div class="hint-entry"><small><?=h($h['created_at'])?> · Pista <?= (int)$h['hint_order']?></small><p><?=h($h['hint_text'])?></p></div><?php endforeach;?></article><?php endforeach;?></div><?php endif;?></section>
