@@ -1989,7 +1989,7 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (3,2,'Estar autenticado no significa que el servidor haya comprobado que el objeto solicitado te pertenece.'),
 (4,1,'Una página actual puede tener versiones anteriores que nunca debieron quedar dentro del directorio público. Piensa en cómo editores y despliegues suelen nombrar esas copias.'),
 (4,2,'Cuando cambia la extensión de un archivo dinámico, el servidor puede dejar de interpretarlo y entregar su contenido como un archivo ordinario.'),
-(5,1,'Busca una función pública que acepte un parámetro y prueba un valor fuera de los que la interfaz utiliza normalmente.'),
+(5,1,'Las funciones de exportación suelen recibir parámetros para decidir qué conjunto de datos entregar. Revisa la solicitud que genera el botón CSV y observa qué valor controla el contenido solicitado.'),
 (5,2,'Un error de producción debería ser genérico. Si la respuesta empieza a hablar de archivos, líneas, excepciones o servicios internos, observa todo lo que revela.'),
 (6,1,'Compara lo que puede hacer un usuario normal frente a otra función del portal.'),
 (6,2,'No confíes en que ocultar un botón equivale a autorizar una acción.'),
