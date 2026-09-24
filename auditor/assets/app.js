@@ -6,6 +6,13 @@
   document.getElementById('confirmFinish')?.addEventListener('click',(e)=>{
     e.preventDefault(); dlg?.close(); document.getElementById('finishForm')?.submit();
   });
+  const backToTop=document.getElementById('backToTop');
+  if(backToTop){
+    const syncBackToTop=()=>backToTop.classList.toggle('visible',window.scrollY>320);
+    window.addEventListener('scroll',syncBackToTop,{passive:true});
+    syncBackToTop();
+    backToTop.addEventListener('click',()=>window.scrollTo({top:0,behavior:'smooth'}));
+  }
 })();
 
 // v0.5.2 — checklist persistente por intento
