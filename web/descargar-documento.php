@@ -19,7 +19,8 @@ if ($file === '') {
  * No se normaliza la ruta ni se comprueba que el archivo final permanezca
  * dentro de assets/docs/citizen.
  */
-$baseDir = __DIR__.'/assets/docs/citizen';
+$store = require __DIR__.'/includes/document-store.php';
+$baseDir = __DIR__.'/'.$store['citizen_root'];
 $path = $baseDir.'/'.$file;
 
 if (!is_file($path) || !is_readable($path)) {
