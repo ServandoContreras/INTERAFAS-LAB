@@ -30,6 +30,7 @@ if ($clientRole !== 'procurement_admin') {
         0
     );
     http_response_code(403);
+    header('X-Required-Role: procurement_admin');
     $pageTitle='Acceso restringido';
     include __DIR__.'/includes/header.php';
     ?>
