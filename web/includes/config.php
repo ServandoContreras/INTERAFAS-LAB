@@ -26,7 +26,9 @@ require_once __DIR__.'/telemetry.php';
  * login y ese mismo identificador reaparece desde un cliente con otro
  * User-Agent, el laboratorio considera demostrada la reutilización.
  */
-if(!empty($_SESSION['user']) && !empty($_SESSION['vuln10_session_probe']) && is_array($_SESSION['vuln10_session_probe'])){
+$vuln10ProbePage=basename((string)($_SERVER['PHP_SELF'] ?? '')) === 'perfil.php';
+
+if($vuln10ProbePage && !empty($_SESSION['user']) && !empty($_SESSION['vuln10_session_probe']) && is_array($_SESSION['vuln10_session_probe'])){
     $probe=$_SESSION['vuln10_session_probe'];
     $preAuthSid=(string)($probe['preauth_sid'] ?? '');
     $authenticatedSid=(string)($probe['authenticated_sid'] ?? '');
