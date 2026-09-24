@@ -169,6 +169,18 @@ CREATE TABLE IF NOT EXISTS tramites_solicitudes (
   creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   estatus VARCHAR(50) DEFAULT 'Recibido'
 );
+CREATE TABLE IF NOT EXISTS reportes_ciudadanos (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  folio VARCHAR(40) UNIQUE NOT NULL,
+  categoria VARCHAR(80) NOT NULL,
+  municipio VARCHAR(100) NOT NULL,
+  descripcion TEXT NOT NULL,
+  correo VARCHAR(160) NULL,
+  estado VARCHAR(40) NOT NULL DEFAULT 'Recibido',
+  proof_token VARCHAR(96) NOT NULL,
+  creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
 CREATE TABLE IF NOT EXISTS pagos_simulados (
   id INT AUTO_INCREMENT PRIMARY KEY,
   referencia VARCHAR(40) UNIQUE NOT NULL,
@@ -2005,8 +2017,8 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (6,2,'Si algún valor controlado por el cliente parece indicar el rol o privilegio de la sesión, prueba a modificar únicamente ese valor y repite la solicitud.'),
 (7,1,'Si puedes distinguir una condición verdadera de una falsa, ya tienes un canal de comunicación con la base de datos aunque la aplicación no muestre resultados ni errores.'),
 (7,2,'MySQL/MariaDB mantiene metadatos sobre bases, tablas y columnas. Investiga DATABASE() e information_schema antes de intentar localizar datos concretos.'),
-(8,1,'Busca campos cuyo contenido vuelva a mostrarse posteriormente a otros usuarios.'),
-(8,2,'Piensa en entradas persistentes que el navegador interpreta, no solo muestra.'),
+(8,1,'Busca una entrada ciudadana que no solo se envíe, sino que quede almacenada y pueda consultarse después en otra vista.'),
+(8,2,'Si el contenido reaparece dentro del HTML, comprueba si el navegador lo trata como texto o como marcado ejecutable. Una ejecución JavaScript inocua es suficiente para demostrar el fallo.'),
 (9,1,'Examina cómo el servidor decide qué archivo entregar.'),
 (9,2,'Prueba si una ruta solicitada puede escapar del directorio previsto dentro del laboratorio.'),
 (10,1,'Observa qué cambia —y qué no— cuando una sesión inicia, termina o se reutiliza.'),
