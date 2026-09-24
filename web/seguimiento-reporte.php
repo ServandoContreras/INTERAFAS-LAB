@@ -34,25 +34,5 @@ include __DIR__.'/includes/header.php';
 <div id="xss-proof-result" class="section-spacer"></div>
 </div></section>
 
-<script>
-window.INTERAFAS_REPORT_CONTEXT = <?=json_encode([
-  'reportId'=>(int)$r['id'],
-  'proof'=>(string)$r['proof_token']
-], JSON_UNESCAPED_SLASHES)?>;
-
-window.validateStoredContentExecution = async function(){
-  const ctx=window.INTERAFAS_REPORT_CONTEXT;
-  const response=await fetch('/validate-stored-content.php',{
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body:JSON.stringify({report_id:ctx.reportId,proof:ctx.proof})
-  });
-  const data=await response.json();
-  if(data.ok){
-    document.getElementById('xss-proof-result').innerHTML =
-      '<div class="success-banner">Ejecución persistente confirmada · <code>'+data.flag+'</code></div>';
-  }
-  return data;
-};
-</script>
+<meta name="interafas-validation-endpoint" content="/validate-stored-content.php?report_id=<?=(int)$r['id']?>&proof=<?=htmlspecialchars($r['proof_token'])?>">
 <?php include __DIR__.'/includes/footer.php'; ?>
