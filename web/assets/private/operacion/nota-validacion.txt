@@ -1,0 +1,8 @@
+INTERAFAS · Archivo interno de operación
+Clasificación: uso interno de laboratorio
+
+Este archivo no forma parte del repositorio público de documentos ciudadanos.
+La aplicación web no debería permitir su lectura desde el módulo de descargas.
+
+Referencia de validación:
+UPSLP_CNOIV-TOO-DEEP-09
