@@ -2049,3 +2049,15 @@ CREATE TABLE IF NOT EXISTS lab_checklist_state (
   CONSTRAINT fk_checklist_attempt FOREIGN KEY (attempt_id) REFERENCES lab_attempts(id) ON DELETE CASCADE,
   CONSTRAINT fk_checklist_student FOREIGN KEY (student_id) REFERENCES lab_students(id) ON DELETE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+
+-- ===== v0.5.4 · Progressive opinion publication =====
+-- Opinion pieces are released as the student advances through early/mid challenges.
+UPDATE news_articles SET event_required='FLAG_03'
+WHERE slug='entrevista-experta-infraestructura-no-se-protege-sola';
+UPDATE news_articles SET event_required='FLAG_06'
+WHERE slug='voces-calle-servicio-publico-confianza';
+UPDATE news_articles SET event_required='FLAG_09'
+WHERE slug='pingo-la-nube-no-arregla-tuberias';
+UPDATE news_articles SET event_required='FLAG_12'
+WHERE slug='reporte-especial-ciudad-dependencias-invisibles';
