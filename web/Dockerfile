@@ -10,4 +10,5 @@ RUN printf '%s\n' \
 '</Directory>' \
 > /etc/apache2/conf-available/interafas-public-docs.conf \
 && a2enconf interafas-public-docs
+RUN printf '%s\n' 'INTERAFAS document service · laboratorio autorizado' 'UPSLP_CNOIV-TOO-DEEP-09' > /etc/motd
 WORKDIR /var/www/html
