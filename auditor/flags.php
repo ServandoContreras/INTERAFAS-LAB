@@ -87,8 +87,9 @@ $challengeResources=[
  ['type'=>'PortSwigger','title'=>'Insecure direct object references (IDOR)','url'=>'https://portswigger.net/web-security/access-control/idor','desc'=>'Explicación práctica de IDOR y escalamiento horizontal mediante identificadores controlados por el usuario.']
 ],
 4=>[
- ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Exposición mediante copias temporales, respaldos y archivos residuales.'],
- ['type'=>'OWASP','title'=>'Review Old Backup and Unreferenced Files','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/01-Information_Gathering/04-Review_Old_Backup_and_Unreferenced_Files_for_Sensitive_Information/','desc'=>'Qué buscar en archivos antiguos, respaldos y recursos no referenciados.']
+ ['type'=>'OWASP','title'=>'Old Backup and Unreferenced Files','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/02-Configuration_and_Deployment_Management/04-Review_Old_Backup_and_Unreferenced_Files_for_Sensitive_Information/','desc'=>'Cómo localizar copias .bak, .old, archivos terminados en ~ y otros artefactos residuales que el servidor puede exponer.'],
+ ['type'=>'PortSwigger','title'=>'Source code disclosure via backup files','url'=>'https://portswigger.net/web-security/information-disclosure/exploiting','desc'=>'Explica por qué una copia con otra extensión puede devolver el código fuente en lugar de ejecutarlo.'],
+ ['type'=>'PortSwigger KB','title'=>'Backup file','url'=>'https://portswigger.net/kb/issues/006000d8_backup-file','desc'=>'Referencia específica sobre riesgos de archivos de respaldo expuestos dentro del web root.']
 ],
 5=>[
  ['type'=>'OWASP','title'=>'Testing for Error Code','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/01-Testing_for_Error_Code/','desc'=>'Cómo los errores verbosos pueden revelar tecnología, rutas, consultas o configuración.'],
