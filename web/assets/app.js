@@ -166,3 +166,23 @@ if (window.INTERAFAS_SCENARIO_POLL) {
   pollScenario();
   setInterval(pollScenario, 1000);
 }
+
+
+// v0.5.8 — contexto de cuenta en tiempo real.
+// La interfaz consume únicamente el estado, aunque la respuesta API puede
+// incluir otras relaciones útiles para clientes autorizados.
+(() => {
+  const status=document.querySelector('[data-account-context]');
+  if(!status) return;
+
+  fetch('/api/account-context.php',{credentials:'same-origin',cache:'no-store'})
+    .then(r=>r.json())
+    .then(data=>{
+      if(!data || !data.ok){
+        status.innerHTML='<i></i> Contexto no disponible';
+        return;
+      }
+      status.innerHTML='<i></i> Cuenta '+(data.status==='Activo'?'sincronizada':'actualizada');
+    })
+    .catch(()=>{ status.innerHTML='<i></i> Contexto no disponible'; });
+})();
