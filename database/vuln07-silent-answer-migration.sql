@@ -11,6 +11,6 @@ VALUES ('procurement-reference','UPSLP_CNOIV-SILENT-ANSWER-07')
 ON DUPLICATE KEY UPDATE verification_token=VALUES(verification_token);
 
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
-(7,1,'En la validación de referencias, compara respuestas ante entradas que hagan que una condición sea siempre verdadera y siempre falsa. La ausencia de errores visibles no descarta una inyección.'),
-(7,2,'Si ya lograste controlar una respuesta booleana, ese mismo canal puede servir para inferir información carácter por carácter. Investiga enumeración de esquema y extracción mediante blind SQL injection.')
+(7,1,'Si puedes distinguir una condición verdadera de una falsa, ya tienes un canal de comunicación con la base de datos aunque la aplicación no muestre resultados ni errores.'),
+(7,2,'MySQL/MariaDB mantiene metadatos sobre bases, tablas y columnas. Investiga DATABASE() e information_schema antes de intentar localizar datos concretos.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
