@@ -1991,7 +1991,7 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (4,2,'Cuando cambia la extensión de un archivo dinámico, el servidor puede dejar de interpretarlo y entregar su contenido como un archivo ordinario.'),
 (5,1,'Las funciones de exportación suelen recibir parámetros para decidir qué conjunto de datos entregar. Revisa la solicitud que genera el botón CSV y observa qué valor controla el contenido solicitado.'),
 (5,2,'Un error de producción debería ser genérico. Si la respuesta empieza a hablar de archivos, líneas, excepciones o servicios internos, observa todo lo que revela.'),
-(6,1,'Accede a la función reservada con tu sesión ciudadana y analiza la solicitud HTTP completa. No revises solo la URL: observa también los datos que el navegador envía automáticamente.'),
+(6,1,'Accede a la función reservada con tu sesión ciudadana y analiza la transacción HTTP completa. Además de lo que envía el navegador, revisa con atención la respuesta del servidor.'),
 (6,2,'Si algún valor controlado por el cliente parece indicar el rol o privilegio de la sesión, prueba a modificar únicamente ese valor y repite la solicitud.'),
 (7,1,'Observa diferencias pequeñas en la respuesta cuando cambias una condición.'),
 (7,2,'No necesitas ver un error SQL para inferir si una condición es verdadera o falsa.'),
