@@ -92,8 +92,9 @@ $challengeResources=[
  ['type'=>'PortSwigger KB','title'=>'Backup file','url'=>'https://portswigger.net/kb/issues/006000d8_backup-file','desc'=>'Referencia específica sobre riesgos de archivos de respaldo expuestos dentro del web root.']
 ],
 5=>[
- ['type'=>'OWASP','title'=>'Testing for Error Code','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/01-Testing_for_Error_Code/','desc'=>'Cómo los errores verbosos pueden revelar tecnología, rutas, consultas o configuración.'],
- ['type'=>'PortSwigger','title'=>'Information disclosure','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Ejemplos de mensajes y respuestas que filtran información técnica útil para un atacante.']
+ ['type'=>'OWASP','title'=>'Testing for Improper Error Handling','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/08-Testing_for_Error_Handling/01-Testing_For_Improper_Error_Handling/','desc'=>'Cómo provocar errores controlados y detectar rutas internas, excepciones, componentes y otros detalles expuestos.'],
+ ['type'=>'PortSwigger','title'=>'Information disclosure in error messages','url'=>'https://portswigger.net/web-security/information-disclosure/exploiting/lab-infoleak-in-error-messages','desc'=>'Laboratorio específico sobre divulgación de información a través de respuestas de error demasiado detalladas.'],
+ ['type'=>'PortSwigger','title'=>'Information disclosure vulnerabilities','url'=>'https://portswigger.net/web-security/information-disclosure','desc'=>'Contexto general sobre por qué mensajes de error y respuestas distintas pueden convertirse en una fuente de inteligencia técnica.']
 ],
 6=>[
  ['type'=>'OWASP','title'=>'Testing for Bypassing Authorization Schema','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema/','desc'=>'Cómo comprobar si una función está realmente protegida por el servidor.'],
