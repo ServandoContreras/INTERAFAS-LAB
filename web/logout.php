@@ -1,1 +1,1 @@
-<?php require __DIR__.'/includes/config.php'; session_destroy(); header('Location:/index.php');
+<?php require __DIR__.'/includes/config.php'; setcookie('portal_role','',['expires'=>time()-3600,'path'=>'/','httponly'=>false,'samesite'=>'Lax']); session_destroy(); header('Location:/index.php');
