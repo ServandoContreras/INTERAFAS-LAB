@@ -1974,8 +1974,8 @@ CREATE TABLE IF NOT EXISTS lab_hint_usage (
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (1,1,'Empieza por una comprobación básica que muchos olvidan: revisa qué rutas pide el propio sitio que los buscadores no indexen.'),
 (1,2,'Un servidor puede mostrar más de lo que la aplicación decidió enlazar. Revisa nombres y artefactos que parezcan residuales.'),
-(2,1,'Mira más allá de lo que el navegador renderiza visualmente.'),
-(2,2,'El código fuente y los recursos del cliente también cuentan una historia.'),
+(2,1,'Mira más allá de lo que la página muestra en pantalla. Revisa también los recursos que el navegador carga para construirla.'),
+(2,2,'La configuración de ejecución del frontend puede conservar referencias que el usuario normal nunca necesita abrir.'),
 (3,1,'Compara identificadores cuando consultas información de una cuenta.'),
 (3,2,'Pregúntate si el servidor valida que ese objeto realmente te pertenece.'),
 (4,1,'Los archivos antiguos suelen sobrevivir a los cambios de versión.'),
