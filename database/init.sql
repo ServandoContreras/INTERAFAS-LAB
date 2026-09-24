@@ -147,6 +147,16 @@ CREATE TABLE IF NOT EXISTS licitaciones (
   estado VARCHAR(40) NOT NULL,
   bases_archivo VARCHAR(180) NOT NULL
 );
+CREATE TABLE IF NOT EXISTS portal_validation_meta (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  context_key VARCHAR(80) UNIQUE NOT NULL,
+  verification_token VARCHAR(120) NOT NULL
+);
+
+INSERT INTO portal_validation_meta(context_key,verification_token)
+VALUES ('procurement-reference','UPSLP_CNOIV-SILENT-ANSWER-07')
+ON DUPLICATE KEY UPDATE verification_token=VALUES(verification_token);
+
 CREATE TABLE IF NOT EXISTS tramites_solicitudes (
   id INT AUTO_INCREMENT PRIMARY KEY,
   folio VARCHAR(40) UNIQUE NOT NULL,
@@ -1993,8 +2003,8 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (5,2,'Un error de producción debería ser genérico. Si la respuesta empieza a hablar de archivos, líneas, excepciones o servicios internos, observa todo lo que revela.'),
 (6,1,'Accede a la función reservada con tu sesión ciudadana y analiza la transacción HTTP completa. Además de lo que envía el navegador, revisa con atención la respuesta del servidor.'),
 (6,2,'Si algún valor controlado por el cliente parece indicar el rol o privilegio de la sesión, prueba a modificar únicamente ese valor y repite la solicitud.'),
-(7,1,'Observa diferencias pequeñas en la respuesta cuando cambias una condición.'),
-(7,2,'No necesitas ver un error SQL para inferir si una condición es verdadera o falsa.'),
+(7,1,'En la validación de referencias, compara respuestas ante entradas que hagan que una condición sea siempre verdadera y siempre falsa. La ausencia de errores visibles no descarta una inyección.'),
+(7,2,'Si ya lograste controlar una respuesta booleana, ese mismo canal puede servir para inferir información carácter por carácter. Investiga enumeración de esquema y extracción mediante blind SQL injection.'),
 (8,1,'Busca campos cuyo contenido vuelva a mostrarse posteriormente a otros usuarios.'),
 (8,2,'Piensa en entradas persistentes que el navegador interpreta, no solo muestra.'),
 (9,1,'Examina cómo el servidor decide qué archivo entregar.'),
