@@ -2018,7 +2018,7 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (7,1,'Si puedes distinguir una condición verdadera de una falsa, ya tienes un canal de comunicación con la base de datos aunque la aplicación no muestre resultados ni errores.'),
 (7,2,'MySQL/MariaDB mantiene metadatos sobre bases, tablas y columnas. Investiga DATABASE() e information_schema antes de intentar localizar datos concretos.'),
 (8,1,'Busca una entrada ciudadana que no solo se envíe, sino que quede almacenada y pueda consultarse después en otra vista.'),
-(8,2,'Si el contenido reaparece dentro del HTML, comprueba si el navegador lo trata como texto o como marcado ejecutable. Una ejecución JavaScript inocua es suficiente para demostrar el fallo.'),
+(8,2,'Si consigues ejecutar JavaScript desde el contenido almacenado, inspecciona también el HTML de la vista de seguimiento. Puede contener información útil para acreditar la ejecución mediante una petición HTTP normal.'),
 (9,1,'Examina cómo el servidor decide qué archivo entregar.'),
 (9,2,'Prueba si una ruta solicitada puede escapar del directorio previsto dentro del laboratorio.'),
 (10,1,'Observa qué cambia —y qué no— cuando una sesión inicia, termina o se reutiliza.'),
