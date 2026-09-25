@@ -157,16 +157,16 @@ $pressureZones=18;
   </div>
 
   <div class="metrics metro-metrics dense">
-    <div class="metric"><label>Total Supply</label><strong data-live-pulse="<?=$totalSupply?>" data-live-amp="26"><?=$totalSupply?></strong><small>L/s</small><span class="sub">Metropolitan production</span></div>
-    <div class="metric"><label>Total Demand</label><strong data-live-pulse="<?=$totalDemand?>" data-live-amp="22"><?=$totalDemand?></strong><small>L/s</small><span class="sub">Current demand</span></div>
+    <div class="metric"><label>Total Supply</label><strong data-live-stat="supply" data-decimals="0"><?=$totalSupply?></strong><small>L/s</small><span class="sub">Metropolitan production</span></div>
+    <div class="metric"><label>Total Demand</label><strong data-live-stat="demand" data-decimals="0"><?=$totalDemand?></strong><small>L/s</small><span class="sub">Current demand</span></div>
     <div class="metric"><label>Supply Balance</label><strong>+<?=$balance?></strong><small>L/s</small><span class="sub">Available operating margin</span></div>
-    <div class="metric"><label>System Reserve</label><strong><?=$avgReserve?></strong><small>%</small><span class="sub">Average reserve</span></div>
+    <div class="metric"><label>System Reserve</label><strong data-live-stat="reserve" data-decimals="1"><?=$avgReserve?></strong><small>%</small><span class="sub">Average reserve</span></div>
     <div class="metric"><label>Minimum Reserve</label><strong>79</strong><small>%</small><span class="sub">Cerro de San Pablo</span></div>
-    <div class="metric"><label>Average Pressure</label><strong data-live-pulse="<?=$avgPressure?>" data-live-amp=".08" data-live-decimals="2"><?=$avgPressure?></strong><small>bar</small><span class="sub">Distribution headers</span></div>
+    <div class="metric"><label>Average Pressure</label><strong data-live-stat="pressure" data-decimals="2"><?=$avgPressure?></strong><small>bar</small><span class="sub">Distribution headers</span></div>
     <div class="metric"><label>Pressure Range</label><strong>4.1–4.5</strong><small>bar</small><span class="sub">Observed municipal range</span></div>
     <div class="metric"><label>Water Quality</label><strong>NORMAL</strong><span class="sub">3 municipalities within limits</span></div>
-    <div class="metric"><label>Energy Load</label><strong>2.74</strong><small>MW</small><span class="sub">Pumping systems</span></div>
-    <div class="metric"><label>Active Alarms</label><strong><?=$totalAlarms?></strong><span class="sub"><?=$unackAlarms?> unacknowledged</span></div>
+    <div class="metric"><label>Energy Load</label><strong data-live-stat="energy" data-decimals="1">16.7</strong><small>MW</small><span class="sub">Pumping systems</span></div>
+    <div class="metric"><label>Active Alarms</label><strong data-live-stat="active" data-decimals="0"><?=$totalAlarms?></strong><span class="sub"><?=$unackAlarms?> unacknowledged</span></div>
     <div class="metric"><label>Population Served</label><strong><?=number_format($populationServed/1000000,2)?></strong><small>M</small><span class="sub">Simulated metropolitan population</span></div>
     <div class="metric"><label>Service Connections</label><strong><?=number_format($serviceConnections/1000000,2)?></strong><small>M</small><span class="sub">Domestic / commercial / industrial</span></div>
     <div class="metric"><label>Daily Volume</label><strong><?=number_format($dailyVolume)?></strong><small>ML/d</small><span class="sub">Current hydraulic throughput</span></div>
@@ -182,6 +182,9 @@ $pressureZones=18;
     <div><span>Maintenance</span><strong class="warn-text"><?=$maintenanceActive?></strong></div>
     <div><span>Unack Alarms</span><strong class="warn-text"><?=$unackAlarms?></strong></div>
     <div><span>Availability</span><strong><?=$availability?>%</strong></div>
+  </div>
+  <div class="live-event-ticker" id="live-event-ticker">
+    <span class="sev-badge sev-info">INFO</span><b>HMI-OPS-01</b><span>Waiting for live operational events…</span><time>--:--:--</time>
   </div>
 
   <div class="metro-overview-grid">
@@ -279,47 +282,182 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="process">
-  <div class="page-head"><div><div class="breadcrumb">Process / Station Detail</div><h1 id="process-title">EST-SL-01 · Saint Louis</h1><p id="process-subtitle">Regulation / distribution · PLC-SL-01 · RTU-SL-01</p></div><div class="page-tools"><span class="tool-chip" id="process-mode">AUTO</span><span class="tool-chip">LOCAL DETAIL</span></div></div>
+  <div class="page-head process-page-head">
+    <div>
+      <div class="breadcrumb">Process / Live Station HMI</div>
+      <h1><span data-current-station>EST-SL-01</span> · <span data-current-city>Saint Louis</span></h1>
+      <p><span data-current-function>Metropolitan regulation / distribution</span> · <span data-current-controller>PLC-SL-01</span> · <span data-current-gateway>RTU-SL-01</span></p>
+    </div>
+    <div class="page-tools">
+      <span class="tool-chip live-chip"><i></i> LIVE</span>
+      <span class="tool-chip">AUTO</span>
+      <span class="tool-chip"><span data-live-updated>--:--:--</span></span>
+      <span class="tool-chip"><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></span>
+    </div>
+  </div>
 
-  <div class="process-detail-grid">
-    <section class="panel">
-      <div class="panel-head"><h2>Station Process</h2><span id="process-zone">Saint Louis distribution cell</span></div>
-      <div class="station-process-canvas">
-        <div class="station-pipe main"></div><div class="station-pipe branch-a"></div><div class="station-pipe branch-b"></div>
-        <div class="station-tank"><strong id="proc-tank">TK-SL-01</strong><div class="tank-gauge"><span id="proc-tank-fill" style="height:84%"></span></div><b id="proc-reserve">84%</b></div>
-        <div class="station-pump primary"><strong id="proc-pump1">P-SL-101</strong><span>RUNNING</span></div>
-        <div class="station-pump standby"><strong id="proc-pump2">P-SL-102</strong><span>STANDBY</span></div>
-        <div class="station-instrument flow"><strong id="proc-flow-tag">FLOW-SL-01</strong><span id="proc-flow">1130 L/s</span></div>
-        <div class="station-instrument pressure"><strong id="proc-pressure-tag">PRESS-SL-01</strong><span id="proc-pressure">4.5 bar</span></div>
-        <div class="station-valve valve-a"><strong id="proc-valve1">V-SL-201</strong><span>OPEN</span></div>
-        <div class="station-valve valve-b"><strong id="proc-valve2">V-SL-202</strong><span>OPEN</span></div>
-        <div class="station-destination a">ZONE A</div><div class="station-destination b">ZONE B</div>
+  <div class="process-status-strip">
+    <div><span>FLOW</span><strong data-live-tag="FLOW">—</strong><i class="pilot" data-state-pilot="FLOW"></i></div>
+    <div><span>HEADER PRESSURE</span><strong data-live-tag="PRESS">—</strong><i class="pilot"></i></div>
+    <div><span>RESERVOIR</span><strong data-live-tag="LEVEL">—</strong><i class="pilot"></i></div>
+    <div><span>CHLORINE</span><strong data-live-tag="CHLORINE">—</strong><i class="pilot"></i></div>
+    <div><span>TURBIDITY</span><strong data-live-tag="TURBIDITY">—</strong><i class="pilot"></i></div>
+    <div><span>RTU LATENCY</span><strong data-live-tag="LATENCY">—</strong><i class="pilot"></i></div>
+    <div><span>MODE</span><strong data-live-tag="MODE" data-live-format="state">AUTO</strong><i class="pilot"></i></div>
+  </div>
+
+  <div class="pid-shell">
+    <div class="pid-toolbar">
+      <div class="pid-toolbar-left">
+        <button class="pid-tab active">LIVE PROCESS</button>
+        <button class="pid-tab" data-view-jump="assets">EQUIPMENT</button>
+        <button class="pid-tab" data-view-jump="alarms">ALARMS</button>
+        <button class="pid-tab" data-view-jump="maintenance">MAINTENANCE</button>
       </div>
-    </section>
+      <div class="pid-legend">
+        <span><i class="legend-dot ok"></i>NORMAL</span>
+        <span><i class="legend-dot warn"></i>WARNING</span>
+        <span><i class="legend-dot alarm"></i>ALARM</span>
+        <span><i class="legend-dot off"></i>OFFLINE / STOP</span>
+      </div>
+    </div>
 
-    <aside class="inspector">
-      <section class="panel"><div class="panel-head"><h2>Station Context</h2><span id="station-status">ONLINE</span></div><div class="panel-body">
-        <div class="kv"><span>Station</span><strong id="station-id">EST-SL-01</strong></div>
-        <div class="kv"><span>Municipality</span><strong id="station-city">Saint Louis</strong></div>
-        <div class="kv"><span>Controller</span><strong id="station-controller">PLC-SL-01</strong></div>
-        <div class="kv"><span>Gateway</span><strong id="station-gateway">RTU-SL-01</strong></div>
-        <div class="kv"><span>Supply</span><strong id="station-supply">1130 L/s</strong></div>
-        <div class="kv"><span>Demand</span><strong id="station-demand">1070 L/s</strong></div>
-        <div class="kv"><span>Quality</span><strong class="ok-text">NORMAL</strong></div>
-      </div></section>
+    <div class="pid-grid">
+      <section class="pid-canvas">
+        <div class="pid-titlebar"><strong>STATION PROCESS SCHEMATIC</strong><span>Digital twin simulation · live tags</span></div>
 
-      <section class="panel"><div class="panel-head"><h2>PMN Control Cell</h2><span>Legacy simulator context</span></div><div class="panel-body">
-        <div class="kv"><span>Primary Pump</span><strong id="p101"><?=htmlspecialchars((string)($state['p101']??'—'))?></strong></div>
-        <div class="kv"><span>Flow</span><strong id="flow"><?=htmlspecialchars((string)($state['flow']??'—'))?> L/s</strong></div>
-        <div class="kv"><span>Pressure</span><strong id="pressure"><?=htmlspecialchars((string)($state['pressure']??'—'))?> bar</strong></div>
-        <div class="kv"><span>Tank</span><strong id="tank"><?=htmlspecialchars((string)($state['tank']??'—'))?>%</strong></div>
-        <?php if($canControl): ?>
-        <div class="actions"><button class="btn" data-state="ON">START P-101</button><button class="btn danger" data-state="OFF">STOP P-101</button></div>
-        <?php else: ?>
-        <div class="actions"><span class="tool-chip">PROCESS CONTROL RESTRICTED</span></div>
-        <?php endif; ?>
-      </div></section>
-    </aside>
+        <div class="pid-scene">
+          <div class="pid-zone zone-intake">INTAKE / STORAGE</div>
+          <div class="pid-zone zone-pumping">PRIMARY PUMPING</div>
+          <div class="pid-zone zone-quality">QUALITY / REGULATION</div>
+          <div class="pid-zone zone-distribution">DISTRIBUTION</div>
+
+          <!-- pipes -->
+          <div class="pipe pipe-main p1 flow-active"></div>
+          <div class="pipe pipe-main p2" data-pipe-state="P101"></div>
+          <div class="pipe pipe-main p3 flow-active"></div>
+          <div class="pipe pipe-main p4" data-pipe-state="V201"></div>
+          <div class="pipe pipe-main p5" data-pipe-state="V202"></div>
+          <div class="pipe pipe-vertical pv1 flow-active"></div>
+          <div class="pipe pipe-vertical pv2 flow-active"></div>
+          <div class="pipe pipe-vertical pv3 flow-active"></div>
+
+          <!-- reservoir -->
+          <div class="pid-equipment reservoir-vessel eq-click" data-equipment="TQ-01">
+            <div class="vessel-cap top"></div>
+            <div class="vessel-body"><div class="liquid-level" data-level-fill="LEVEL"></div><div class="vessel-grid"></div></div>
+            <div class="vessel-cap bottom"></div>
+            <div class="equipment-label"><b>TQ-01</b><span>Regulation Reservoir</span></div>
+            <div class="digital-readout"><small>LT-101</small><strong data-live-tag="LEVEL">—</strong></div>
+          </div>
+
+          <!-- pump A -->
+          <div class="pid-equipment pump-unit pump-a running eq-click" data-pump-state="P101" data-equipment="P-101">
+            <div class="motor"><div class="motor-rotor"></div></div>
+            <div class="pump-volute"></div>
+            <div class="equipment-label"><b>P-101</b><span>Primary Pump A</span></div>
+            <div class="equipment-state" data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</div>
+            <div class="mini-values"><span>LOAD <b data-live-tag="MOTOR_A">—</b></span><span>CURR <b data-live-tag="CURRENT_A">—</b></span></div>
+          </div>
+
+          <!-- pump B -->
+          <div class="pid-equipment pump-unit pump-b stopped eq-click" data-pump-state="P102" data-equipment="P-102">
+            <div class="motor"><div class="motor-rotor"></div></div>
+            <div class="pump-volute"></div>
+            <div class="equipment-label"><b>P-102</b><span>Standby Pump B</span></div>
+            <div class="equipment-state" data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</div>
+            <div class="mini-values"><span>LOAD <b data-live-tag="MOTOR_B">—</b></span><span>CURR <b data-live-tag="CURRENT_B">—</b></span></div>
+          </div>
+
+          <!-- quality skid -->
+          <div class="pid-equipment quality-skid eq-click" data-equipment="QCS-01">
+            <div class="skid-cabinet"><div class="cabinet-screen"><span>QCS</span><i></i><i></i><i></i></div></div>
+            <div class="sample-cell"></div>
+            <div class="equipment-label"><b>QCS-01</b><span>Quality Control Skid</span></div>
+            <div class="quality-values">
+              <div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div>
+              <div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div>
+              <div><small>TEMP</small><strong data-live-tag="TEMP">—</strong></div>
+            </div>
+          </div>
+
+          <!-- header -->
+          <div class="pid-equipment pressure-header eq-click" data-equipment="HDR-01">
+            <div class="header-cylinder"></div>
+            <div class="equipment-label"><b>HDR-01</b><span>Distribution Header</span></div>
+          </div>
+
+          <!-- instruments -->
+          <div class="instrument inst-flow"><div class="inst-tag">FT-101</div><strong data-live-tag="FLOW">—</strong></div>
+          <div class="instrument inst-pressure"><div class="inst-tag">PT-201</div><strong data-live-tag="PRESS">—</strong></div>
+          <div class="instrument inst-latency"><div class="inst-tag">RTU RTT</div><strong data-live-tag="LATENCY">—</strong></div>
+
+          <!-- valves -->
+          <div class="pid-valve valve-1 open eq-click" data-valve-state="V201" data-equipment="V-201"><div class="valve-symbol"></div><span>V-201</span><b data-live-tag="V201" data-live-format="state" data-on="OPEN" data-off="CLOSED">OPEN</b></div>
+          <div class="pid-valve valve-2 open eq-click" data-valve-state="V202" data-equipment="V-202"><div class="valve-symbol"></div><span>V-202</span><b data-live-tag="V202" data-live-format="state" data-on="OPEN" data-off="CLOSED">OPEN</b></div>
+
+          <!-- destinations -->
+          <div class="distribution-zone dist-a"><b>ZONE A</b><span>Primary distribution</span><strong data-live-tag="FLOW">—</strong></div>
+          <div class="distribution-zone dist-b"><b>ZONE B</b><span>Secondary distribution</span><strong>ACTIVE</strong></div>
+
+          <!-- controller rack -->
+          <div class="controller-rack eq-click" data-equipment="PLC">
+            <div class="rack-head"><b data-current-controller>PLC-SL-01</b><span>CONTROL CELL</span></div>
+            <div class="rack-modules"><?php for($i=0;$i<8;$i++): ?><i class="<?=$i<6?'on':''?>"></i><?php endfor; ?></div>
+            <div class="rack-footer"><span>CPU RUN</span><b class="state-ok">ONLINE</b></div>
+          </div>
+
+          <div class="rtu-panel eq-click" data-equipment="RTU">
+            <b data-current-gateway>RTU-SL-01</b><span>STATION EDGE</span>
+            <div class="rtu-led-row"><i></i><i></i><i class="warn"></i><i></i></div>
+            <small>LATENCY</small><strong data-live-tag="LATENCY">—</strong>
+          </div>
+        </div>
+      </section>
+
+      <aside class="pid-side">
+        <section class="pid-panel">
+          <header><span>PROCESS STATUS</span><b class="state-ok">RUNNING</b></header>
+          <div class="pid-kv"><span>Station</span><b data-current-station>EST-SL-01</b></div>
+          <div class="pid-kv"><span>Municipality</span><b data-current-city>Saint Louis</b></div>
+          <div class="pid-kv"><span>Controller</span><b data-current-controller>PLC-SL-01</b></div>
+          <div class="pid-kv"><span>Gateway</span><b data-current-gateway>RTU-SL-01</b></div>
+          <div class="pid-kv"><span>Control mode</span><b data-live-tag="MODE" data-live-format="state">AUTO</b></div>
+        </section>
+
+        <section class="pid-panel">
+          <header><span>LIVE INSTRUMENTS</span><b><span data-live-updated>--:--:--</span></b></header>
+          <div class="instrument-list">
+            <div><span>FT-101</span><b data-live-tag="FLOW">—</b><i class="pilot"></i></div>
+            <div><span>PT-201</span><b data-live-tag="PRESS">—</b><i class="pilot"></i></div>
+            <div><span>LT-101</span><b data-live-tag="LEVEL">—</b><i class="pilot"></i></div>
+            <div><span>AIT-301</span><b data-live-tag="CHLORINE">—</b><i class="pilot"></i></div>
+            <div><span>AIT-302</span><b data-live-tag="TURBIDITY">—</b><i class="pilot"></i></div>
+            <div><span>TT-101</span><b data-live-tag="TEMP">—</b><i class="pilot"></i></div>
+          </div>
+        </section>
+
+        <section class="pid-panel process-actions-panel">
+          <header><span>PROCESS COMMAND</span><b><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></b></header>
+          <?php if($canControl): ?>
+          <div class="process-command-grid">
+            <button class="command-btn start" data-state="ON">START P-101</button>
+            <button class="command-btn stop" data-state="OFF">STOP P-101</button>
+          </div>
+          <?php else: ?>
+          <div class="control-restricted"><i></i><b>CONTROL RESTRICTED</b><span>Maintenance sessions are read-only for process commands.</span></div>
+          <?php endif; ?>
+        </section>
+
+        <section class="pid-panel">
+          <header><span>ACTIVE PROCESS NOTICES</span><b class="warn-text">2</b></header>
+          <div class="notice-list">
+            <div class="notice warn"><i></i><div><b>RTU latency variance</b><span>Communication path under observation.</span></div></div>
+            <div class="notice info"><i></i><div><b>Service window active</b><span>RTU-GW-07 diagnostic SERVICE.</span></div></div>
+          </div>
+        </section>
+      </aside>
+    </div>
   </div>
 </section>
 
@@ -544,6 +682,14 @@ $pressureZones=18;
 
 <section class="view" data-view="events">
   <div class="page-head"><div><div class="breadcrumb">Analysis / Events</div><h1>Operational Event Timeline</h1><p>Actividad reciente de estaciones, controladores, servicios OT y mantenimiento.</p></div><div class="page-tools"><span class="tool-chip">20 RECENT</span><span class="tool-chip">LIVE SESSION</span></div></div>
+  <div class="panel live-log-panel">
+    <div class="panel-head"><h2>Live Operational Stream</h2><span><i class="live-dot"></i> ingesting · <b data-live-updated>--:--:--</b></span></div>
+    <div class="table-wrap live-log-wrap"><table class="data-table live-log-table">
+      <thead><tr><th>Time</th><th>Severity</th><th>Source</th><th>Message</th></tr></thead>
+      <tbody id="live-log-body"></tbody>
+    </table></div>
+  </div>
+  <div class="log-gap"></div>
   <div class="panel"><div class="panel-head"><h2>Timeline</h2><span>Metropolitan operations</span></div><div class="event-timeline">
     <div><time>11:52:09</time><b>HMI-OPS-01</b><span>Metropolitan operator interface refresh completed</span><em>INFO</em></div>
     <div><time>11:46:03</time><b>TK-CP-01</b><span>Reservoir operating threshold advisory created</span><em class="warn-text">HIGH</em></div>
@@ -600,7 +746,9 @@ $pressureZones=18;
 </div>
 
 <script src="/operations/assets/ops-client.php"></script>
+<script>window.INTERAFAS_STATIONS=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
 <script src="/operations/assets/hmi-v4.js"></script>
+<script src="/operations/assets/hmi-v5-live.js"></script>
 <script>
 const stations=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;
 
@@ -614,28 +762,14 @@ document.querySelectorAll('[data-view-jump]').forEach(btn=>btn.addEventListener(
 
 function openStation(index){
   const s=stations[index]; if(!s)return;
-  const code=s.id.split('-')[1];
-  document.getElementById('process-title').textContent=s.id+' · '+s.city;
-  document.getElementById('process-subtitle').textContent=s.function+' · '+s.controller+' · '+s.gateway;
-  document.getElementById('process-zone').textContent=s.city+' distribution cell';
-  document.getElementById('station-id').textContent=s.id;
-  document.getElementById('station-city').textContent=s.city;
-  document.getElementById('station-controller').textContent=s.controller;
-  document.getElementById('station-gateway').textContent=s.gateway;
-  document.getElementById('station-supply').textContent=s.supply+' L/s';
-  document.getElementById('station-demand').textContent=s.demand+' L/s';
-  document.getElementById('station-status').textContent=s.status;
-  document.getElementById('proc-tank').textContent='TK-'+code+'-01';
-  document.getElementById('proc-reserve').textContent=s.reserve+'%';
-  document.getElementById('proc-tank-fill').style.height=s.reserve+'%';
-  document.getElementById('proc-pump1').textContent='P-'+code+'-101';
-  document.getElementById('proc-pump2').textContent='P-'+code+'-102';
-  document.getElementById('proc-flow-tag').textContent='FLOW-'+code+'-01';
-  document.getElementById('proc-flow').textContent=s.supply+' L/s';
-  document.getElementById('proc-pressure-tag').textContent='PRESS-'+code+'-01';
-  document.getElementById('proc-pressure').textContent=s.pressure+' bar';
-  document.getElementById('proc-valve1').textContent='V-'+code+'-201';
-  document.getElementById('proc-valve2').textContent='V-'+code+'-202';
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val;};
+  document.querySelectorAll('[data-current-station]').forEach(el=>el.textContent=s.id);
+  document.querySelectorAll('[data-current-city]').forEach(el=>el.textContent=s.city);
+  document.querySelectorAll('[data-current-controller]').forEach(el=>el.textContent=s.controller);
+  document.querySelectorAll('[data-current-gateway]').forEach(el=>el.textContent=s.gateway);
+  document.querySelectorAll('[data-current-function]').forEach(el=>el.textContent=s.function);
+  set('station-id',s.id);set('station-city',s.city);set('station-controller',s.controller);set('station-gateway',s.gateway);
+  if(window.INTERAFAS_LIVE)window.INTERAFAS_LIVE.setStation(index);
   showView('process');
 }
 
@@ -651,6 +785,14 @@ document.querySelectorAll('[data-asset-row]').forEach(row=>row.addEventListener(
   document.getElementById('asset-detail-function').textContent=a.function;
   document.getElementById('asset-detail-vendor').textContent=a.vendor;
   document.getElementById('asset-detail-related').textContent=a.related;
+}));
+
+document.querySelectorAll('.eq-click').forEach(el=>el.addEventListener('click',()=>{
+  const name=el.dataset.equipment||'Process asset';
+  if(window.INTERAFAS_HMI?.openDrawer){
+    window.INTERAFAS_HMI.openDrawer(name,'LIVE PROCESS ASSET',
+      '<div class="drawer-kpi">'+name+'</div><p>Live asset context from the selected station process cell.</p><div class="drawer-meta"><span>Station</span><b>'+((document.querySelector('[data-current-station]')||{}).textContent||'—')+'</b><span>Controller</span><b>'+((document.querySelector('[data-current-controller]')||{}).textContent||'—')+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
+  }
 }));
 
 async function refreshTelemetry(){
