@@ -6,11 +6,12 @@ header('Cache-Control: no-store');
 header('X-INTERAFAS-Gateway: operations-bridge');
 header('X-INTERAFAS-Access-Policy: internal-network');
 
-$remote=(string)($_SERVER['REMOTE_ADDR']??'');
-$forwarded=trim((string)($_SERVER['HTTP_X_FORWARDED_FOR']??''));
-$claimed=$forwarded!=='' ? trim(explode(',',$forwarded)[0]) : $remote;
+$source=operational_source();
+$remote=$source['remote'];
+$forwarded=$source['forwarded'];
+$claimed=$source['claimed'];
 
-$internal=in_array($claimed,['127.0.0.1','::1'],true);
+$internal=operational_source_is_internal();
 
 if(!$internal){
     lab_event(
@@ -23,7 +24,7 @@ if(!$internal){
             'result'=>'restricted',
             'remote_addr'=>$remote,
             'claimed_source'=>$claimed,
-            'source_header'=>$forwarded!==''?'X-Forwarded-For':'REMOTE_ADDR'
+            'source_header'=>$source['source']
         ],
         'interafas-web',
         'notice',
