@@ -1183,3 +1183,249 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   .municipal-native-sl,.municipal-native-so,.municipal-native-cp{min-height:auto}
   .municipal-native-sl .mini-scada-canvas,.municipal-native-so .mini-scada-canvas,.municipal-native-cp .mini-scada-canvas{height:280px}
 }
+
+
+/* V10 — instrumented SCADA municipal overviews */
+.municipal-scada-grid{
+  display:grid;
+  grid-template-columns:minmax(300px,.82fr) minmax(620px,1.55fr) minmax(470px,1.18fr);
+  gap:12px;
+  align-items:end;
+}
+.scada-overview{
+  border:1px solid #263f4c;
+  background:#08131b;
+  box-shadow:0 10px 28px rgba(0,0,0,.24);
+  overflow:hidden;
+}
+.scada-sl{min-height:520px}
+.scada-so{min-height:455px}
+.scada-cp{min-height:375px}
+
+.scada-ov-head{
+  height:46px;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:0 10px;
+  background:linear-gradient(180deg,#124694,#0d3371);
+  border-bottom:1px solid #0a2552;
+  color:#fff
+}
+.scada-ov-head strong{display:block;font-size:12px;letter-spacing:.08em}
+.scada-ov-head span{display:block;font-size:8px;opacity:.82;margin-top:2px;letter-spacing:.06em}
+.scada-ov-status{display:flex;align-items:center;gap:6px;font:700 8px ui-monospace,SFMono-Regular,Consolas,monospace}
+.scada-ov-status i{width:8px;height:8px;border-radius:50%;background:#37e66f;box-shadow:0 0 8px rgba(55,230,111,.75)}
+.scada-ov-status time{padding-left:6px;border-left:1px solid rgba(255,255,255,.35);font-size:8px}
+
+.scada-ov-tabs{
+  min-height:30px;
+  display:flex;align-items:center;gap:3px;
+  padding:3px 5px;
+  background:#bfc1c2;border-bottom:1px solid #7b7f81
+}
+.scada-ov-tabs b{
+  padding:5px 8px;
+  background:#e6e6e6;
+  border:1px solid #7e8285;
+  color:#101010;
+  font:700 7px Arial,Segoe UI,sans-serif;
+  box-shadow:inset 0 1px #fff
+}
+.scada-ov-tabs b.active{background:#66df74;border-color:#338c3d}
+
+.scada-ov-process{
+  position:relative;
+  background:#d0d1d1;
+  color:#111;
+  overflow:hidden;
+  font-family:Arial,Segoe UI,sans-serif
+}
+.scada-sl .scada-ov-process{height:350px}
+.scada-so .scada-ov-process{height:285px}
+.scada-cp .scada-ov-process{height:220px}
+
+.ov-unit{
+  position:absolute;
+  border:1px solid #777d80;
+  background:#e9e9e9;
+  box-shadow:1px 2px 0 rgba(0,0,0,.16);
+  z-index:4
+}
+.ov-unit h4{
+  margin:0;
+  padding:4px 6px;
+  background:#f3f3f3;
+  border-bottom:1px solid #8b8f91;
+  font-size:8px;
+  letter-spacing:.03em
+}
+
+.ov-instrument,.ov-analyzer,.ov-control-box{
+  background:#fff;border:1px solid #666d70;color:#111;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.ov-instrument{padding:4px 6px;min-width:72px}
+.ov-instrument small,.ov-analyzer span,.ov-control-box small{display:block;font-size:6px;color:#2c3438}
+.ov-instrument b,.ov-analyzer b,.ov-control-box b,.ov-control-box strong{display:block;margin-top:2px;font-size:8px;color:#063ea1}
+.ov-instrument.mini{margin-top:5px}
+
+.ov-tank-pair{display:flex;gap:8px;padding:9px 8px 7px}
+.ov-tank{
+  position:relative;
+  width:64px;height:94px;
+  border:2px solid #52595d;
+  border-radius:28px 28px 10px 10px;
+  background:linear-gradient(90deg,#858e92,#eef1f2,#7a8387);
+  overflow:hidden;
+  text-align:center
+}
+.ov-tank .ov-water{
+  position:absolute;left:6px;right:6px;bottom:18px;
+  background:linear-gradient(#39cdf6,#0c83c2);
+  border-top:1px solid #0876ab
+}
+.ov-tank span,.ov-tank b{
+  position:absolute;left:0;right:0;font-size:7px;z-index:2
+}
+.ov-tank span{top:5px;font-weight:700}
+.ov-tank b{bottom:4px;color:#123b8e;background:rgba(255,255,255,.78)}
+
+.ov-elevated-tank{
+  position:relative;width:62px;height:95px;margin:12px auto 3px;
+  border:2px solid #575e62;border-radius:42% 42% 20% 20%;
+  background:linear-gradient(90deg,#8d9498,#e8ebec,#7e8589);overflow:hidden
+}
+.ov-elevated-tank .ov-water{position:absolute;left:5px;right:5px;bottom:5px;background:#19a7db}
+.ov-elevated-tank:after{
+  content:"";position:absolute;left:18px;right:18px;bottom:-50px;height:55px;
+  border-left:4px solid #666d71;border-right:4px solid #666d71
+}
+
+.ov-pump-grid{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:8px}
+.ov-pump-row{display:flex;gap:6px;padding:8px;justify-content:center}
+.ov-pump{
+  position:relative;
+  min-width:74px;
+  min-height:61px;
+  padding:5px 4px 4px 28px;
+  background:#f2f2f2;
+  border:1px solid #666;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.ov-pump i{
+  position:absolute;left:5px;top:16px;width:17px;height:17px;border-radius:50%;
+  border:4px solid #740808;border-right-color:#ef2d24;background:#b30d0d
+}
+.ov-pump span,.ov-pump b,.ov-pump small{display:block}
+.ov-pump b{margin-top:3px;color:#008d18}
+.ov-pump small{margin-top:2px;color:#444}
+.ov-pump.standby b{color:#9d7100}.ov-pump.standby i{background:#70777a;border-color:#51575a}
+.ov-pump.fault b{color:#c20f18}.ov-pump.fault i{border-right-color:#ff2b2b;box-shadow:0 0 7px rgba(255,0,0,.7)}
+
+.ov-analyzer{padding:6px;margin:7px}
+.ov-analyzer small{display:block;margin-top:2px;font-size:6px;color:#444}
+.ov-control-box{padding:5px;margin:4px}
+.ov-control-box em{display:inline-block;margin-top:4px;padding:2px 8px;background:#38dc4a;color:#111;font-style:normal;font-size:7px;border:1px solid #238b2d}
+
+.ov-intake-symbol{height:40px;margin:7px;position:relative;border-bottom:8px solid #0d80d0}
+.ov-intake-symbol:before{
+  content:"";position:absolute;left:7px;top:4px;width:35px;height:28px;background:#aab0b3;border:1px solid #555
+}
+.ov-intake-symbol i{position:absolute;top:6px;width:3px;height:24px;background:#4f5558}
+.ov-intake-symbol i:nth-child(1){left:15px}.ov-intake-symbol i:nth-child(2){left:25px}.ov-intake-symbol i:nth-child(3){left:35px}
+
+.ov-zone-line{
+  margin:6px 7px;
+  padding:5px 7px;
+  background:#fff;border:1px solid #5d6669;
+  display:grid;grid-template-columns:1fr auto;gap:2px 8px;
+  font-size:7px;position:relative
+}
+.ov-zone-line:before{content:"";position:absolute;left:0;right:0;bottom:-6px;height:5px;background:#20b940}
+.ov-zone-line.zone-b:before{background:#bc2cdf}.ov-zone-line.zone-c:before{background:#147bd9}
+.ov-zone-line span{font-weight:700}.ov-zone-line b{color:#0d3a95}.ov-zone-line em{grid-column:2;font-style:normal;color:#333}
+
+.ov-prv-symbol{text-align:center;padding:8px 6px 2px}
+.ov-prv-symbol i{display:block;width:26px;height:26px;border-radius:50%;background:#32c44a;border:3px solid #17732b;margin:0 auto}
+.ov-prv-symbol span{display:block;margin-top:3px;font-size:7px;font-weight:700}
+
+.ov-pipe{
+  position:absolute;z-index:2;
+  background:#0877df;border:1px solid #045aa8
+}
+.ov-pipe:after{
+  content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(90deg,transparent 0 20px,rgba(255,255,255,.88) 20px 28px,transparent 28px 42px);
+  animation:ovPipe 1.8s linear infinite
+}
+@keyframes ovPipe{from{transform:translateX(-42px)}to{transform:translateX(0)}}
+@keyframes ovPipeV{from{transform:translateY(-42px)}to{transform:translateY(0)}}
+.ov-pipe.vertical:after{
+  background:repeating-linear-gradient(180deg,transparent 0 20px,rgba(255,255,255,.88) 20px 28px,transparent 28px 42px);
+  animation:ovPipeV 1.8s linear infinite
+}
+.ov-valve{
+  position:absolute;z-index:6;text-align:center;font:700 6px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.ov-valve i{display:block;width:18px;height:18px;margin:auto;transform:rotate(45deg);border:2px solid #555;background:#dc252a}
+.ov-valve.open i{background:#33c951}
+.ov-valve span{display:block;margin-top:2px;background:#fff;border:1px solid #777;padding:1px 2px}
+
+.scada-ov-summary{
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  gap:1px;background:#203b49;border-top:1px solid #244a5c
+}
+.scada-sl .scada-ov-summary,.scada-so .scada-ov-summary{grid-template-columns:repeat(4,1fr)}
+.scada-ov-summary>div{background:#0b1b24;padding:7px 8px}
+.scada-ov-summary span{display:block;font-size:6px;color:#718f9e;letter-spacing:.06em}
+.scada-ov-summary b{display:block;margin-top:3px;font:700 9px ui-monospace,SFMono-Regular,Consolas,monospace}
+
+.scada-ov-alarm{
+  min-height:42px;display:flex;align-items:center;gap:10px;
+  padding:6px 8px;background:#111;color:#ddd;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.scada-ov-alarm b{color:#ff4c4c}.scada-ov-alarm span{color:#ffb64b}
+.scada-ov-alarm.ok b{color:#62e58d}.scada-ov-alarm .btn{margin-left:auto;font-family:Inter,Segoe UI,Arial,sans-serif}
+
+/* SL overview layout */
+.sl-u-intake{left:1.5%;top:5%;width:16%;height:42%}
+.sl-u-storage{left:19%;top:5%;width:22%;height:42%}
+.sl-u-pumps{left:1.5%;bottom:5%;width:39.5%;height:44%}
+.sl-u-quality{left:43%;top:5%;width:17%;height:42%}
+.sl-u-header{left:43%;bottom:5%;width:17%;height:44%}
+.sl-u-dist{right:1.5%;top:5%;width:37%;height:90%}
+.sl-line-a{left:16%;top:27%;width:4%;height:6px}
+.sl-line-b{left:40%;top:27%;width:4%;height:6px}
+.sl-line-c{left:59%;top:52%;width:5%;height:6px;background:#d92128;border-color:#901017}
+.sl-line-d{left:63%;top:26%;width:6px;height:55%;background:#d92128;border-color:#901017}
+.sl-line-d:after{background:repeating-linear-gradient(180deg,transparent 0 20px,rgba(255,255,255,.88) 20px 28px,transparent 28px 42px);animation:ovPipeV 1.8s linear infinite}
+.sl-v1{left:38.8%;top:23%}.sl-v2{left:61.7%;top:48%}
+
+/* SO overview layout */
+.so-u-intake{left:2%;top:7%;width:18%;height:45%}
+.so-u-pumps{left:22%;top:7%;width:32%;height:45%}
+.so-u-prv{left:56%;top:7%;width:20%;height:45%}
+.so-u-quality{left:2%;bottom:7%;width:27%;height:37%}
+.so-u-tank{left:31%;bottom:7%;width:22%;height:37%}
+.so-u-dist{right:2%;bottom:7%;width:43%;height:37%}
+.so-line-a{left:18%;top:31%;width:5%;height:6px}
+.so-line-b{left:53%;top:31%;width:4%;height:6px}
+.so-line-c{left:75%;top:31%;width:6px;height:44%;background:#20b940;border-color:#147729}
+.so-line-c:after{background:repeating-linear-gradient(180deg,transparent 0 20px,rgba(255,255,255,.88) 20px 28px,transparent 28px 42px);animation:ovPipeV 1.8s linear infinite}
+.so-line-d{left:52%;top:73%;width:7%;height:6px;background:#20b940;border-color:#147729}
+.so-v1{right:23%;bottom:23%}.so-v2{right:8%;bottom:23%}
+
+/* CP overview layout */
+.cp-u-storage{left:3%;top:8%;width:27%;height:82%}
+.cp-u-pumps{left:33%;top:8%;width:29%;height:82%}
+.cp-u-quality{left:65%;top:8%;width:16%;height:82%}
+.cp-u-zone{right:3%;top:8%;width:14%;height:82%}
+.cp-line-1{left:28%;top:52%;width:7%;height:6px}.cp-line-2{left:60%;top:52%;width:6%;height:6px}.cp-line-3{left:80%;top:52%;width:6%;height:6px}
+.cp-v1{left:60%;top:47%}
+
+@media(max-width:1250px){
+  .municipal-scada-grid{grid-template-columns:1fr}
+  .scada-sl,.scada-so,.scada-cp{min-height:auto}
+  .scada-sl .scada-ov-process,.scada-so .scada-ov-process,.scada-cp .scada-ov-process{height:330px}
+}
