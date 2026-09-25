@@ -22,9 +22,9 @@ $fw=$state['firmware']??[];
 $canControl=(string)($ops['role']??'')==='operator';
 
 $stations=[
-    ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE'],
-    ['id'=>'EST-SL-01','city'=>'Saint Louis','name'=>'Estación Central Saint Louis','function'=>'Regulation / distribution','supply'=>1130,'demand'=>1070,'reserve'=>84,'pressure'=>4.5,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-01','gateway'=>'RTU-SL-01','status'=>'ONLINE'],
-    ['id'=>'EST-SO-01','city'=>'Soledade','name'=>'Estación Oriente Soledade','function'=>'Pumping / distribution','supply'=>800,'demand'=>680,'reserve'=>81,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-01','gateway'=>'RTU-SO-01','status'=>'ONLINE']
+    ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE'],
+    ['id'=>'EST-SL-01','city'=>'Saint Louis','name'=>'Estación Central Saint Louis','function'=>'Regulation / distribution','supply'=>1130,'demand'=>1070,'reserve'=>84,'pressure'=>4.5,'quality'=>'NORMAL','alarms'=>3,'controller'=>'PLC-SL-01','gateway'=>'RTU-SL-01','status'=>'ONLINE'],
+    ['id'=>'EST-SO-01','city'=>'Soledade','name'=>'Estación Oriente Soledade','function'=>'Pumping / distribution','supply'=>800,'demand'=>680,'reserve'=>81,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SO-01','gateway'=>'RTU-SO-01','status'=>'ONLINE']
 ];
 
 $assets=[
@@ -52,7 +52,19 @@ $assets=[
     ['id'=>'TK-SO-01','type'=>'Reservoir','station'=>'Soledade','zone'=>'Process','function'=>'Regulation storage','status'=>'ONLINE','vendor'=>'Process asset','related'=>'PLC-SO-01'],
     ['id'=>'P-SO-101','type'=>'Pump','station'=>'Soledade','zone'=>'Process','function'=>'Primary pumping','status'=>'RUNNING','vendor'=>'Field equipment','related'=>'PLC-SO-01'],
     ['id'=>'P-SO-102','type'=>'Pump','station'=>'Soledade','zone'=>'Process','function'=>'Standby pumping','status'=>'STANDBY','vendor'=>'Field equipment','related'=>'PLC-SO-01'],
-    ['id'=>'V-SO-201','type'=>'Control Valve','station'=>'Soledade','zone'=>'Process','function'=>'Distribution control','status'=>'OPEN','vendor'=>'Field equipment','related'=>'PLC-SO-01']
+    ['id'=>'V-SO-201','type'=>'Control Valve','station'=>'Soledade','zone'=>'Process','function'=>'Distribution control','status'=>'OPEN','vendor'=>'Field equipment','related'=>'PLC-SO-01'],
+    ['id'=>'PLC-CP-02','type'=>'PLC','station'=>'Cerro de San Pablo','zone'=>'Area Control','function'=>'Pumping control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'P-CP-101 · P-CP-102'],
+    ['id'=>'PLC-CP-03','type'=>'PLC','station'=>'Cerro de San Pablo','zone'=>'Area Control','function'=>'Reservoir auxiliary control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'TK-CP-01 · QCS-CP-01'],
+    ['id'=>'RTU-CP-02','type'=>'RTU','station'=>'Cerro de San Pablo','zone'=>'OT Edge','function'=>'Remote booster communications','status'=>'ONLINE','vendor'=>'Remote terminal unit','related'=>'PLC-CP-02 · RTU-GW-07'],
+    ['id'=>'QCS-CP-01','type'=>'Quality Controller','station'=>'Cerro de San Pablo','zone'=>'Process Control','function'=>'Water quality supervision','status'=>'ONLINE','vendor'=>'Quality control system','related'=>'PLC-CP-03 · HIST-01'],
+    ['id'=>'PLC-SL-02','type'=>'PLC','station'=>'Saint Louis','zone'=>'Area Control','function'=>'Pumping control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'P-SL-101 · P-SL-102'],
+    ['id'=>'PLC-SL-03','type'=>'PLC','station'=>'Saint Louis','zone'=>'Area Control','function'=>'Reservoir auxiliary control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'TK-SL-01 · QCS-SL-01'],
+    ['id'=>'RTU-SL-02','type'=>'RTU','station'=>'Saint Louis','zone'=>'OT Edge','function'=>'Remote booster communications','status'=>'DEGRADED','vendor'=>'Remote terminal unit','related'=>'PLC-SL-02 · RTU-GW-07'],
+    ['id'=>'QCS-SL-01','type'=>'Quality Controller','station'=>'Saint Louis','zone'=>'Process Control','function'=>'Water quality supervision','status'=>'ONLINE','vendor'=>'Quality control system','related'=>'PLC-SL-03 · HIST-01'],
+    ['id'=>'PLC-SO-02','type'=>'PLC','station'=>'Soledade','zone'=>'Area Control','function'=>'Pumping control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'P-SO-101 · P-SO-102'],
+    ['id'=>'PLC-SO-03','type'=>'PLC','station'=>'Soledade','zone'=>'Area Control','function'=>'Reservoir auxiliary control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'TK-SO-01 · QCS-SO-01'],
+    ['id'=>'RTU-SO-02','type'=>'RTU','station'=>'Soledade','zone'=>'OT Edge','function'=>'Remote booster communications','status'=>'ONLINE','vendor'=>'Remote terminal unit','related'=>'PLC-SO-02 · RTU-GW-07'],
+    ['id'=>'QCS-SO-01','type'=>'Quality Controller','station'=>'Soledade','zone'=>'Process Control','function'=>'Water quality supervision','status'=>'ONLINE','vendor'=>'Quality control system','related'=>'PLC-SO-03 · HIST-01']
 ];
 
 $totalSupply=array_sum(array_column($stations,'supply'));
@@ -60,6 +72,13 @@ $totalDemand=array_sum(array_column($stations,'demand'));
 $avgReserve=round(array_sum(array_column($stations,'reserve'))/count($stations));
 $avgPressure=round(array_sum(array_column($stations,'pressure'))/count($stations),1);
 $totalAlarms=array_sum(array_column($stations,'alarms'));
+$balance=$totalSupply-$totalDemand;
+$availability=99.82;
+$plcOnline=9;
+$rtuOnline=6;
+$unackAlarms=4;
+$maintenanceActive=2;
+$degradedLinks=1;
 ?><!doctype html>
 <html lang="es">
 <head>
@@ -109,6 +128,7 @@ $totalAlarms=array_sum(array_column($stations,'alarms'));
   <?php endif; ?>
   <div class="nav-section">ANALYSIS</div>
   <button class="nav-item" data-view-target="events"><span class="nav-glyph">≡</span><span>Events</span></button>
+  <button class="nav-item" data-view-target="statistics"><span class="nav-glyph">▥</span><span>Statistics</span></button>
 </aside>
 
 <main class="hmi-main"><div class="workspace">
@@ -119,14 +139,27 @@ $totalAlarms=array_sum(array_column($stations,'alarms'));
     <div class="page-tools"><span class="tool-chip">MODE AUTO</span><span class="tool-chip"><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></span><span class="tool-chip"><?=$totalAlarms?> ACTIVE ALARMS</span></div>
   </div>
 
-  <div class="metrics metro-metrics">
+  <div class="metrics metro-metrics dense">
     <div class="metric"><label>Total Supply</label><strong><?=$totalSupply?></strong><small>L/s</small><span class="sub">Metropolitan production</span></div>
-    <div class="metric"><label>Total Demand</label><strong><?=$totalDemand?></strong><small>L/s</small><span class="sub">Current metropolitan demand</span></div>
-    <div class="metric"><label>System Reserve</label><strong><?=$avgReserve?></strong><small>%</small><span class="sub">Average available reserve</span></div>
+    <div class="metric"><label>Total Demand</label><strong><?=$totalDemand?></strong><small>L/s</small><span class="sub">Current demand</span></div>
+    <div class="metric"><label>Supply Balance</label><strong>+<?=$balance?></strong><small>L/s</small><span class="sub">Available operating margin</span></div>
+    <div class="metric"><label>System Reserve</label><strong><?=$avgReserve?></strong><small>%</small><span class="sub">Average reserve</span></div>
+    <div class="metric"><label>Minimum Reserve</label><strong>79</strong><small>%</small><span class="sub">Cerro de San Pablo</span></div>
     <div class="metric"><label>Average Pressure</label><strong><?=$avgPressure?></strong><small>bar</small><span class="sub">Distribution headers</span></div>
+    <div class="metric"><label>Pressure Range</label><strong>4.1–4.5</strong><small>bar</small><span class="sub">Observed municipal range</span></div>
     <div class="metric"><label>Water Quality</label><strong>NORMAL</strong><span class="sub">3 municipalities within limits</span></div>
-    <div class="metric"><label>Stations</label><strong>3 / 3</strong><span class="sub">Metropolitan stations online</span></div>
-    <div class="metric"><label>Critical Assets</label><strong><?=count($assets)?> / <?=count($assets)?></strong><span class="sub">Observed OT assets</span></div>
+    <div class="metric"><label>Energy Load</label><strong>2.74</strong><small>MW</small><span class="sub">Pumping systems</span></div>
+    <div class="metric"><label>Active Alarms</label><strong><?=$totalAlarms?></strong><span class="sub"><?=$unackAlarms?> unacknowledged</span></div>
+  </div>
+  <div class="tech-strip">
+    <div><span>Stations</span><strong>3 / 3</strong></div>
+    <div><span>PLC Online</span><strong><?=$plcOnline?> / 9</strong></div>
+    <div><span>RTU Online</span><strong><?=$rtuOnline?> / 6</strong></div>
+    <div><span>OT Services</span><strong>5 / 5</strong></div>
+    <div><span>Degraded Links</span><strong class="warn-text"><?=$degradedLinks?></strong></div>
+    <div><span>Maintenance</span><strong class="warn-text"><?=$maintenanceActive?></strong></div>
+    <div><span>Unack Alarms</span><strong class="warn-text"><?=$unackAlarms?></strong></div>
+    <div><span>Availability</span><strong><?=$availability?>%</strong></div>
   </div>
 
   <div class="metro-overview-grid">
@@ -161,10 +194,14 @@ $totalAlarms=array_sum(array_column($stations,'alarms'));
       <section class="panel">
         <div class="panel-head"><h2>Metropolitan Situation</h2><span>Current operational context</span></div>
         <div class="panel-body">
+          <div class="event-row"><span class="event-time">11:46</span><div><strong>Cerro de San Pablo</strong><small>Reservoir level approaching operating threshold</small></div><b class="warn-text">MED</b></div>
           <div class="event-row"><span class="event-time">11:39</span><div><strong>Saint Louis</strong><small>Pressure deviation +0.4 bar</small></div><b class="warn-text">MED</b></div>
           <div class="event-row"><span class="event-time">11:35</span><div><strong>RTU-GW-07</strong><small>Maintenance state <?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></small></div><b class="warn-text">SERVICE</b></div>
+          <div class="event-row"><span class="event-time">11:28</span><div><strong>RTU-SL-02</strong><small>Communication quality degraded</small></div><b class="warn-text">LOW</b></div>
           <div class="event-row"><span class="event-time">11:21</span><div><strong>HIST-01</strong><small>Historian health check completed</small></div><b class="ok-text">INFO</b></div>
+          <div class="event-row"><span class="event-time">11:14</span><div><strong>EWS-01</strong><small>Engineering baseline synchronized</small></div><b class="ok-text">INFO</b></div>
           <div class="event-row"><span class="event-time">11:08</span><div><strong>Soledade</strong><small>RTU latency threshold observed</small></div><b class="warn-text">LOW</b></div>
+          <div class="event-row"><span class="event-time">10:54</span><div><strong>BRS-01</strong><small>Recovery catalog check queued</small></div><b class="ok-text">INFO</b></div>
         </div>
       </section>
       <section class="panel">
@@ -279,23 +316,43 @@ $totalAlarms=array_sum(array_column($stations,'alarms'));
 </section>
 
 <section class="view" data-view="trends">
-  <div class="page-head"><div><div class="breadcrumb">Process / Trends</div><h1>Metropolitan Trends</h1><p>Variables consolidadas por municipio y cabecera de distribución.</p></div><div class="page-tools"><span class="tool-chip">15 MIN</span><span class="tool-chip">METROPOLITAN</span><span class="tool-chip">LIVE</span></div></div>
-  <div class="trend-grid">
-    <div class="trend"><div class="trend-head"><strong>SUPPLY.TOTAL</strong><span><?=$totalSupply?> L/s</span></div><svg class="spark" viewBox="0 0 600 120" preserveAspectRatio="none"><path class="grid" d="M0 30H600M0 60H600M0 90H600"/><path class="line" d="M0 74 C60 68 100 72 150 61 S230 55 285 58 S365 46 430 50 S525 43 600 46"/></svg></div>
-    <div class="trend"><div class="trend-head"><strong>DEMAND.TOTAL</strong><span><?=$totalDemand?> L/s</span></div><svg class="spark" viewBox="0 0 600 120" preserveAspectRatio="none"><path class="grid" d="M0 30H600M0 60H600M0 90H600"/><path class="line2" d="M0 82 C80 78 120 76 180 70 S280 62 340 66 S470 59 600 62"/></svg></div>
-    <div class="trend"><div class="trend-head"><strong>PRESSURE.BY.CITY</strong><span>4.1 / 4.5 / 4.3 bar</span></div><svg class="spark" viewBox="0 0 600 120" preserveAspectRatio="none"><path class="grid" d="M0 30H600M0 60H600M0 90H600"/><path class="line" d="M0 67 C90 64 140 68 210 61 S320 58 390 60 S500 54 600 57"/><path class="line2" d="M0 78 C100 75 150 70 220 73 S340 66 430 69 S530 65 600 66"/></svg></div>
-    <div class="trend"><div class="trend-head"><strong>RESERVOIR.LEVELS</strong><span>79 / 84 / 81 %</span></div><svg class="spark" viewBox="0 0 600 120" preserveAspectRatio="none"><path class="grid" d="M0 30H600M0 60H600M0 90H600"/><path class="line2" d="M0 52 C100 55 180 49 260 53 S390 59 480 52 S560 50 600 51"/></svg></div>
+  <div class="page-head"><div><div class="breadcrumb">Process / Trends</div><h1>Metropolitan Trends & Operating Statistics</h1><p>Series operativas consolidadas, rangos y variación por municipio.</p></div><div class="page-tools"><span class="tool-chip">15 MIN</span><span class="tool-chip">1 H</span><span class="tool-chip">8 H</span><span class="tool-chip">24 H</span><span class="tool-chip">7 D</span></div></div>
+  <div class="trend-stat-grid">
+    <div class="trend-stat"><span>Supply</span><strong><?=$totalSupply?> L/s</strong><small>AVG 2817 · MIN 2721 · MAX 2898 · Δ +2.1%</small></div>
+    <div class="trend-stat"><span>Demand</span><strong><?=$totalDemand?> L/s</strong><small>AVG 2587 · MIN 2492 · MAX 2641 · Δ +1.4%</small></div>
+    <div class="trend-stat"><span>Pressure</span><strong><?=$avgPressure?> bar</strong><small>CP 4.1 · SL 4.5 · SO 4.3 · σ 0.17</small></div>
+    <div class="trend-stat"><span>Reservoirs</span><strong>81.3%</strong><small>CP 79 · SL 84 · SO 81 · STABLE</small></div>
+    <div class="trend-stat"><span>Energy</span><strong>2.74 MW</strong><small>AVG 2.61 · PEAK 2.88 · PF 0.94</small></div>
+    <div class="trend-stat"><span>Availability</span><strong><?=$availability?>%</strong><small>1 degraded link · 0 critical outages</small></div>
+  </div>
+  <div class="trend-grid rich">
+    <div class="trend"><div class="trend-head"><strong>SUPPLY vs DEMAND</strong><span><?=$totalSupply?> / <?=$totalDemand?> L/s</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 108 C55 95 90 100 130 82 S220 66 275 72 S360 50 420 56 S510 41 600 46"/><path class="line2" d="M0 125 C70 117 115 111 165 102 S260 88 320 91 S450 76 600 80"/></svg><div class="trend-legend"><span>Supply</span><span>Demand</span></div></div>
+    <div class="trend"><div class="trend-head"><strong>PRESSURE BY MUNICIPALITY</strong><span>4.1 / 4.5 / 4.3 bar</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 94 C90 90 140 96 210 87 S320 84 390 86 S500 78 600 82"/><path class="line2" d="M0 72 C90 70 160 74 230 65 S360 61 430 64 S525 58 600 60"/><path class="line3" d="M0 84 C100 82 155 85 225 78 S350 73 430 77 S530 69 600 71"/></svg><div class="trend-legend"><span>CP</span><span>SL</span><span>SO</span></div></div>
+    <div class="trend"><div class="trend-head"><strong>RESERVOIR LEVELS</strong><span>79 / 84 / 81 %</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 68 C100 72 180 66 260 70 S390 77 480 69 S560 67 600 68"/><path class="line2" d="M0 52 C100 56 180 50 260 54 S390 60 480 53 S560 51 600 52"/><path class="line3" d="M0 61 C100 64 180 59 260 63 S390 68 480 61 S560 60 600 61"/></svg></div>
+    <div class="trend"><div class="trend-head"><strong>PUMP LOAD / CURRENT</strong><span>Metropolitan pumping</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line2" d="M0 112 L50 110 L54 61 L145 64 L150 70 L245 67 L250 56 L340 59 L345 68 L455 65 L460 53 L600 55"/></svg></div>
+    <div class="trend"><div class="trend-head"><strong>COMMUNICATION LATENCY</strong><span>1 degraded path</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 118 C110 116 175 114 250 112 S350 108 400 105 L430 48 L455 96 C500 106 550 108 600 106"/></svg></div>
+    <div class="trend"><div class="trend-head"><strong>ALARMS / HOUR</strong><span><?=$totalAlarms?> active</span></div><div class="bar-chart"><i style="height:22%"></i><i style="height:35%"></i><i style="height:18%"></i><i style="height:52%"></i><i style="height:73%"></i><i style="height:46%"></i><i style="height:62%"></i><i style="height:38%"></i><i style="height:81%"></i><i style="height:58%"></i><i style="height:43%"></i><i style="height:66%"></i></div></div>
   </div>
 </section>
 
 <section class="view" data-view="alarms">
-  <div class="page-head"><div><div class="breadcrumb">Process / Alarms</div><h1>Metropolitan Alarm Management</h1><p>Condiciones activas y eventos operacionales por estación.</p></div><div class="page-tools"><span class="tool-chip"><?=$totalAlarms?> ACTIVE</span><span class="tool-chip">0 CRITICAL</span></div></div>
-  <div class="panel"><div class="panel-head"><h2>Active Alarm Queue</h2><span>Priority ordered</span></div><div class="table-wrap"><table class="data-table">
+  <div class="page-head"><div><div class="breadcrumb">Process / Alarms</div><h1>Metropolitan Alarm Management</h1><p>Condiciones activas, reconocidas y recientes por estación y servicio OT.</p></div><div class="page-tools"><span class="tool-chip"><?=$totalAlarms?> ACTIVE</span><span class="tool-chip"><?=$unackAlarms?> UNACK</span><span class="tool-chip">0 CRITICAL</span></div></div>
+  <div class="alarm-filter-strip"><span>ALL 12</span><span>HIGH 1</span><span>MEDIUM 3</span><span>LOW 3</span><span>INFO 5</span><span>UNACK <?=$unackAlarms?></span></div>
+  <div class="panel"><div class="panel-head"><h2>Alarm & Event Queue</h2><span>Priority ordered</span></div><div class="table-wrap"><table class="data-table">
     <thead><tr><th>Time</th><th>Priority</th><th>Station</th><th>Source</th><th>Condition</th><th>State</th></tr></thead>
     <tbody>
-      <tr><td>11:39:12</td><td class="warn-text">MEDIUM</td><td>Saint Louis</td><td>PRESS-SL-01</td><td>Pressure deviation +0.4 bar</td><td>ACTIVE</td></tr>
-      <tr><td>11:08:44</td><td class="warn-text">LOW</td><td>Soledade</td><td>RTU-SO-01</td><td>Communication latency threshold</td><td>ACTIVE</td></tr>
-      <tr><td>10:42:07</td><td>INFO</td><td>Metropolitan</td><td>RTU-GW-07</td><td>Maintenance state entered</td><td>ACK</td></tr>
+      <tr><td>11:46:03</td><td class="warn-text">HIGH</td><td>Cerro de San Pablo</td><td>TK-CP-01</td><td>Reservoir level approaching low operating threshold</td><td>UNACK</td></tr>
+      <tr><td>11:39:12</td><td class="warn-text">MEDIUM</td><td>Saint Louis</td><td>PRESS-SL-01</td><td>Header pressure high deviation +0.4 bar</td><td>UNACK</td></tr>
+      <tr><td>11:28:51</td><td class="warn-text">MEDIUM</td><td>Saint Louis</td><td>RTU-SL-02</td><td>Communication quality degraded</td><td>UNACK</td></tr>
+      <tr><td>11:08:44</td><td class="warn-text">MEDIUM</td><td>Soledade</td><td>RTU-SO-02</td><td>Communication latency threshold</td><td>UNACK</td></tr>
+      <tr><td>10:58:09</td><td>LOW</td><td>Saint Louis</td><td>P-SL-102</td><td>Standby pump availability test delayed</td><td>ACK</td></tr>
+      <tr><td>10:51:27</td><td>LOW</td><td>Cerro de San Pablo</td><td>FLOW-CP-02</td><td>Flow variance above baseline</td><td>ACK</td></tr>
+      <tr><td>10:43:18</td><td>LOW</td><td>Soledade</td><td>QCS-SO-01</td><td>Quality sample synchronization delay</td><td>ACK</td></tr>
+      <tr><td>10:42:07</td><td>INFO</td><td>Metropolitan</td><td>RTU-GW-07</td><td>Maintenance diagnostic state entered</td><td>ACK</td></tr>
+      <tr><td>10:31:33</td><td>INFO</td><td>Metropolitan</td><td>HIST-01</td><td>Archive backlog recovered</td><td>CLEARED</td></tr>
+      <tr><td>10:14:22</td><td>INFO</td><td>Metropolitan</td><td>BRS-01</td><td>Recovery catalog validation scheduled</td><td>OPEN</td></tr>
+      <tr><td>09:57:40</td><td>INFO</td><td>Metropolitan</td><td>EWS-01</td><td>Engineering baseline synchronized</td><td>CLEARED</td></tr>
+      <tr><td>09:41:15</td><td>INFO</td><td>Saint Louis</td><td>PLC-SL-02</td><td>Configuration verification completed</td><td>CLEARED</td></tr>
     </tbody>
   </table></div></div>
 </section>
@@ -370,19 +427,41 @@ $totalAlarms=array_sum(array_column($stations,'alarms'));
 </section>
 
 <section class="view" data-view="maintenance">
-  <div class="page-head"><div><div class="breadcrumb">System / Maintenance</div><h1>Maintenance Context</h1><p>Estado de servicio de la puerta de enlace y contexto de mantenimiento metropolitano.</p></div></div>
-  <div class="grid-main">
-    <div class="panel"><div class="panel-head"><h2>RTU-GW-07 Service State</h2><span>OT Edge</span></div><div class="panel-body">
-      <div class="kv"><span>Firmware</span><strong><?=htmlspecialchars((string)($fw['version']??'—'))?></strong></div>
-      <div class="kv"><span>Mode</span><strong><?=htmlspecialchars((string)($fw['mode']??'—'))?></strong></div>
-      <div class="kv"><span>Diagnostic</span><strong><?=htmlspecialchars((string)($fw['diagnostic']??'—'))?></strong></div>
-      <div class="kv"><span>Automation engine</span><strong>READY</strong></div>
-    </div></div>
-    <div class="panel"><div class="panel-head"><h2>Service Scope</h2><span><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></span></div><div class="panel-body">
-      <div class="kv"><span>Stations visible</span><strong>3</strong></div>
-      <div class="kv"><span>OT services visible</span><strong>5</strong></div>
+  <div class="page-head"><div><div class="breadcrumb">System / Maintenance</div><h1>Maintenance Operations Context</h1><p>Ventanas de servicio, firmware, validaciones técnicas y actividades recientes de la red metropolitana.</p></div><div class="page-tools"><span class="tool-chip">2 ACTIVE / PENDING</span><span class="tool-chip">SERVICE WINDOW</span></div></div>
+  <div class="maintenance-kpis">
+    <div><span>Active Windows</span><strong>1</strong><small>RTU-GW-07</small></div>
+    <div><span>Scheduled</span><strong>2</strong><small>Next 12 hours</small></div>
+    <div><span>Firmware Reviews</span><strong>1</strong><small>Pending</small></div>
+    <div><span>Config Validations</span><strong>2</strong><small>Queued</small></div>
+    <div><span>Recovery Checks</span><strong>1</strong><small>Scheduled</small></div>
+    <div><span>Assets in Service</span><strong>1</strong><small>RTU-GW-07</small></div>
+  </div>
+  <div class="maintenance-grid">
+    <section class="panel"><div class="panel-head"><h2>Maintenance Windows</h2><span>Current & scheduled</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Window</th><th>Asset</th><th>Scope</th><th>State</th><th>Owner</th></tr></thead><tbody>
+      <tr><td>MW-260925-01</td><td>RTU-GW-07</td><td>Firmware / diagnostics</td><td class="warn-text">ACTIVE</td><td>OT Support</td></tr>
+      <tr><td>MW-260925-02</td><td>EST-SL-01</td><td>Controller validation</td><td>SCHEDULED</td><td>Engineering</td></tr>
+      <tr><td>MW-260926-01</td><td>BRS-01</td><td>Recovery catalog</td><td>SCHEDULED</td><td>OT Services</td></tr>
+    </tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Firmware Estate</h2><span>Edge / station devices</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Asset</th><th>Version</th><th>Diagnostic</th><th>State</th></tr></thead><tbody>
+      <tr><td>RTU-GW-07</td><td><?=htmlspecialchars((string)($fw['version']??'—'))?></td><td><?=htmlspecialchars((string)($fw['diagnostic']??'—'))?></td><td class="warn-text">SERVICE</td></tr>
+      <tr><td>RTU-CP-01</td><td>2.9.8</td><td>LOCKED</td><td class="ok-text">CURRENT</td></tr>
+      <tr><td>RTU-SL-01</td><td>3.1.2</td><td>LOCKED</td><td class="ok-text">CURRENT</td></tr>
+      <tr><td>RTU-SO-01</td><td>3.0.7</td><td>LOCKED</td><td class="ok-text">CURRENT</td></tr>
+    </tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>Recent Maintenance</h2><span>Last operations</span></div><div class="panel-body">
+      <div class="maint-event"><b>11:35</b><span>RTU-GW-07 diagnostic changed to SERVICE</span><strong class="warn-text">ACTIVE</strong></div>
+      <div class="maint-event"><b>09:42</b><span>PLC-SL-02 configuration verification</span><strong class="ok-text">PASS</strong></div>
+      <div class="maint-event"><b>08:11</b><span>BRS-01 recovery catalog check</span><strong class="ok-text">PASS</strong></div>
+      <div class="maint-event"><b>07:48</b><span>HIST-01 storage health validation</span><strong class="ok-text">PASS</strong></div>
+      <div class="maint-event"><b>06:32</b><span>RTU-SO-02 communications test</span><strong class="warn-text">DEGRADED</strong></div>
+    </div></section>
+    <section class="panel"><div class="panel-head"><h2>Pending Actions</h2><span>Operational queue</span></div><div class="panel-body">
+      <div class="kv"><span>Firmware review</span><strong>RTU-GW-07</strong></div>
+      <div class="kv"><span>Config validation</span><strong>PLC-SL-02</strong></div>
+      <div class="kv"><span>Config validation</span><strong>PLC-CP-03</strong></div>
+      <div class="kv"><span>Recovery validation</span><strong>BRS-01</strong></div>
       <div class="kv"><span>Process control</span><strong class="<?=$canControl?'ok-text':'warn-text'?>"><?=$canControl?'AVAILABLE':'RESTRICTED'?></strong></div>
-    </div></div>
+    </div></section>
   </div>
 </section>
 
@@ -399,14 +478,42 @@ $totalAlarms=array_sum(array_column($stations,'alarms'));
 </section>
 
 <section class="view" data-view="events">
-  <div class="page-head"><div><div class="breadcrumb">Analysis / Events</div><h1>Operational Event Timeline</h1><p>Eventos recientes visibles para la sesión metropolitana.</p></div></div>
-  <div class="panel"><div class="panel-head"><h2>Timeline</h2><span>Current session</span></div><div class="panel-body">
-    <div class="alarm-row"><span>HMI-OPS-01 · Metropolitan interface loaded</span><strong class="ok-text">INFO</strong></div>
-    <div class="alarm-row"><span>RTU-GW-07 · Firmware state synchronized</span><strong class="ok-text">INFO</strong></div>
-    <div class="alarm-row"><span>EST-SL-01 · Pressure deviation observed</span><strong class="warn-text">MEDIUM</strong></div>
-    <div class="alarm-row"><span>EST-SO-01 · Communications latency observed</span><strong class="warn-text">LOW</strong></div>
-    <div class="alarm-row"><span id="eventlog">No operator actions in current view.</span><strong>SESSION</strong></div>
+  <div class="page-head"><div><div class="breadcrumb">Analysis / Events</div><h1>Operational Event Timeline</h1><p>Actividad reciente de estaciones, controladores, servicios OT y mantenimiento.</p></div><div class="page-tools"><span class="tool-chip">20 RECENT</span><span class="tool-chip">LIVE SESSION</span></div></div>
+  <div class="panel"><div class="panel-head"><h2>Timeline</h2><span>Metropolitan operations</span></div><div class="event-timeline">
+    <div><time>11:52:09</time><b>HMI-OPS-01</b><span>Metropolitan operator interface refresh completed</span><em>INFO</em></div>
+    <div><time>11:46:03</time><b>TK-CP-01</b><span>Reservoir operating threshold advisory created</span><em class="warn-text">HIGH</em></div>
+    <div><time>11:39:12</time><b>PRESS-SL-01</b><span>Pressure deviation detected in Saint Louis header</span><em class="warn-text">MED</em></div>
+    <div><time>11:35:06</time><b>RTU-GW-07</b><span>Diagnostic state synchronized as SERVICE</span><em class="warn-text">SERVICE</em></div>
+    <div><time>11:28:51</time><b>RTU-SL-02</b><span>Communication quality changed to DEGRADED</span><em class="warn-text">LOW</em></div>
+    <div><time>11:21:44</time><b>HIST-01</b><span>Historian health check completed</span><em>INFO</em></div>
+    <div><time>11:14:18</time><b>EWS-01</b><span>Engineering baseline synchronized</span><em>INFO</em></div>
+    <div><time>11:08:44</time><b>RTU-SO-02</b><span>Communication latency threshold observed</span><em class="warn-text">MED</em></div>
+    <div><time>10:58:09</time><b>P-SL-102</b><span>Standby availability test postponed</span><em>LOW</em></div>
+    <div><time>10:54:27</time><b>BRS-01</b><span>Recovery catalog validation queued</span><em>INFO</em></div>
+    <div><time>10:51:27</time><b>FLOW-CP-02</b><span>Flow variance advisory acknowledged</span><em>LOW</em></div>
+    <div><time>10:43:18</time><b>QCS-SO-01</b><span>Quality sample synchronization restored</span><em>INFO</em></div>
+    <div><time>10:31:33</time><b>HIST-01</b><span>Archive backlog returned to baseline</span><em>INFO</em></div>
+    <div><time>10:14:22</time><b>BRS-01</b><span>Night recovery validation scheduled</span><em>INFO</em></div>
+    <div><time>09:57:40</time><b>EWS-01</b><span>Project checksum baseline updated</span><em>INFO</em></div>
+    <div><time>09:41:15</time><b>PLC-SL-02</b><span>Configuration verification completed</span><em>INFO</em></div>
+    <div><time>09:19:08</time><b>PLC-CP-03</b><span>Reservoir auxiliary logic synchronized</span><em>INFO</em></div>
+    <div><time>08:47:31</time><b>OT-AUTO-01</b><span>Maintenance scheduler cycle completed</span><em>INFO</em></div>
+    <div><time>08:11:02</time><b>BRS-01</b><span>Recovery catalog integrity check passed</span><em>INFO</em></div>
+    <div><time>07:48:36</time><b>HIST-01</b><span>Storage health validation passed</span><em>INFO</em></div>
+    <div id="eventlog" class="session-event"><time>SESSION</time><b>HMI</b><span>No operator actions in current view.</span><em>SESSION</em></div>
   </div></div>
+</section>
+
+<section class="view" data-view="statistics">
+  <div class="page-head"><div><div class="breadcrumb">Analysis / Statistics</div><h1>Metropolitan Operational Statistics</h1><p>Indicadores agregados de disponibilidad, eventos, mantenimiento y comportamiento por municipio.</p></div><div class="page-tools"><span class="tool-chip">24 H</span><span class="tool-chip">3 MUNICIPALITIES</span></div></div>
+  <div class="statistics-grid">
+    <section class="panel"><div class="panel-head"><h2>Availability</h2><span>24 hours</span></div><div class="big-stat"><?=$availability?>%</div><div class="stat-lines"><span>PLC 100%</span><span>RTU 98.7%</span><span>OT Services 100%</span></div></section>
+    <section class="panel"><div class="panel-head"><h2>Alarm Distribution</h2><span>By municipality</span></div><div class="horizontal-bars"><div><span>Cerro de San Pablo</span><i style="width:48%"></i><b>2</b></div><div><span>Saint Louis</span><i style="width:72%"></i><b>3</b></div><div><span>Soledade</span><i style="width:48%"></i><b>2</b></div><div><span>Metropolitan</span><i style="width:38%"></i><b>2</b></div></div></section>
+    <section class="panel"><div class="panel-head"><h2>Event Severity</h2><span>Last 24 hours</span></div><div class="donut-stat"><div class="donut"></div><div><span>High 4%</span><span>Medium 16%</span><span>Low 22%</span><span>Info 58%</span></div></div></section>
+    <section class="panel"><div class="panel-head"><h2>Maintenance Activity</h2><span>Last 24 hours</span></div><div class="big-stat">11</div><div class="stat-lines"><span>8 completed</span><span>2 scheduled</span><span>1 active</span></div></section>
+    <section class="panel wide"><div class="panel-head"><h2>Top Event-Producing Assets</h2><span>Operational records</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Asset</th><th>Class</th><th>Events</th><th>Warnings</th><th>Availability</th></tr></thead><tbody><tr><td>RTU-GW-07</td><td>Gateway</td><td>21</td><td>3</td><td>99.4%</td></tr><tr><td>HIST-01</td><td>Historian</td><td>17</td><td>1</td><td>100%</td></tr><tr><td>PLC-SL-02</td><td>PLC</td><td>14</td><td>2</td><td>100%</td></tr><tr><td>RTU-SL-02</td><td>RTU</td><td>12</td><td>4</td><td>96.8%</td></tr><tr><td>BRS-01</td><td>Recovery</td><td>9</td><td>0</td><td>100%</td></tr></tbody></table></div></section>
+    <section class="panel wide"><div class="panel-head"><h2>Municipal Operating Profile</h2><span>Current period</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Municipality</th><th>Supply</th><th>Demand</th><th>Reserve</th><th>Pressure</th><th>Alarms</th><th>Availability</th></tr></thead><tbody><tr><td>Cerro de San Pablo</td><td>910 L/s</td><td>860 L/s</td><td>79%</td><td>4.1 bar</td><td>2</td><td>99.91%</td></tr><tr><td>Saint Louis</td><td>1130 L/s</td><td>1070 L/s</td><td>84%</td><td>4.5 bar</td><td>3</td><td>99.72%</td></tr><tr><td>Soledade</td><td>800 L/s</td><td>680 L/s</td><td>81%</td><td>4.3 bar</td><td>2</td><td>99.83%</td></tr></tbody></table></div></section>
+  </div>
 </section>
 
 <div class="footer-note">Entorno operacional metropolitano simulado con fines académicos. Ninguna acción se comunica con infraestructura física.</div>
