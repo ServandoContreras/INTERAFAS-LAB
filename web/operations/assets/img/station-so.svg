@@ -1,10 +1,88 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620">
-<defs><linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#08151e"/><stop offset="1" stop-color="#21424a"/></linearGradient><filter id="d"><feDropShadow dx="0" dy="10" stdDeviation="10" flood-opacity=".42"/></filter></defs>
-<rect width="1200" height="620" fill="url(#bg)"/><path d="M0 462L220 348L470 390L760 330L1200 410V620H0Z" fill="#102b34"/>
-<g stroke="#5d96aa" stroke-width="4" filter="url(#d)">
-<g transform="translate(90 230)"><rect width="260" height="155" rx="13" fill="#123440"/><polygon points="0,0 130,-65 260,0" fill="#0d2731"/><circle cx="74" cy="112" r="38" fill="#0c2530"/><circle cx="184" cy="112" r="38" fill="#0c2530"/><path d="M42 112H216" stroke="#4cb2d4" stroke-width="11"/></g>
-<g transform="translate(455 190)"><rect width="225" height="200" rx="10" fill="#10313c"/><rect x="26" y="30" width="72" height="138" fill="#183f4c"/><rect x="126" y="30" width="72" height="138" fill="#183f4c"/><g fill="#72d4aa"><circle cx="49" cy="54" r="6"/><circle cx="49" cy="80" r="6"/><circle cx="149" cy="54" r="6"/></g></g>
-<g transform="translate(765 160)"><ellipse cx="118" cy="31" rx="118" ry="31" fill="#1b4755"/><rect y="31" width="236" height="195" fill="#143742"/><ellipse cx="118" cy="226" rx="118" ry="31" fill="#0d2931"/><path d="M33 95H203M33 150H203" stroke="#3a879a" stroke-width="8"/></g>
-<g transform="translate(1020 248)"><rect width="110" height="120" rx="8" fill="#123542"/><path d="M18 36H92M18 68H92M18 100H92" stroke="#4f8da0" stroke-width="7"/></g></g>
-<path d="M350 337H455M680 337H765M1001 337H1020" stroke="#4cb2d4" stroke-width="14"/>
-<g fill="#d9e9ef" font-family="Segoe UI,Arial"><text x="55" y="70" font-size="34" font-weight="700">SOLEDADE · EASTERN DISTRIBUTION WORKS</text><text x="55" y="108" font-size="20" fill="#7da0af">Three-pump booster hall · break-pressure storage · two service sectors</text><text x="135" y="450" font-size="17">BOOSTER HALL</text><text x="492" y="450" font-size="17">PLC / RTU</text><text x="805" y="450" font-size="17">BREAK TANK</text><text x="1018" y="450" font-size="17">2-WAY HEADER</text></g></svg>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1440 900">
+<defs>
+  <linearGradient id="panel" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#d8d8d8"/><stop offset="1" stop-color="#bec2c4"/></linearGradient>
+  <linearGradient id="tank" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#7f888c"/><stop offset=".48" stop-color="#eef1f2"/><stop offset="1" stop-color="#6d767a"/></linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#42d4ff"/><stop offset="1" stop-color="#0b84cb"/></linearGradient>
+  <linearGradient id="pump" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#8d0909"/><stop offset=".5" stop-color="#ff3a28"/><stop offset="1" stop-color="#7d0505"/></linearGradient>
+  <filter id="shadow"><feDropShadow dx="2" dy="3" stdDeviation="2" flood-opacity=".35"/></filter>
+  <style>
+    .t{font-family:Arial,Segoe UI,sans-serif;fill:#111}.h{font-size:18px;font-weight:700}.s{font-size:13px}.xs{font-size:11px}.tag{fill:#fff;stroke:#60666a;stroke-width:1}.panel{fill:#ececec;stroke:#7d8388;stroke-width:2}.green{fill:#20d82b;stroke:#13751b}.red{fill:#ed2024;stroke:#8d1114}.bluepipe{fill:none;stroke:#0878e8;stroke-width:13;stroke-linejoin:round}.greenpipe{fill:none;stroke:#19bf37;stroke-width:12;stroke-linejoin:round}.arrow{fill:#fff}.valve{fill:#e82525;stroke:#6b0808;stroke-width:2}
+  </style>
+</defs>
+<rect width="1440" height="900" fill="url(#panel)"/>
+<rect width="1440" height="62" fill="#10449b"/><rect y="62" width="1440" height="46" fill="#cacaca" stroke="#808080"/>
+<text x="26" y="38" font-family="Arial" font-size="29" font-weight="800" fill="#fff">INTERAFAS · SOLEDADE EASTERN DISTRIBUTION WORKS</text>
+<text x="1040" y="36" font-family="Arial" font-size="15" fill="#fff">LIVE SYNOPTIC · AUTO MODE</text>
+<g class="t" font-size="14" font-weight="700">
+ <rect x="16" y="70" width="120" height="30" fill="#59e36a" stroke="#666"/><text x="39" y="91">SYNOPTIC</text>
+ <rect x="142" y="70" width="105" height="30" fill="#e5e5e5" stroke="#777"/><text x="170" y="91">BOOSTER</text>
+ <rect x="253" y="70" width="132" height="30" fill="#e5e5e5" stroke="#777"/><text x="266" y="91">PRESSURE CTRL</text>
+ <rect x="391" y="70" width="105" height="30" fill="#e5e5e5" stroke="#777"/><text x="414" y="91">STORAGE</text>
+ <rect x="502" y="70" width="105" height="30" fill="#e5e5e5" stroke="#777"/><text x="527" y="91">QUALITY</text>
+ <rect x="613" y="70" width="92" height="30" fill="#e5e5e5" stroke="#777"/><text x="636" y="91">ALARMS</text>
+ <rect x="711" y="70" width="90" height="30" fill="#e5e5e5" stroke="#777"/><text x="735" y="91">EVENTS</text>
+</g>
+
+<!-- intake -->
+<g filter="url(#shadow)">
+ <rect x="20" y="132" width="300" height="235" class="panel"/>
+ <text x="35" y="157" class="t h">EASTERN FEEDER INTAKE</text>
+ <path d="M35 290 Q84 250 133 290 T230 290 T300 290V350H35Z" fill="#178fd3"/>
+ <rect x="50" y="191" width="125" height="72" fill="#aab3b7" stroke="#5f666a"/><path d="M66 197v60M87 197v60M108 197v60M129 197v60M150 197v60" stroke="#4e5559" stroke-width="5"/>
+ <rect x="184" y="184" width="116" height="84" class="tag"/><text x="195" y="205" class="t xs">FLOW 0.92 m³/s</text><text x="195" y="225" class="t xs">TURB 12.6 NTU</text><text x="195" y="245" class="t xs">TEMP 18.4 °C</text>
+ <rect x="47" y="310" width="126" height="35" class="tag"/><text x="60" y="332" class="t xs">INT-SO-101</text>
+</g>
+
+<!-- booster station -->
+<g filter="url(#shadow)">
+ <rect x="342" y="132" width="485" height="310" class="panel"/><text x="360" y="158" class="t h">BOOSTER PUMPING STATION · BPS-SO-01</text>
+ <path d="M376 203H787V332H760" class="bluepipe"/>
+ <g transform="translate(390 214)"><rect x="22" y="0" width="66" height="112" rx="10" fill="url(#pump)" stroke="#630707"/><rect x="3" y="96" width="105" height="55" fill="#858c8f" stroke="#444"/><circle cx="55" cy="-14" r="8" class="green"/><text x="17" y="178" class="t s">P-SO-101</text><rect x="1" y="187" width="108" height="70" class="tag"/><text x="12" y="207" class="t xs">AUTO · 50 Hz</text><text x="12" y="228" class="t xs">0.48 m³/s</text><text x="12" y="249" class="t xs">86 A</text></g>
+ <g transform="translate(545 214)"><rect x="22" y="0" width="66" height="112" rx="10" fill="url(#pump)" stroke="#630707"/><rect x="3" y="96" width="105" height="55" fill="#858c8f" stroke="#444"/><circle cx="55" cy="-14" r="8" class="green"/><text x="17" y="178" class="t s">P-SO-102</text><rect x="1" y="187" width="108" height="70" class="tag"/><text x="12" y="207" class="t xs">AUTO · 50 Hz</text><text x="12" y="228" class="t xs">0.46 m³/s</text><text x="12" y="249" class="t xs">82 A</text></g>
+ <g transform="translate(700 214)"><rect x="22" y="0" width="66" height="112" rx="10" fill="url(#pump)" stroke="#630707"/><rect x="3" y="96" width="105" height="55" fill="#858c8f" stroke="#444"/><circle cx="55" cy="-14" r="8" class="red"/><text x="17" y="178" class="t s">P-SO-103</text><rect x="1" y="187" width="108" height="70" class="tag"/><text x="12" y="207" class="t xs">LOCAL · 0 Hz</text><text x="12" y="228" class="t xs">0.00 m³/s</text><text x="12" y="249" class="t xs">0 A</text></g>
+</g>
+<path d="M320 286H342" class="bluepipe"/>
+
+<!-- pressure control -->
+<g filter="url(#shadow)">
+ <rect x="850" y="132" width="565" height="310" class="panel"/><text x="870" y="158" class="t h">PRESSURE CONTROL STATION · PRV-SO-01</text>
+ <path d="M872 285H1380" class="bluepipe"/>
+ <circle cx="1008" cy="285" r="22" fill="#cfd5d7" stroke="#555" stroke-width="3"/><rect x="995" y="232" width="26" height="36" fill="#27c246" stroke="#166f2d" stroke-width="2"/><text x="966" y="220" class="t s">PCV-201</text>
+ <rect x="1090" y="182" width="165" height="88" class="tag"/><text x="1105" y="204" class="t s" font-weight="700">PIC-201</text><text x="1105" y="225" class="t xs">SP 5.0 bar</text><text x="1105" y="245" class="t xs">PV 5.1 bar · AUTO</text>
+ <rect x="886" y="307" width="112" height="54" class="tag"/><text x="898" y="328" class="t xs">PT-201 8.5 bar</text><text x="898" y="348" class="t xs">FIT-201 1.34</text>
+ <rect x="1260" y="307" width="110" height="54" class="tag"/><text x="1272" y="328" class="t xs">PT-202 5.1 bar</text><text x="1272" y="348" class="t xs">DOWNSTREAM</text>
+</g>
+
+<!-- quality & break tank -->
+<g filter="url(#shadow)">
+ <rect x="20" y="465" width="675" height="250" class="panel"/><text x="38" y="492" class="t h">CHEMICAL DOSING &amp; QUALITY · CHL-SO-01</text>
+ <rect x="50" y="535" width="100" height="142" rx="16" fill="#daddde" stroke="#555" stroke-width="2"/><text x="66" y="565" class="t s">NaOCl</text><text x="62" y="585" class="t xs">LEVEL 72%</text><circle cx="100" cy="620" r="9" class="green"/>
+ <rect x="180" y="525" width="160" height="110" class="tag"/><text x="195" y="548" class="t s" font-weight="700">CL-201</text><text x="195" y="571" class="t xs">SET 1.0 mg/L</text><text x="195" y="592" class="t xs">PV 1.02 mg/L</text><text x="195" y="614" class="t xs">AUTO</text>
+ <path d="M150 604H475" class="bluepipe"/>
+ <rect x="375" y="525" width="270" height="145" class="tag"/><text x="392" y="548" class="t s" font-weight="700">WATER QUALITY AFTER CHLORINATION</text><text x="392" y="575" class="t xs">pH 7.4</text><text x="392" y="598" class="t xs">Cl Res. 1.02 mg/L</text><text x="392" y="621" class="t xs">Turbidity 0.32 NTU</text><text x="392" y="644" class="t xs">Temp. 17.8 °C</text>
+</g>
+<g filter="url(#shadow)">
+ <rect x="720" y="465" width="350" height="250" class="panel"/><text x="738" y="492" class="t h">BREAK-PRESSURE STORAGE</text>
+ <ellipse cx="895" cy="545" rx="112" ry="25" fill="url(#tank)" stroke="#444" stroke-width="3"/><rect x="783" y="545" width="224" height="120" fill="url(#tank)" stroke="#444" stroke-width="3"/><ellipse cx="895" cy="665" rx="112" ry="25" fill="#717a7f" stroke="#444" stroke-width="3"/>
+ <rect x="802" y="595" width="186" height="55" fill="url(#water)"/><text x="854" y="578" class="t h">RVT-SO-01</text><rect x="845" y="608" width="100" height="44" class="tag"/><text x="860" y="628" class="t s">LEVEL 62%</text><text x="868" y="646" class="t xs">6.20 m</text>
+</g>
+<path d="M695 604H720" class="bluepipe"/>
+
+<!-- service sectors -->
+<g filter="url(#shadow)">
+ <rect x="1095" y="465" width="320" height="250" class="panel"/><text x="1115" y="492" class="t h">DISTRIBUTION SECTORS</text>
+ <rect x="1115" y="515" width="280" height="80" fill="#e7eeee" stroke="#4f7d7e" stroke-width="2"/><text x="1130" y="538" class="t s" font-weight="700">ZONE 1 · NORTH / INDUSTRIAL</text><path d="M1130 565H1370" class="greenpipe"/><rect x="1226" y="546" width="20" height="38" class="valve"/><text x="1260" y="559" class="t xs">0.76 m³/s · 4.8 bar</text>
+ <rect x="1115" y="610" width="280" height="80" fill="#e7eeee" stroke="#4f7d7e" stroke-width="2"/><text x="1130" y="633" class="t s" font-weight="700">ZONE 2 · SOUTH / RESIDENTIAL</text><path d="M1130 660H1370" class="greenpipe"/><rect x="1226" y="641" width="20" height="38" class="valve"/><text x="1260" y="654" class="t xs">0.52 m³/s · 4.6 bar</text>
+</g>
+<path d="M1070 604H1095" class="greenpipe"/>
+
+<!-- status tables -->
+<g filter="url(#shadow)">
+ <rect x="20" y="738" width="1050" height="92" class="panel"/><text x="38" y="762" class="t s" font-weight="700">PLANT OVERVIEW</text>
+ <text x="38" y="786" class="t xs">INTAKE 0.92 m³/s · BOOSTED 1.34 m³/s · DISTRIBUTED 1.28 m³/s · TANK 62% · DOWNSTREAM 4.8 bar</text>
+ <text x="38" y="810" class="t xs">P-SO-101 RUN/AUTO · P-SO-102 RUN/AUTO · P-SO-103 STOP/LOCAL · PLC/RTU COMMUNICATIONS OK</text>
+</g>
+<rect x="1095" y="738" width="320" height="92" class="tag"/><text x="1114" y="762" class="t s" font-weight="700">KEY MEASUREMENTS</text><text x="1114" y="786" class="t xs">PT-201 8.5 bar · PT-202 5.1 bar</text><text x="1114" y="810" class="t xs">FIT-401 0.76 · FIT-402 0.52 m³/s</text>
+
+<rect x="0" y="846" width="1440" height="54" fill="#111"/><rect x="10" y="852" width="150" height="40" fill="#e41f26"/><text x="23" y="873" font-family="Arial" font-size="15" font-weight="700" fill="#fff">1 ACTIVE ALARM</text><text x="182" y="870" font-family="Consolas,monospace" font-size="13" fill="#ff4444">P-SO-103 BOOSTER PUMP 3 · FAULT - NO FEEDBACK</text><text x="182" y="889" font-family="Consolas,monospace" font-size="13" fill="#ffb23a">PT-SO-401 NORTH ZONE PRESSURE · LOW PRESSURE</text>
+</svg>
