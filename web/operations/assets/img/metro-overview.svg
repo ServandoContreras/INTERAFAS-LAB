@@ -1,31 +1,57 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
 <defs>
-<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07131d"/><stop offset="1" stop-color="#0f2635"/></linearGradient>
-<linearGradient id="water" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#285d78"/><stop offset="1" stop-color="#4aa8c8"/></linearGradient>
-<filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+  <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1"><stop stop-color="#07121a"/><stop offset="1" stop-color="#102d3b"/></linearGradient>
+  <linearGradient id="ground" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0a1b25"/><stop offset="1" stop-color="#17303d"/></linearGradient>
+  <linearGradient id="water" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#1f6684"/><stop offset=".5" stop-color="#4db6d7"/><stop offset="1" stop-color="#27708e"/></linearGradient>
+  <linearGradient id="glass" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#173c4d"/><stop offset="1" stop-color="#0d202b"/></linearGradient>
+  <filter id="shadow" x="-30%" y="-30%" width="160%" height="160%"><feDropShadow dx="0" dy="12" stdDeviation="14" flood-opacity=".45"/></filter>
+  <filter id="glow"><feGaussianBlur stdDeviation="4" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
 </defs>
-<rect width="1600" height="900" fill="url(#bg)"/>
-<g opacity=".18" stroke="#3f7389" stroke-width="1">
-<path d="M0 100H1600M0 200H1600M0 300H1600M0 400H1600M0 500H1600M0 600H1600M0 700H1600M0 800H1600"/>
-<path d="M100 0V900M200 0V900M300 0V900M400 0V900M500 0V900M600 0V900M700 0V900M800 0V900M900 0V900M1000 0V900M1100 0V900M1200 0V900M1300 0V900M1400 0V900M1500 0V900"/>
+<rect width="1600" height="900" fill="url(#sky)"/>
+<path d="M0 590 L280 430 L575 530 L830 395 L1100 485 L1600 330 V900 H0Z" fill="url(#ground)"/>
+<g opacity=".22" fill="#1c4353">
+  <rect x="70" y="255" width="55" height="190"/><rect x="135" y="315" width="38" height="130"/><rect x="185" y="225" width="72" height="220"/><rect x="269" y="290" width="48" height="155"/>
+  <rect x="1225" y="185" width="55" height="190"/><rect x="1290" y="245" width="38" height="130"/><rect x="1340" y="155" width="72" height="220"/><rect x="1424" y="220" width="48" height="155"/>
 </g>
-<path d="M120 520 C310 340 510 380 690 430 S1070 520 1480 320" fill="none" stroke="url(#water)" stroke-width="34" opacity=".75"/>
-<path d="M240 180 C420 280 510 300 690 430M690 430 C820 620 1030 700 1280 730M690 430 C880 260 1080 210 1370 200" fill="none" stroke="#376c82" stroke-width="18" opacity=".75"/>
-<g fill="#102b3a" stroke="#57a7c4" stroke-width="5">
-<rect x="630" y="365" width="170" height="115" rx="16"/>
-<circle cx="290" cy="485" r="58"/><circle cx="1090" cy="490" r="58"/><circle cx="1340" cy="270" r="58"/>
-<rect x="190" y="135" width="150" height="90" rx="14"/><rect x="1180" y="690" width="150" height="90" rx="14"/>
+<g opacity=".28" stroke="#2b5264" stroke-width="1"><path d="M0 680H1600M0 760H1600M0 840H1600"/><path d="M160 560V900M400 500V900M640 470V900M880 430V900M1120 400V900M1360 360V900"/></g>
+
+<!-- metropolitan trunk -->
+<path d="M115 705 C300 655 420 630 580 612 S900 580 1090 530 S1340 448 1510 420" fill="none" stroke="#123747" stroke-width="60" opacity=".75"/>
+<path d="M115 705 C300 655 420 630 580 612 S900 580 1090 530 S1340 448 1510 420" fill="none" stroke="url(#water)" stroke-width="18"/>
+<path d="M430 642 C410 540 420 470 490 420M805 598 C820 510 845 460 900 420M1180 505 C1225 440 1270 390 1345 350" fill="none" stroke="#2e7591" stroke-width="12"/>
+
+<!-- central plant -->
+<g transform="translate(655 320)" filter="url(#shadow)">
+  <polygon points="0,145 190,55 380,145 190,235" fill="#0b1d27" stroke="#315a6c" stroke-width="3"/>
+  <polygon points="65,145 190,86 310,145 190,202" fill="#123444" stroke="#4a8498" stroke-width="3"/>
+  <rect x="135" y="43" width="110" height="84" rx="8" fill="url(#glass)" stroke="#4f8fa7" stroke-width="3"/>
+  <rect x="155" y="60" width="26" height="20" fill="#3e8da9"/><rect x="194" y="60" width="26" height="20" fill="#3e8da9"/>
+  <circle cx="78" cy="156" r="38" fill="#102936" stroke="#59a7c2" stroke-width="4"/><circle cx="302" cy="156" r="38" fill="#102936" stroke="#59a7c2" stroke-width="4"/>
+  <path d="M78 118V93H120M302 118V93H260" fill="none" stroke="#57a4bf" stroke-width="8"/>
+  <text x="190" y="258" fill="#dcecf2" text-anchor="middle" font-size="24" font-family="Segoe UI,Arial" font-weight="700">PMN-CENTRAL</text>
 </g>
-<g fill="#d8edf5" font-family="Segoe UI,Arial" text-anchor="middle">
-<text x="715" y="410" font-size="28" font-weight="700">PMN-CENTRAL</text><text x="715" y="442" font-size="18" fill="#7fc8df">Metropolitan Regulation</text>
-<text x="290" y="480" font-size="22" font-weight="700">CERRO</text><text x="290" y="506" font-size="16">SAN PABLO</text>
-<text x="1090" y="485" font-size="22" font-weight="700">SAINT LOUIS</text>
-<text x="1340" y="265" font-size="22" font-weight="700">SOLEDADE</text>
-<text x="265" y="180" font-size="20" font-weight="700">TQ-METRO-01</text><text x="1255" y="740" font-size="20" font-weight="700">RTU-GW-07</text>
+
+<!-- reservoirs -->
+<g transform="translate(250 405)" filter="url(#shadow)">
+  <ellipse cx="0" cy="0" rx="94" ry="36" fill="#173847" stroke="#5aa1b9" stroke-width="4"/><rect x="-94" y="0" width="188" height="84" fill="#11303e" stroke="#5aa1b9" stroke-width="4"/><ellipse cx="0" cy="84" rx="94" ry="36" fill="#0c2430" stroke="#5aa1b9" stroke-width="4"/><path d="M-70 35H70" stroke="#3f89a5" stroke-width="6"/><text x="0" y="140" fill="#cfe2e9" text-anchor="middle" font-size="18" font-family="Segoe UI,Arial">TQ-METRO-01</text>
 </g>
-<g fill="#72d4aa" filter="url(#glow)"><circle cx="290" cy="485" r="8"/><circle cx="1090" cy="490" r="8"/><circle cx="1340" cy="270" r="8"/><circle cx="715" cy="423" r="8"/></g>
-<g fill="#6f93a4" font-family="Segoe UI,Arial" font-size="15">
-<text x="88" y="850">METROPOLITAN PRIMARY DISTRIBUTION · SIMULATED OT OPERATIONAL VIEW</text>
-<text x="1180" y="850">OPS-NET-20</text>
+<g transform="translate(1280 315)" filter="url(#shadow)">
+  <ellipse cx="0" cy="0" rx="76" ry="30" fill="#173847" stroke="#5aa1b9" stroke-width="4"/><rect x="-76" y="0" width="152" height="70" fill="#11303e" stroke="#5aa1b9" stroke-width="4"/><ellipse cx="0" cy="70" rx="76" ry="30" fill="#0c2430" stroke="#5aa1b9" stroke-width="4"/>
 </g>
+
+<!-- satellite stations -->
+<g font-family="Segoe UI,Arial" filter="url(#shadow)">
+  <g transform="translate(300 650)"><rect width="220" height="92" rx="12" fill="#0d2633" stroke="#47859d" stroke-width="3"/><rect x="18" y="18" width="74" height="56" rx="6" fill="#1a4859"/><circle cx="150" cy="46" r="22" fill="#12313e" stroke="#58a4bd" stroke-width="4"/><text x="110" y="116" text-anchor="middle" fill="#d8ebf2" font-size="20" font-weight="700">CERRO DE SAN PABLO</text></g>
+  <g transform="translate(825 585)"><rect width="220" height="92" rx="12" fill="#0d2633" stroke="#47859d" stroke-width="3"/><rect x="18" y="18" width="74" height="56" rx="6" fill="#1a4859"/><circle cx="150" cy="46" r="22" fill="#12313e" stroke="#58a4bd" stroke-width="4"/><text x="110" y="116" text-anchor="middle" fill="#d8ebf2" font-size="20" font-weight="700">SAINT LOUIS</text></g>
+  <g transform="translate(1260 470)"><rect width="220" height="92" rx="12" fill="#0d2633" stroke="#47859d" stroke-width="3"/><rect x="18" y="18" width="74" height="56" rx="6" fill="#1a4859"/><circle cx="150" cy="46" r="22" fill="#12313e" stroke="#58a4bd" stroke-width="4"/><text x="110" y="116" text-anchor="middle" fill="#d8ebf2" font-size="20" font-weight="700">SOLEDADE</text></g>
+</g>
+
+<!-- OT edge -->
+<g transform="translate(1210 700)" filter="url(#shadow)">
+  <rect width="250" height="94" rx="10" fill="#0d1f2a" stroke="#8a7343" stroke-width="3"/><rect x="20" y="18" width="56" height="58" fill="#173c4c"/><g fill="#72d4aa"><circle cx="35" cy="34" r="5"/><circle cx="35" cy="50" r="5"/></g><text x="96" y="40" fill="#dcecf2" font-size="18" font-family="Segoe UI,Arial" font-weight="700">RTU-GW-07</text><text x="96" y="64" fill="#8ba6b2" font-size="14" font-family="Segoe UI,Arial">OT Edge / Service</text>
+</g>
+
+<g fill="#72d4aa" filter="url(#glow)"><circle cx="410" cy="650" r="7"/><circle cx="935" cy="585" r="7"/><circle cx="1370" cy="470" r="7"/><circle cx="845" cy="465" r="7"/></g>
+<text x="60" y="70" fill="#d7e9f0" font-family="Segoe UI,Arial" font-weight="700" font-size="30">METROPOLITAN WATER OPERATIONS</text>
+<text x="60" y="105" fill="#688a9a" font-family="Segoe UI,Arial" font-size="16">12 stations · 18 PLC · 15 RTU · 10.12M people served · simulated digital twin</text>
 </svg>
