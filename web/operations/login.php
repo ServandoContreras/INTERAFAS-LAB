@@ -54,12 +54,12 @@ button{width:100%;margin-top:20px;border:0;border-radius:10px;padding:12px;backg
 <h1>Centro de Operaciones</h1>
 <p class="muted">Acceso exclusivo para personal de operación autorizado.</p>
 <?php if($error):?><div class="error"><?=htmlspecialchars($error)?></div><?php endif;?>
-<form method="post">
+<form method="post" data-ops-login>
 <label for="username">Usuario operacional</label>
 <input id="username" name="username" autocomplete="username" required>
 <label for="password">Contraseña</label>
 <input id="password" name="password" type="password" autocomplete="current-password" required>
 <button type="submit">Ingresar</button>
 </form>
-<div class="scope">El acceso requiere procedencia de la red operacional y una identidad activa del Centro de Operaciones.</div>
+<div class="scope">El acceso requiere procedencia de la red operacional y una identidad activa del Centro de Operaciones.<br>Hora de estación: <span data-ops-clock>--:--:--</span></div>
 </div><script src="/operations/assets/ops-client.php" defer></script></body></html>
