@@ -4,20 +4,91 @@ require __DIR__.'/common.php';
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 header('X-INTERAFAS-Gateway: operations-bridge');
+header('X-INTERAFAS-Access-Policy: internal-network');
+
+$remote=(string)($_SERVER['REMOTE_ADDR']??'');
+$forwarded=trim((string)($_SERVER['HTTP_X_FORWARDED_FOR']??''));
+$claimed=$forwarded!=='' ? trim(explode(',',$forwarded)[0]) : $remote;
+
+$internal=in_array($claimed,['127.0.0.1','::1'],true);
+
+if(!$internal){
+    lab_event(
+        'OPERATIONS_GATEWAY_PROBE',
+        'Consulta al gateway operacional restringido',
+        '/operations/gateway.php',
+        [
+            'challenge'=>16,
+            'gateway'=>'operations-bridge',
+            'result'=>'restricted',
+            'remote_addr'=>$remote,
+            'claimed_source'=>$claimed,
+            'source_header'=>$forwarded!==''?'X-Forwarded-For':'REMOTE_ADDR'
+        ],
+        'interafas-web',
+        'notice',
+        8
+    );
+
+    http_response_code(403);
+    echo json_encode([
+        'ok'=>false,
+        'error'=>'restricted-gateway',
+        'message'=>'El gateway operacional sólo acepta solicitudes procedentes de la red interna.',
+        'policy'=>[
+            'required_zone'=>'internal',
+            'source_validation'=>'proxy-client-address'
+        ]
+    ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+    exit;
+}
+
+$state=ot_call('/state');
+
+if(empty($state) || isset($state['error'])){
+    http_response_code(502);
+    echo json_encode(['ok'=>false,'error'=>'operational-upstream-unavailable'],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
+    exit;
+}
+
+header('X-INTERAFAS-Boundary: crossed');
+header('X-INTERAFAS-Validation: UPSLP_CNOIV-BEYOND-THE-WEB-16');
 
 lab_event(
-    'OPERATIONS_GATEWAY_PROBE',
-    'Consulta al gateway operacional restringido',
+    'VULN16_TRUSTED_PROXY_BYPASS',
+    'Gateway operacional aceptó origen declarado por el cliente',
     '/operations/gateway.php',
-    ['gateway'=>'operations-bridge','result'=>'restricted'],
+    [
+        'challenge'=>16,
+        'remote_addr'=>$remote,
+        'claimed_source'=>$claimed,
+        'trusted_header'=>'X-Forwarded-For',
+        'upstream'=>'ot-sim',
+        'target'=>'RTU-GW-07'
+    ],
     'interafas-web',
-    'notice',
-    8
+    'warning',
+    0
 );
 
-http_response_code(403);
 echo json_encode([
-    'ok'=>false,
-    'error'=>'restricted-gateway',
-    'message'=>'El gateway operacional requiere autorización adicional.'
+    'ok'=>true,
+    'gateway'=>'operations-bridge',
+    'zone'=>'operational',
+    'access'=>'read-only',
+    'source'=>[
+        'observed_remote'=>$remote,
+        'trusted_client'=>$claimed
+    ],
+    'snapshot'=>[
+        'plant'=>$state['plant']??null,
+        'tank'=>$state['tank']??null,
+        'flow'=>$state['flow']??null,
+        'pressure'=>$state['pressure']??null,
+        'quality'=>$state['quality']??null,
+        'alarms'=>$state['alarms']??[]
+    ],
+    'links'=>[
+        'monitoring'=>'/operations/'
+    ]
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
