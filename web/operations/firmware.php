@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/common.php'; require_ops_bridge_context(); $ctx=require_lab_attempt(); $result=null; $error=null;
+require __DIR__.'/common.php'; require_operational_network(); $ops=require_operational_auth(); $result=null; $error=null;
 lab_event('OT_FIRMWARE_PANEL','Acceso al administrador de firmware','RTU-GW-07',[],'ot-hmi','notice',8);
 $current=ot_call('/firmware');
 if($_SERVER['REQUEST_METHOD']==='POST'){
