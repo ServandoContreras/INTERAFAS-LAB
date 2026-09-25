@@ -20,6 +20,6 @@ ON DUPLICATE KEY UPDATE
   active=VALUES(active);
 
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
-(17,1,'VULN 16 revela únicamente la puerta de entrada legítima del Centro de Operaciones. Ábrela con la misma condición de red interna y revisa qué recursos JavaScript carga la página antes de intentar adivinar otras rutas.'),
-(17,2,'El cliente web compartido contiene la configuración que utiliza el HMI para refrescar datos de proceso. Localiza el endpoint de telemetría en ese recurso y compara su respuesta sin sesión operacional con la protección aplicada a /operations/.')
+(17,1,'VULN 16 revela únicamente la puerta de entrada legítima del Centro de Operaciones. Ábrela con la misma condición de red operacional y utiliza las herramientas de desarrollador para inventariar los recursos que carga la página; evita adivinar URLs.'),
+(17,2,'Inspecciona los scripts cargados por el acceso operacional y busca patrones habituales de aplicaciones dinámicas como fetch, endpoint, api o rutas /operations/. Identifica qué servicio utilizaría el HMI para actualizar datos sin recargar toda la interfaz.'),(17,3,'Conserva la misma condición de red operacional pero no inicies sesión como operador. Compara la respuesta de /operations/ con la del servicio descubierto: si uno exige identidad y el otro entrega datos de proceso, revisa los encabezados de ambos y documenta la diferencia.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
