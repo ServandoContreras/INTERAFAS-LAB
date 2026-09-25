@@ -1668,3 +1668,149 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   .municipal-process-sl .overview-process-scene,
   .municipal-process-so .overview-process-scene{transform:scale(.505)!important}
 }
+
+
+/* V14 — Saint Louis metropolitan process refinement */
+.city-process-sl .sl-suction-header,
+.city-process-sl .sl-discharge-header{
+  position:absolute;z-index:4;
+  height:28px;
+  padding:5px 8px;
+  background:#071820;
+  border:1px solid #355667;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace;
+  color:#cde1e9;
+  display:flex;align-items:center;justify-content:space-between;gap:8px
+}
+.city-process-sl .sl-suction-header{left:21.5%;top:47%;width:24%}
+.city-process-sl .sl-discharge-header{left:47.5%;top:47%;width:20%}
+.city-process-sl .sl-suction-header span{color:#58eaff}
+.city-process-sl .sl-discharge-header span{color:#72d4aa}
+
+.city-process-sl .sl-filter-bank{
+  position:absolute;z-index:5;
+  left:50.8%;top:17%;
+  width:150px;
+  min-height:132px;
+  padding:8px;
+  background:#091922;
+  border:1px solid #34596a;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-filter-bank>b{
+  display:block;
+  margin-bottom:6px;
+  color:#d9e9ef;
+  font-size:8px;
+  letter-spacing:.06em
+}
+.city-process-sl .sl-filter-bank>div{
+  display:grid;
+  grid-template-columns:1fr 9px auto;
+  gap:6px;
+  align-items:center;
+  padding:5px 0;
+  border-top:1px solid #183746;
+  font-size:7px
+}
+.city-process-sl .sl-filter-bank span{color:#92abb7}
+.city-process-sl .sl-filter-bank small{color:#d5e1e6}
+.city-process-sl .sl-filter-bank i{
+  width:7px;height:7px;border-radius:50%;display:block
+}
+.city-process-sl .sl-filter-bank i.ok{background:#55df86;box-shadow:0 0 6px rgba(85,223,134,.5)}
+.city-process-sl .sl-filter-bank i.warn{background:#ffd15b;box-shadow:0 0 6px rgba(255,209,91,.45)}
+
+.city-process-sl .sl-chem{
+  position:absolute;z-index:5;
+  left:62%;top:22%;
+  width:72px;height:84px;
+  padding:8px 6px;
+  text-align:center;
+  background:#0c1d25;
+  border:1px solid #546d77;
+  border-radius:18px 18px 5px 5px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-chem b{display:block;color:#dcebf1;font-size:9px}
+.city-process-sl .sl-chem span{display:block;margin-top:6px;color:#8da6b2;font-size:6px}
+.city-process-sl .sl-chem strong{
+  display:inline-block;margin-top:8px;padding:3px 5px;
+  background:#071018;border:1px solid #28513d;color:#6fea9a;font-size:7px
+}
+
+/* Treatment area becomes a train rather than stacked cards */
+.city-process-sl .sl-qcs{
+  left:57.5%!important;
+  top:58%!important;
+  width:128px!important
+}
+.city-process-sl .sl-header{
+  left:66%!important;
+  top:47%!important;
+  width:102px!important;
+  min-height:78px
+}
+.city-process-sl .sl-flow{left:64.5%!important;top:39%!important}
+
+/* Pump bank gains true suction/discharge relationship */
+.city-process-sl .sl-p1{left:25%!important;top:21%!important}
+.city-process-sl .sl-p2{left:36%!important;top:21%!important}
+.city-process-sl .sl-p3{left:25%!important;top:61%!important}
+.city-process-sl .sl-p4{left:36%!important;top:61%!important}
+
+.city-process-sl:before{
+  left:22.5%!important;
+  top:49%!important;
+  width:25%!important;
+  height:9px!important;
+  background:#234f66!important
+}
+.city-process-sl:after{
+  content:"";
+  position:absolute;
+  left:47%;top:49%;
+  width:21%;
+  height:9px;
+  background:#2d657e;
+  border:1px solid #173f52;
+  z-index:1
+}
+
+/* Reservoir outlets feed one suction manifold */
+.city-process-sl .sl-r1{left:18.5%!important;top:34%!important;width:5.5%!important}
+.city-process-sl .sl-r2{left:18.5%!important;top:67%!important;width:5.5%!important}
+.city-process-sl .sl-r3{left:45%!important;top:31%!important;width:6%!important}
+.city-process-sl .sl-r4{left:45%!important;top:71%!important;width:6%!important}
+.city-process-sl .sl-r5{left:67%!important;top:50%!important;width:9%!important}
+.city-process-sl .sl-r6{left:75%!important;top:26%!important;height:58%!important}
+
+/* Valve positions now follow actual hydraulic branches */
+.city-process-sl .sl-v-suc-a{left:20.5%;top:29%}
+.city-process-sl .sl-v-suc-b{left:20.5%;top:62%}
+.city-process-sl .sl-v-a{left:74%;top:20%!important}
+.city-process-sl .sl-v-b{left:74%;top:46%!important}
+.city-process-sl .sl-v-c{left:74%;top:72%!important}
+
+/* Distribution boxes carry direct field readings */
+.city-process-sl .cp-zone small,
+.city-process-sl .cp-zone em{
+  display:block;
+  margin-top:5px;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace;
+  font-style:normal
+}
+.city-process-sl .cp-zone small{color:#58eaff}
+.city-process-sl .cp-zone em{color:#74dba8}
+
+/* Clean up duplicate tags around Saint Louis */
+.city-process-sl .sl-tag-flow{left:9%!important;top:42%!important}
+.city-process-sl .sl-tag-p1{left:38%!important;top:11%!important}
+.city-process-sl .sl-tag-q{left:56%!important;top:42%!important}
+.city-process-sl .sl-status{right:2.5%!important;bottom:1.5%!important}
+.city-process-sl .sl-mcc{left:25%!important;bottom:1.5%!important}
+
+/* Overview keeps the same process, but hide no equipment; only reduce label weight slightly */
+.overview-process-scene.city-sl .sl-filter-bank>div{padding:4px 0}
+.overview-process-scene.city-sl .sl-suction-header,
+.overview-process-scene.city-sl .sl-discharge-header{font-size:6px}
