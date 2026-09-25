@@ -83,6 +83,7 @@ echo json_encode([
     'upstream_status'=>'reachable',
     'links'=>[
         'operator_login'=>'/operations/login.php',
-        'monitoring'=>'/operations/monitor.php'
+        'operator_console'=>'/operations/',
+        'telemetry_api'=>'/operations/telemetry.php'
     ]
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
