@@ -763,3 +763,86 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   .municipal-card:nth-child(1),.municipal-card:nth-child(2),.municipal-card:nth-child(3){min-height:250px}
   .municipal-card:nth-child(1) img,.municipal-card:nth-child(2) img,.municipal-card:nth-child(3) img{height:250px}
 }
+
+
+/* V7 — truly independent municipal process scenes */
+.v6-flow-pulse,.pulse-a,.pulse-b,.pulse-c{display:none!important;animation:none!important}
+
+.city-process{position:absolute;inset:0;min-height:100%;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+.cp-section{position:absolute;border:1px dashed rgba(83,130,151,.42);background:rgba(10,28,39,.18);z-index:0}
+.cp-section>span{position:absolute;left:8px;top:6px;font-size:7px;letter-spacing:.12em;color:#58798a}
+.cp-route{position:absolute;background:#3f7489;z-index:1;overflow:hidden}
+.cp-route.active:after{content:"";position:absolute;inset:0;background:repeating-linear-gradient(90deg,transparent 0 24px,rgba(112,225,255,.36) 24px 34px,transparent 34px 58px);animation:pipeFlow 1.5s linear infinite}
+.cp-route[style*="width:5px"].active:after{background:repeating-linear-gradient(180deg,transparent 0 24px,rgba(112,225,255,.36) 24px 34px,transparent 34px 58px);animation:pipeFlowV 1.5s linear infinite}
+
+.cp-tank,.cp-source,.cp-header,.cp-control,.cp-skid,.cp-zone,.cp-meter,.cp-overflow,.cp-pump,.cp-tower{position:absolute;z-index:4;background:#0d202b;border:1px solid #31596d;color:#dcebf1;box-shadow:0 8px 22px rgba(0,0,0,.18)}
+.cp-tank b,.cp-source b,.cp-header b,.cp-control b,.cp-skid b,.cp-zone b,.cp-meter b,.cp-overflow b,.cp-pump b,.cp-tower b{display:block;font-size:9px}
+.cp-tank span,.cp-source span,.cp-header span,.cp-control span,.cp-skid span,.cp-zone span,.cp-overflow span,.cp-pump span,.cp-tower span{display:block;color:#7897a7;font-size:7px;margin-top:3px}
+.cp-tank strong,.cp-source strong,.cp-header strong,.cp-control strong,.cp-skid strong,.cp-zone strong,.cp-meter strong,.cp-pump strong,.cp-tower strong{display:block;color:#72d4aa;font-size:9px;margin-top:5px}
+.cp-tank{width:112px;height:155px;padding:9px;text-align:center;border-radius:5px 5px 14px 14px}
+.cp-level{height:74px;border:1px solid #34596a;margin:7px 12px;position:relative;overflow:hidden;background:#07141c}
+.cp-level i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(#32b6d9,#176482);transition:height .8s ease}
+.cp-pump{width:105px;height:72px;border-radius:9px;padding:9px 8px 8px 42px}
+.cp-pump>i{position:absolute;left:9px;top:18px;width:27px;height:27px;border-radius:50%;border:4px solid #476f80;border-right-color:#72d4aa}
+.cp-pump.running>i{animation:rotorSpin .85s linear infinite}
+.cp-pump.stopped>i{border-right-color:#7a868c;animation:none}
+.cp-skid{width:132px;padding:10px}
+.cp-skid>div{display:flex;justify-content:space-between;gap:8px;border-top:1px solid #173746;margin-top:6px;padding-top:5px}
+.cp-skid small{color:#7897a7;font-size:7px}
+.cp-header,.cp-control,.cp-source,.cp-zone,.cp-overflow{padding:10px}
+.cp-header{width:145px}
+.cp-control{width:150px}
+.cp-source{width:130px}
+.cp-zone{width:145px;border-color:#397b7f;background:#0c3035}
+.cp-meter{padding:6px 8px;background:#050707;border-color:#7b8d91}
+.cp-overflow{width:130px;border-style:dashed;opacity:.78}
+.cp-tower{width:128px;height:245px;background:transparent;border:0;box-shadow:none;text-align:center}
+.tower-bowl{position:absolute;left:14px;top:10px;width:100px;height:82px;border:3px solid #586b70;border-radius:48% 48% 25% 25%;overflow:hidden;background:#d7dddd}
+.tower-bowl i{position:absolute;left:0;right:0;bottom:0;background:#2b9fc0;transition:height .8s ease}
+.tower-legs:before,.tower-legs:after{content:"";position:absolute;top:90px;width:7px;height:105px;background:#66767b;transform-origin:top}
+.tower-legs:before{left:32px;transform:rotate(9deg)}.tower-legs:after{right:32px;transform:rotate(-9deg)}
+.cp-tower>b{position:absolute;left:0;right:0;top:202px}.cp-tower>span{position:absolute;left:0;right:0;top:218px}.cp-tower>strong{position:absolute;left:0;right:0;top:232px}
+
+/* Saint Louis: four distinct process bands, dual storage, 4-pump bank, 3 distribution zones */
+.city-process-sl .sl-storage{left:2%;top:5%;width:20%;height:88%}
+.city-process-sl .sl-lift{left:24%;top:5%;width:24%;height:88%}
+.city-process-sl .sl-treatment{left:50%;top:5%;width:21%;height:88%}
+.city-process-sl .sl-distribution{left:73%;top:5%;width:25%;height:88%}
+.city-process-sl .sl-tank-a{left:4%;top:22%}.city-process-sl .sl-tank-b{left:11%;top:53%}
+.city-process-sl .sl-p1{left:27%;top:19%}.city-process-sl .sl-p2{left:38%;top:19%}.city-process-sl .sl-p3{left:27%;top:55%}.city-process-sl .sl-p4{left:38%;top:55%}
+.city-process-sl .sl-qcs{left:53%;top:18%}.city-process-sl .sl-header{left:55%;top:57%}.city-process-sl .sl-flow{left:62%;top:46%}
+.city-process-sl .sl-zone-a{right:4%;top:18%}.city-process-sl .sl-zone-b{right:4%;top:45%}.city-process-sl .sl-zone-c{right:4%;top:72%}
+.city-process-sl .sl-r1{left:20%;top:35%;width:7%;height:5px}.city-process-sl .sl-r2{left:20%;top:68%;width:7%;height:5px}
+.city-process-sl .sl-r3{left:47%;top:35%;width:8%;height:5px}.city-process-sl .sl-r4{left:47%;top:68%;width:8%;height:5px}
+.city-process-sl .sl-r5{left:65%;top:50%;width:14%;height:5px}.city-process-sl .sl-r6{left:71%;top:50%;width:5px;height:30%}
+.city-process-sl .sl-branch-a{right:16%;top:28%;width:9%;height:5px}.city-process-sl .sl-branch-b{right:16%;top:55%;width:9%;height:5px}.city-process-sl .sl-branch-c{right:16%;top:82%;width:9%;height:5px}
+
+/* Soledade: linear booster -> PRV -> break tank -> split service */
+.city-process-so .so-intake{left:3%;top:12%;width:31%;height:76%}
+.city-process-so .so-control{left:36%;top:12%;width:18%;height:76%}
+.city-process-so .so-storage{left:56%;top:12%;width:20%;height:76%}
+.city-process-so .so-service{left:78%;top:12%;width:19%;height:76%}
+.city-process-so .so-source{left:5%;top:42%}
+.city-process-so .so-p1{left:18%;top:24%}.city-process-so .so-p2{left:18%;top:46%}.city-process-so .so-p3{left:18%;top:68%}
+.city-process-so .so-prv{left:38%;top:42%}
+.city-process-so .so-break{left:59%;top:32%;height:170px}
+.city-process-so .so-qcs{left:59%;top:67%}
+.city-process-so .so-zone-n{right:3%;top:29%}.city-process-so .so-zone-s{right:3%;top:61%}
+.city-process-so .so-r1{left:15%;top:51%;width:23%;height:5px}.city-process-so .so-r2{left:52%;top:51%;width:8%;height:5px}.city-process-so .so-r3{left:69%;top:51%;width:13%;height:5px}
+.city-process-so .so-up{left:81%;top:36%;width:5px;height:16%}.city-process-so .so-down{left:81%;top:51%;width:5px;height:18%}
+
+/* Cerro de San Pablo: gravity-assisted elevated tank -> compact booster -> chlorination -> single high zone */
+.city-process-cp .cp-storage{left:4%;top:8%;width:26%;height:84%}
+.city-process-cp .cp-booster{left:32%;top:22%;width:25%;height:62%}
+.city-process-cp .cp-disinfection{left:59%;top:22%;width:18%;height:62%}
+.city-process-cp .cp-highzone{left:79%;top:22%;width:17%;height:62%}
+.city-process-cp .cp-tower{left:9%;top:16%}
+.city-process-cp .cp-p1{left:36%;top:35%}.city-process-cp .cp-p2{left:36%;top:60%}
+.city-process-cp .cp-chlor{left:61%;top:40%}.city-process-cp .cp-pressure{left:63%;top:64%}
+.city-process-cp .cp-zone-main{right:3%;top:45%}.city-process-cp .cp-overflow{left:8%;bottom:5%}
+.city-process-cp .cp-r1{left:26%;top:54%;width:11%;height:5px}.city-process-cp .cp-r2{left:47%;top:54%;width:15%;height:5px}.city-process-cp .cp-r3{left:72%;top:54%;width:12%;height:5px}
+.city-process-cp .cp-gravity{left:18%;top:36%;width:5px;height:18%;background:#4d6b76;opacity:.55}
+
+@media(max-width:900px){
+  .city-process{min-width:900px}
+}
