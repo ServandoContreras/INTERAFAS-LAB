@@ -22,20 +22,20 @@ $fw=$state['firmware']??[];
 $canControl=(string)($ops['role']??'')==='operator';
 
 $stations=[
-    ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Primary pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE','img'=>'station-cp.svg','population'=>920000],
-    ['id'=>'EST-CP-02','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Sur','function'=>'Southern pressure regulation','supply'=>610,'demand'=>575,'reserve'=>76,'pressure'=>4.0,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-CP-04','gateway'=>'RTU-CP-03','status'=>'ONLINE','img'=>'station-cp.svg','population'=>640000],
-    ['id'=>'EST-CP-03','city'=>'Cerro de San Pablo','name'=>'Estación Poniente','function'=>'Booster / distribution','supply'=>470,'demand'=>452,'reserve'=>74,'pressure'=>3.9,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-CP-05','gateway'=>'RTU-CP-04','status'=>'ONLINE','img'=>'station-cp.svg','population'=>510000],
-    ['id'=>'EST-CP-04','city'=>'Cerro de San Pablo','name'=>'Estación Valle Alto','function'=>'Reservoir / high zone','supply'=>390,'demand'=>361,'reserve'=>82,'pressure'=>4.4,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-CP-06','gateway'=>'RTU-CP-05','status'=>'ONLINE','img'=>'station-cp.svg','population'=>430000],
+    ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Primary pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE','img'=>'station-cp.svg','population'=>1050000],
+    ['id'=>'EST-CP-02','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Sur','function'=>'Southern pressure regulation','supply'=>610,'demand'=>575,'reserve'=>76,'pressure'=>4.0,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-CP-04','gateway'=>'RTU-CP-03','status'=>'ONLINE','img'=>'station-cp.svg','population'=>720000],
+    ['id'=>'EST-CP-03','city'=>'Cerro de San Pablo','name'=>'Estación Poniente','function'=>'Booster / distribution','supply'=>470,'demand'=>452,'reserve'=>74,'pressure'=>3.9,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-CP-05','gateway'=>'RTU-CP-04','status'=>'ONLINE','img'=>'station-cp.svg','population'=>590000],
+    ['id'=>'EST-CP-04','city'=>'Cerro de San Pablo','name'=>'Estación Valle Alto','function'=>'Reservoir / high zone','supply'=>390,'demand'=>361,'reserve'=>82,'pressure'=>4.4,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-CP-06','gateway'=>'RTU-CP-05','status'=>'ONLINE','img'=>'station-cp.svg','population'=>490000],
 
-    ['id'=>'EST-SL-01','city'=>'Saint Louis','name'=>'Estación Central Saint Louis','function'=>'Metropolitan regulation / distribution','supply'=>1130,'demand'=>1070,'reserve'=>84,'pressure'=>4.5,'quality'=>'NORMAL','alarms'=>3,'controller'=>'PLC-SL-01','gateway'=>'RTU-SL-01','status'=>'ONLINE','img'=>'station-sl.svg','population'=>1180000],
-    ['id'=>'EST-SL-02','city'=>'Saint Louis','name'=>'Estación Industrial','function'=>'Industrial corridor pumping','supply'=>930,'demand'=>890,'reserve'=>78,'pressure'=>4.2,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SL-04','gateway'=>'RTU-SL-03','status'=>'ONLINE','img'=>'station-sl.svg','population'=>910000],
-    ['id'=>'EST-SL-03','city'=>'Saint Louis','name'=>'Estación Oriente','function'=>'Eastern distribution','supply'=>820,'demand'=>765,'reserve'=>80,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-05','gateway'=>'RTU-SL-04','status'=>'ONLINE','img'=>'station-sl.svg','population'=>830000],
-    ['id'=>'EST-SL-04','city'=>'Saint Louis','name'=>'Estación Aeropuerto','function'=>'Booster / strategic corridor','supply'=>540,'demand'=>514,'reserve'=>77,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-06','gateway'=>'RTU-SL-05','status'=>'ONLINE','img'=>'station-sl.svg','population'=>560000],
+    ['id'=>'EST-SL-01','city'=>'Saint Louis','name'=>'Estación Central Saint Louis','function'=>'Metropolitan regulation / distribution','supply'=>1130,'demand'=>1070,'reserve'=>84,'pressure'=>4.5,'quality'=>'NORMAL','alarms'=>3,'controller'=>'PLC-SL-01','gateway'=>'RTU-SL-01','status'=>'ONLINE','img'=>'station-sl.svg','population'=>1370000],
+    ['id'=>'EST-SL-02','city'=>'Saint Louis','name'=>'Estación Industrial','function'=>'Industrial corridor pumping','supply'=>930,'demand'=>890,'reserve'=>78,'pressure'=>4.2,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SL-04','gateway'=>'RTU-SL-03','status'=>'ONLINE','img'=>'station-sl.svg','population'=>1050000],
+    ['id'=>'EST-SL-03','city'=>'Saint Louis','name'=>'Estación Oriente','function'=>'Eastern distribution','supply'=>820,'demand'=>765,'reserve'=>80,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-05','gateway'=>'RTU-SL-04','status'=>'ONLINE','img'=>'station-sl.svg','population'=>880000],
+    ['id'=>'EST-SL-04','city'=>'Saint Louis','name'=>'Estación Aeropuerto','function'=>'Booster / strategic corridor','supply'=>540,'demand'=>514,'reserve'=>77,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-06','gateway'=>'RTU-SL-05','status'=>'ONLINE','img'=>'station-sl.svg','population'=>700000],
 
-    ['id'=>'EST-SO-01','city'=>'Soledade','name'=>'Estación Oriente Soledade','function'=>'Primary pumping / distribution','supply'=>800,'demand'=>680,'reserve'=>81,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SO-01','gateway'=>'RTU-SO-01','status'=>'ONLINE','img'=>'station-so.svg','population'=>860000],
-    ['id'=>'EST-SO-02','city'=>'Soledade','name'=>'Estación Norte','function'=>'Northern pressure regulation','supply'=>690,'demand'=>651,'reserve'=>75,'pressure'=>4.0,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-04','gateway'=>'RTU-SO-03','status'=>'ONLINE','img'=>'station-so.svg','population'=>710000],
-    ['id'=>'EST-SO-03','city'=>'Soledade','name'=>'Estación Valle','function'=>'Reservoir / booster','supply'=>580,'demand'=>541,'reserve'=>83,'pressure'=>4.4,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-05','gateway'=>'RTU-SO-04','status'=>'ONLINE','img'=>'station-so.svg','population'=>620000],
-    ['id'=>'EST-SO-04','city'=>'Soledade','name'=>'Estación Sur','function'=>'Southern distribution','supply'=>510,'demand'=>477,'reserve'=>80,'pressure'=>4.2,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-SO-06','gateway'=>'RTU-SO-05','status'=>'ONLINE','img'=>'station-so.svg','population'=>550000]
+    ['id'=>'EST-SO-01','city'=>'Soledade','name'=>'Estación Oriente Soledade','function'=>'Primary pumping / distribution','supply'=>800,'demand'=>680,'reserve'=>81,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SO-01','gateway'=>'RTU-SO-01','status'=>'ONLINE','img'=>'station-so.svg','population'=>980000],
+    ['id'=>'EST-SO-02','city'=>'Soledade','name'=>'Estación Norte','function'=>'Northern pressure regulation','supply'=>690,'demand'=>651,'reserve'=>75,'pressure'=>4.0,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-04','gateway'=>'RTU-SO-03','status'=>'ONLINE','img'=>'station-so.svg','population'=>850000],
+    ['id'=>'EST-SO-03','city'=>'Soledade','name'=>'Estación Valle','function'=>'Reservoir / booster','supply'=>580,'demand'=>541,'reserve'=>83,'pressure'=>4.4,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-05','gateway'=>'RTU-SO-04','status'=>'ONLINE','img'=>'station-so.svg','population'=>770000],
+    ['id'=>'EST-SO-04','city'=>'Soledade','name'=>'Estación Sur','function'=>'Southern distribution','supply'=>510,'demand'=>477,'reserve'=>80,'pressure'=>4.2,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-SO-06','gateway'=>'RTU-SO-05','status'=>'ONLINE','img'=>'station-so.svg','population'=>670000]
 ];
 
 $assets=[
@@ -189,9 +189,9 @@ $pressureZones=18;
       <div class="panel-head"><h2>Metropolitan Process Network</h2><span>Primary distribution topology</span></div>
       <div class="metro-image-stage">
         <img src="/operations/assets/img/metro-overview.svg" alt="Vista metropolitana de la red de abastecimiento INTERAFAS">
-        <button class="image-hotspot hs-cp" data-station-open="0"><strong>Cerro de San Pablo</strong><span>4 stations · 2.50M served</span><b>2,380 L/s</b></button>
-        <button class="image-hotspot hs-sl" data-station-open="4"><strong>Saint Louis</strong><span>4 stations · 3.48M served</span><b>3,420 L/s</b></button>
-        <button class="image-hotspot hs-so" data-station-open="8"><strong>Soledade</strong><span>4 stations · 2.74M served</span><b>2,580 L/s</b></button>
+        <button class="image-hotspot hs-cp" data-station-open="0"><strong>Cerro de San Pablo</strong><span>4 stations · 2.85M served</span><b>2,380 L/s</b></button>
+        <button class="image-hotspot hs-sl" data-station-open="4"><strong>Saint Louis</strong><span>4 stations · 4.00M served</span><b>3,420 L/s</b></button>
+        <button class="image-hotspot hs-so" data-station-open="8"><strong>Soledade</strong><span>4 stations · 3.27M served</span><b>2,580 L/s</b></button>
         <button class="image-hotspot hs-core" data-view-jump="metropolitan"><strong>PMN-CENTRAL</strong><span>Metropolitan regulation core</span><b>ONLINE</b></button>
         <button class="image-hotspot hs-gw"><strong>RTU-GW-07</strong><span>OT Edge</span><b class="<?=strtoupper((string)($fw['diagnostic']??''))==='SERVICE'?'warn-text':'ok-text'?>"><?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></b></button>
       </div>    </section>
@@ -226,15 +226,15 @@ $pressureZones=18;
   <div class="municipal-image-grid">
     <article class="municipal-card">
       <img src="/operations/assets/img/station-cp.svg" alt="Complejo de bombeo de Cerro de San Pablo">
-      <div class="municipal-overlay"><span>CERRO DE SAN PABLO</span><strong>4 operational stations</strong><small>2.50M population · 2,380 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="0">OPEN OPERATIONS</button></div>
+      <div class="municipal-overlay"><span>CERRO DE SAN PABLO</span><strong>4 operational stations</strong><small>2.85M population · 2,380 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="0">OPEN OPERATIONS</button></div>
     </article>
     <article class="municipal-card">
       <img src="/operations/assets/img/station-sl.svg" alt="Complejo de regulación de Saint Louis">
-      <div class="municipal-overlay"><span>SAINT LOUIS</span><strong>4 operational stations</strong><small>3.48M population · 3,420 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="4">OPEN OPERATIONS</button></div>
+      <div class="municipal-overlay"><span>SAINT LOUIS</span><strong>4 operational stations</strong><small>4.00M population · 3,420 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="4">OPEN OPERATIONS</button></div>
     </article>
     <article class="municipal-card">
       <img src="/operations/assets/img/station-so.svg" alt="Complejo de distribución de Soledade">
-      <div class="municipal-overlay"><span>SOLEDADE</span><strong>4 operational stations</strong><small>2.74M population · 2,580 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="8">OPEN OPERATIONS</button></div>
+      <div class="municipal-overlay"><span>SOLEDADE</span><strong>4 operational stations</strong><small>3.27M population · 2,580 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="8">OPEN OPERATIONS</button></div>
     </article>
   </div>
 </section>
