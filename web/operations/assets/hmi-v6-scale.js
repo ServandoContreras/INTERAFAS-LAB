@@ -218,7 +218,7 @@ function processTemplates(){
 }
 
 function renderCityProcess(city){
-  const scene=document.querySelector('.pid-scene');
+  const scene=document.querySelector('.view[data-view="process"] .pid-scene');
   if(!scene)return;
   const templates=processTemplates();
   const p=cityProfiles[city]||cityProfiles['Saint Louis'];
