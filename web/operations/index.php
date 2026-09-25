@@ -760,7 +760,7 @@ $pressureZones=18;
 <script src="/operations/assets/ops-client.php"></script>
 <script>window.INTERAFAS_STATIONS=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
 <script src="/operations/assets/hmi-v4.js"></script>
-<script src="/operations/assets/hmi-v5-live.js"></script>
+<script src="/operations/assets/hmi-v5-live.js"></script>\n<script src="/operations/assets/hmi-v6-scale.js"></script>
 <script>
 const stations=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;
 
