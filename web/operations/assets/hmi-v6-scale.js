@@ -369,53 +369,6 @@ function animationPulse(){
 function volumePulse(){ updateVolumeCounters(); }
 function statisticsPulse(){ dynamicStatistics(); }
 
-function updateOverviewTelemetry(){
-  const values={
-    'cp-level':(77.5+Math.sin(state.tick/17)*1.4).toFixed(1)+' %',
-    'cp-pressure':(4.38+Math.sin(state.tick/11)*.08).toFixed(2)+' bar',
-    'cp-cl':(0.71+Math.sin(state.tick/15)*.025).toFixed(2)+' mg/L',
-    'cp-flow':Math.round(2360+Math.sin(state.tick/9)*45).toLocaleString('en-US')+' L/s',
-
-    'sl-intake':(3.45+Math.sin(state.tick/10)*.08).toFixed(2)+' m³/s',
-    'sl-turb':(0.33+Math.sin(state.tick/14)*.035).toFixed(2)+' NTU',
-    'sl-l1':Math.round(68+Math.sin(state.tick/19)*2)+'%',
-    'sl-l2':Math.round(51+Math.sin(state.tick/23)*2)+'%',
-    'sl-cl':(1.04+Math.sin(state.tick/15)*.04).toFixed(2)+' mg/L',
-    'sl-ph':(7.39+Math.sin(state.tick/18)*.04).toFixed(2)+' pH',
-    'sl-pressure':(5.18+Math.sin(state.tick/12)*.12).toFixed(2)+' bar',
-    'sl-flow':(3.34+Math.sin(state.tick/9)*.10).toFixed(2)+' m³/s',
-    'sl-za':(1.28+Math.sin(state.tick/8)*.04).toFixed(2)+' m³/s',
-    'sl-zb':(1.15+Math.sin(state.tick/11)*.035).toFixed(2)+' m³/s',
-    'sl-zc':(0.93+Math.sin(state.tick/13)*.03).toFixed(2)+' m³/s',
-    'sl-prod':(3.50+Math.sin(state.tick/10)*.09).toFixed(2)+' m³/s',
-    'sl-pressure2':(5.18+Math.sin(state.tick/12)*.12).toFixed(2)+' bar',
-
-    'so-intake':(0.92+Math.sin(state.tick/9)*.025).toFixed(2)+' m³/s',
-    'so-prv':'PV '+(5.10+Math.sin(state.tick/12)*.08).toFixed(2)+' bar',
-    'so-cl':(1.02+Math.sin(state.tick/16)*.03).toFixed(2)+' mg/L',
-    'so-level':Math.round(62+Math.sin(state.tick/20)*2)+'%',
-    'so-z1':(0.76+Math.sin(state.tick/10)*.025).toFixed(2)+' m³/s',
-    'so-z2':(0.52+Math.sin(state.tick/13)*.02).toFixed(2)+' m³/s',
-    'so-boost':(1.34+Math.sin(state.tick/8)*.04).toFixed(2)+' m³/s',
-    'so-pressure':(4.80+Math.sin(state.tick/12)*.08).toFixed(2)+' bar'
-  };
-  document.querySelectorAll('[data-ov-key]').forEach(el=>{
-    const k=el.dataset.ovKey;
-    if(values[k]!==undefined) el.textContent=values[k];
-  });
-  document.querySelectorAll('[data-ov-clock]').forEach(el=>el.textContent=time());
-  const levelMap={
-    sl1:68+Math.sin(state.tick/19)*2,
-    sl2:51+Math.sin(state.tick/23)*2,
-    so:62+Math.sin(state.tick/20)*2,
-    cp:78+Math.sin(state.tick/17)*1.4
-  };
-  document.querySelectorAll('[data-ov-level]').forEach(el=>{
-    const v=levelMap[el.dataset.ovLevel];
-    if(v!==undefined)el.style.height=Math.max(5,Math.min(95,v)).toFixed(1)+'%';
-  });
-}
-
 document.addEventListener('DOMContentLoaded',()=>{
   ensureLiveBadges();
   const initialIndex=(window.INTERAFAS_STATIONS||[]).findIndex(s=>s.id===currentStation());
@@ -431,7 +384,6 @@ document.addEventListener('DOMContentLoaded',()=>{
   scheduleLoop(pushAlarm,3600,6800);
   scheduleLoop(volumePulse,1900,3300);
   scheduleLoop(statisticsPulse,2400,4700);
-  scheduleLoop(updateOverviewTelemetry,850,1450);
 });
 
 window.INTERAFAS_V6={
