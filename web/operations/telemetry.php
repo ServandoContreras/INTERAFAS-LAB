@@ -9,8 +9,7 @@ require_operational_network(true);
 $sessionPresent=operational_is_auth();
 $state=ot_call('/state');
 $firmware=is_array($state['firmware']??null) ? $state['firmware'] : [];
-$firmware['update_channel']='stable';
-$firmware['update_feed']='/operations/updates/manifest.php';
+$firmware['update_status']='available';
 
 if(empty($state) || isset($state['error'])){
     http_response_code(502);
