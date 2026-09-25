@@ -8,7 +8,8 @@ const live = {
   logs: [],
   tags: {},
   history: {},
-  alarms: new Map()
+  alarms: new Map(),
+  stats: {}
 };
 
 const COLORS={ok:'ok',warn:'warn',alarm:'alarm',off:'off',service:'service'};
@@ -159,7 +160,8 @@ function recalcStats(){
   const reserve=stationMeta.reduce((a,s)=>a+Number(s.reserve||0),0)/(stationMeta.length||1) + (live.tags.LEVEL.value-Number(station.reserve||live.tags.LEVEL.value))/(stationMeta.length||1);
   const pressure=(stationMeta.reduce((a,s)=>a+Number(s.pressure||0),0)/(stationMeta.length||1))+(live.tags.PRESS.value-Number(station.pressure||live.tags.PRESS.value))/(stationMeta.length||1);
   const active=Array.from(live.alarms.values()).filter(x=>x==='warn'||x==='alarm').length+6;
-  const stats={supply:totalSupply,demand,reserve,pressure,active,energy:16.1+(totalSupply/baseTotal)*.75,latency:live.tags.LATENCY.value};
+  const stats={supply:totalSupply,demand,reserve,pressure,active,energy:16.1+(totalSupply/baseTotal)*.75,latency:live.tags.LATENCY.value,availability:99.74+Math.sin(live.tick/37)*.08,runningPumps:31+(live.tags.P102.value?1:0)};
+  live.stats=stats;
   document.querySelectorAll('[data-live-stat]').forEach(el=>{
     const key=el.dataset.liveStat;
     let value=stats[key];
@@ -202,6 +204,7 @@ function liveTick(){
   renderTags();
   recalcStats();
   maybeEvent();
+  if(live.tick%5===0 && document.querySelector('[data-view="trends"].active') && window.INTERAFAS_HMI?.renderTrends){window.INTERAFAS_HMI.renderTrends();}
 }
 
 function setStation(index){
@@ -230,7 +233,7 @@ function seedLogs(){
   renderLogs();
 }
 
-window.INTERAFAS_LIVE={setStation,pushLog,get tags(){return live.tags;},get history(){return live.history;}};
+window.INTERAFAS_LIVE={setStation,pushLog,get tags(){return live.tags;},get history(){return live.history;},get stats(){return live.stats;}};
 document.addEventListener('DOMContentLoaded',()=>{
   buildTags();
   seedLogs();
