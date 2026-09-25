@@ -15,7 +15,6 @@ function establish_ops_bridge_context(): bool {
     $token=ops_bridge_expected_token();
     if($token===null) return false;
     setcookie('INTERAFAS_OPS_BRIDGE',$token,[
-        'expires'=>time()+900,
         'path'=>'/operations/',
         'httponly'=>true,
         'samesite'=>'Lax'
