@@ -23,7 +23,7 @@ body{background:#07111f;color:#dce8f5}.ops-shell{max-width:1500px;margin:auto;pa
 </style></head><body><div class="ops-shell"><div class="ops-top"><div class="ops-brand"><small>INTERAFAS · Red operacional</small><h1>Centro de Operaciones</h1><span class="muted">Planta Metropolitana Norte · RTU-GW-07</span></div><div><span class="ok">● EN LÍNEA</span> · <?=htmlspecialchars((string)($ops['display_name']??$ops['username']??'Operador'))?> · <a href="logout.php" style="color:#a6dcff">Cerrar sesión</a></div></div>
 <div class="ops-metrics"><div class="ops-metric"><span>Nivel TK-01</span><strong id="tank"><?=htmlspecialchars((string)($state['tank']??'—'))?>%</strong></div><div class="ops-metric"><span>Caudal FLOW-01</span><strong id="flow"><?=htmlspecialchars((string)($state['flow']??'—'))?> L/s</strong></div><div class="ops-metric"><span>Presión</span><strong id="pressure"><?=htmlspecialchars((string)($state['pressure']??'—'))?> bar</strong></div><div class="ops-metric"><span>Calidad</span><strong id="quality"><?=htmlspecialchars((string)($state['quality']??'—'))?></strong></div></div>
 <div class="ops-grid" style="margin-top:18px"><section class="ops-card"><h2>Sinóptico operacional</h2><div class="diagram"><div class="pipe"></div></div><div class="asset"><div><b>P-101</b><div class="muted">Bomba principal de impulsión</div></div><div><strong id="p101"><?=htmlspecialchars((string)($state['p101']??'—'))?></strong> <button class="ops-btn" data-state="ON">Arrancar</button> <button class="ops-btn danger" data-state="OFF">Detener</button></div></div><div class="asset"><div><b>P-102</b><div class="muted">Bomba de respaldo</div></div><strong id="p102"><?=htmlspecialchars((string)($state['p102']??'—'))?></strong></div><div class="asset"><div><b>V-201</b><div class="muted">Válvula de distribución</div></div><strong id="v201"><?=htmlspecialchars((string)($state['v201']??'—'))?></strong></div></section>
-<aside><section class="ops-card"><h2>Alarmas</h2><div id="alarms"><?=empty($state['alarms'])?'<span class="ok">Sin alarmas activas</span>':'<span class="alarm">'.htmlspecialchars(implode(', ',$state['alarms'])).'</span>'?></div></section><section class="ops-card fwbox" style="margin-top:18px"><h2>RTU-GW-07</h2><pre id="fw">Firmware <?=htmlspecialchars((string)($fw['version']??'—'))?>\nModo <?=htmlspecialchars((string)($fw['mode']??'—'))?>\nDiagnóstico <?=htmlspecialchars((string)($fw['diagnostic']??'—'))?></pre><a class="ops-btn" href="firmware.php">Administrar firmware</a></section><section class="ops-card" style="margin-top:18px"><h2>Eventos de sesión</h2><div class="eventlog" id="eventlog">HMI cargado.</div></section></aside></div><div class="ops-footer">Entorno operacional simulado para fines académicos. Ninguna acción se comunica con infraestructura física.</div></div>
+<aside><section class="ops-card"><h2>Alarmas</h2><div id="alarms"><?=empty($state['alarms'])?'<span class="ok">Sin alarmas activas</span>':'<span class="alarm">'.htmlspecialchars(implode(', ',$state['alarms'])).'</span>'?></div></section><section class="ops-card fwbox" style="margin-top:18px"><h2>RTU-GW-07</h2><pre id="fw">Firmware <?=htmlspecialchars((string)($fw['version']??'—'))?>\nModo <?=htmlspecialchars((string)($fw['mode']??'—'))?>\nDiagnóstico <?=htmlspecialchars((string)($fw['diagnostic']??'—'))?></pre><div id="fw-update" class="muted">Consultando actualizaciones…</div><p><a class="ops-btn" href="firmware.php">Administrar firmware</a></p></section><section class="ops-card" style="margin-top:18px"><h2>Eventos de sesión</h2><div class="eventlog" id="eventlog">HMI cargado.</div></section></aside></div><div class="ops-footer">Entorno operacional simulado para fines académicos. Ninguna acción se comunica con infraestructura física.</div></div>
 <script src="/operations/assets/ops-client.php"></script>
 <script>
 async function refreshTelemetry(){
@@ -44,7 +44,24 @@ async function refreshTelemetry(){
     }
   }catch(e){}
 }
+async function refreshFirmwareStatus(){
+  try{
+    const r=await fetch(window.INTERAFAS_OPS.firmwareStatusEndpoint,{cache:'no-store'});
+    const d=await r.json();
+    const node=document.getElementById('fw-update');
+    if(!node) return;
+    if(!d.ok){node.textContent='Estado de actualización no disponible';return;}
+    node.textContent=d.update?.available
+      ? 'Actualización disponible: '+(d.update.candidate_version??'—')+' · canal '+(d.channel??'—')
+      : 'Firmware actualizado';
+  }catch(e){
+    const node=document.getElementById('fw-update');
+    if(node) node.textContent='Estado de actualización no disponible';
+  }
+}
 async function control(state){const r=await fetch('api.php',{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({action:'p101',state})});const d=await r.json();document.getElementById('eventlog').textContent=(d.message||d.error||'Evento')+' · '+new Date().toLocaleTimeString();if(d.process){document.getElementById('p101').textContent=d.process.p101;document.getElementById('flow').textContent=d.process.flow+' L/s';document.getElementById('pressure').textContent=d.process.pressure+' bar';document.getElementById('alarms').innerHTML=d.process.alarms.length?'<span class="alarm">'+d.process.alarms.join(', ')+'</span>':'<span class="ok">Sin alarmas activas</span>';}}
 document.querySelectorAll('[data-state]').forEach(b=>b.addEventListener('click',()=>control(b.dataset.state)));
+refreshFirmwareStatus();
 setInterval(refreshTelemetry,window.INTERAFAS_OPS.refreshInterval);
+setInterval(refreshFirmwareStatus,window.INTERAFAS_OPS.firmwareRefreshInterval);
 </script></body></html>
