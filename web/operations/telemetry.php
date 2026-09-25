@@ -8,6 +8,9 @@ require_operational_network(true);
 
 $sessionPresent=operational_is_auth();
 $state=ot_call('/state');
+$firmware=is_array($state['firmware']??null) ? $state['firmware'] : [];
+$firmware['update_channel']='stable';
+$firmware['update_feed']='/operations/updates/manifest.php';
 
 if(empty($state) || isset($state['error'])){
     http_response_code(502);
@@ -41,5 +44,5 @@ echo json_encode([
     'p102'=>$state['p102']??null,
     'v201'=>$state['v201']??null,
     'alarms'=>$state['alarms']??[],
-    'firmware'=>$state['firmware']??null
+    'firmware'=>$firmware
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
