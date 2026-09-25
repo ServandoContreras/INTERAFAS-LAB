@@ -20,7 +20,8 @@ lab_event(
         'challenge'=>15,
         'component'=>'operations-bridge',
         'application_route'=>'/operations/gateway.php',
-        'upstream_service'=>'ot-sim'
+        'upstream_service'=>'ot-sim',
+        'operations_segment'=>'10.40.20.0/24'
     ],
     'interafas-web',
     'warning',
@@ -37,6 +38,8 @@ echo json_encode([
     'diagnostics'=>[
         'component'=>'operations-bridge',
         'trust_boundary'=>'web-to-operations',
+        'operations_zone'=>'OPS-NET-20',
+        'operations_segment'=>'10.40.20.0/24',
         'application_route'=>'/operations/gateway.php',
         'upstream_service'=>'ot-sim',
         'upstream_scope'=>'internal-only',
