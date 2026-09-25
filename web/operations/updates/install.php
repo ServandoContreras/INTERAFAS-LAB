@@ -125,7 +125,7 @@ if($nonApprovedPackage){
     );
 }
 
-echo json_encode([
+$response=[
     'ok'=>true,
     'device'=>'RTU-GW-07',
     'version'=>$version,
@@ -136,4 +136,17 @@ echo json_encode([
     ],
     'firmware'=>$result['firmware']??null,
     'reboot'=>$result['reboot']??null
-], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
+];
+
+if(strtoupper((string)($result['firmware']['diagnostic']??''))==='SERVICE'){
+    $response['maintenance']=[
+        'state'=>'available',
+        'role'=>'maintenance',
+        'console'=>'/operations/service-entry.php'
+    ];
+}
+
+echo json_encode(
+    $response,
+    JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT
+);

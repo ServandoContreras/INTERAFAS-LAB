@@ -19,6 +19,7 @@ lab_event(
 
 $state=ot_call('/state');
 $fw=$state['firmware']??[];
+$canControl=(string)($ops['role']??'')==='operator';
 $assets=[
     ['id'=>'PLC-01','type'=>'PLC','zone'=>'Control Cell 01','function'=>'Process control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'P-101 · P-102 · V-201'],
     ['id'=>'RTU-GW-07','type'=>'RTU / Gateway','zone'=>'OT Edge','function'=>'Remote interface','status'=>'ONLINE','vendor'=>'Remote terminal gateway','related'=>'PLC-01 · HMI-OPS-01'],
@@ -66,7 +67,11 @@ $assets=[
   <button class="nav-item" data-view-target="maintenance"><span class="nav-glyph">◇</span><span>Maintenance</span></button>
   <div class="nav-section">ENGINEERING</div>
   <button class="nav-item" data-view-target="configuration"><span class="nav-glyph">▤</span><span>Configuration</span></button>
+  <?php if($canControl): ?>
   <a class="nav-item" href="firmware.php"><span class="nav-glyph">▱</span><span>Firmware</span></a>
+  <?php else: ?>
+  <button class="nav-item" data-view-target="maintenance"><span class="nav-glyph">▱</span><span>Firmware context</span></button>
+  <?php endif; ?>
   <div class="nav-section">ANALYSIS</div>
   <button class="nav-item" data-view-target="events"><span class="nav-glyph">≡</span><span>Events</span></button>
 </aside>
@@ -74,7 +79,7 @@ $assets=[
 <main class="hmi-main"><div class="workspace">
 
 <section class="view active" data-view="overview">
-  <div class="page-head"><div><div class="breadcrumb">Operations / Overview</div><h1>Planta Metropolitana Norte</h1><p>Vista operacional consolidada · Cell-01 · actualización cada 5 s</p></div><div class="page-tools"><span class="tool-chip">MODE AUTO</span><span class="tool-chip">0 ACTIVE ALARMS</span></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Operations / Overview</div><h1>Planta Metropolitana Norte</h1><p>Vista operacional consolidada · Cell-01 · actualización cada 5 s</p></div><div class="page-tools"><span class="tool-chip">MODE AUTO</span><span class="tool-chip"><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></span><span class="tool-chip">0 ACTIVE ALARMS</span></div></div>
 
   <div class="metrics">
     <div class="metric"><label>TK-01 Level</label><strong id="tank"><?=htmlspecialchars((string)($state['tank']??'—'))?></strong><small>%</small><span class="sub">Process variable</span></div>
@@ -111,7 +116,11 @@ $assets=[
           <div class="kv"><span>Mode</span><strong>AUTO</strong></div>
           <div class="kv"><span>Status</span><strong class="ok-text" id="inspector-state"><?=htmlspecialchars((string)($state['p101']??'—'))?></strong></div>
           <div><span class="muted" style="font-size:9px">PROCESS TAGS</span><div class="tag-list" id="inspector-tags"><span class="tag-pill">P101.RUN</span><span class="tag-pill">P101.CMD</span><span class="tag-pill">P101.CURRENT</span></div></div>
+          <?php if($canControl): ?>
           <div class="actions"><button class="btn" data-state="ON">START</button><button class="btn danger" data-state="OFF">STOP</button></div>
+          <?php else: ?>
+          <div class="actions"><span class="tool-chip">PROCESS CONTROL RESTRICTED</span></div>
+          <?php endif; ?>
         </div>
       </section>
       <section class="panel">

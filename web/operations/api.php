@@ -1,5 +1,15 @@
 <?php
-require __DIR__.'/common.php'; require_operational_network(true); $ops=require_operational_auth(true); header('Content-Type: application/json; charset=utf-8');
+require __DIR__.'/common.php';
+require_operational_network(true);
+$ops=require_operational_auth(true);
+header('Content-Type: application/json; charset=utf-8');
+
+if((string)($ops['role']??'')!=='operator'){
+    http_response_code(403);
+    echo json_encode(['ok'=>false,'error'=>'operator-role-required'],JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 $payload=json_decode(file_get_contents('php://input'),true) ?: [];
 if(($payload['action']??'')==='p101'){
     $state=strtoupper((string)($payload['state']??''));
