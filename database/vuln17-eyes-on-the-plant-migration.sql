@@ -20,6 +20,6 @@ ON DUPLICATE KEY UPDATE
   active=VALUES(active);
 
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
-(17,1,'VULN 16 te permitió cruzar la restricción de red, pero eso no equivale a estar autenticado como operador. Revisa los enlaces que devuelve el gateway: existe un acceso normal para personal operacional y una vista de monitoreo separada.'),
-(17,2,'Compara ambos recursos usando el mismo encabezado de origen interno. El acceso normal solicita usuario y contraseña; si la vista de monitoreo entrega variables de proceso sin una sesión operacional, revisa sus encabezados y documenta qué control de autorización falta.')
+(17,1,'VULN 16 te permitió alcanzar la aplicación operacional, pero la consola principal sigue exigiendo autenticación. Revisa las rutas que devuelve el gateway y piensa qué servicio necesita el HMI para actualizar nivel, caudal, presión y alarmas sin recargar toda la página.'),
+(17,2,'La consola autenticada consulta periódicamente un endpoint de telemetría. Compara el comportamiento de ese recurso con el de la consola principal y revisa si ambos aplican el mismo control de sesión antes de entregar información de proceso.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
