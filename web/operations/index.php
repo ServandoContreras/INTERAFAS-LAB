@@ -226,83 +226,149 @@ $pressureZones=18;
     </aside>
   </div>
 
-  <div class="municipal-native-grid">
-    <article class="municipal-native-card municipal-native-cp">
-      <div class="mini-scada-head"><span>CERRO DE SAN PABLO</span><b>COMPACT · HILLSIDE BOOSTER</b></div>
-      <div class="mini-scada-canvas cp-mini">
-        <div class="mini-label l1">ELEVATED STORAGE</div>
-        <div class="mini-tower"><i></i><b>TQ-CP-02</b><span>78%</span></div>
-        <div class="mini-pump cp-mp1"><i></i><b>P-CP-101</b><span>RUN</span></div>
-        <div class="mini-pump cp-mp2 standby"><i></i><b>P-CP-102</b><span>STBY</span></div>
-        <div class="mini-quality cp-mq"><b>CL-CP-01</b><span>Cl₂ 0.72 mg/L</span></div>
-        <div class="mini-zone cp-mz"><b>HIGH ZONE</b><span>2,380 L/s</span></div>
-        <div class="mini-pipe cp-pipe-1"></div><div class="mini-pipe cp-pipe-2"></div><div class="mini-pipe cp-pipe-3"></div>
+  <div class="municipal-scada-grid">
+
+    <article class="scada-overview scada-cp">
+      <header class="scada-ov-head">
+        <div><strong>CERRO DE SAN PABLO</strong><span>HILLSIDE BOOSTER STATION</span></div>
+        <div class="scada-ov-status"><i></i><b>AUTO</b><time data-ov-clock>--:--:--</time></div>
+      </header>
+      <nav class="scada-ov-tabs"><b class="active">SYNOPTIC</b><b>ALARMS</b><b>TRENDS</b><b>PLC/RTU</b></nav>
+      <div class="scada-ov-process cp-overview-process">
+        <section class="ov-unit cp-u-storage">
+          <h4>ELEVATED STORAGE</h4>
+          <div class="ov-elevated-tank"><div class="ov-water" data-ov-level="cp" style="height:78%"></div></div>
+          <div class="ov-readout"><small>LT-CP-201</small><b data-ov-key="cp-level">78.0 %</b></div>
+        </section>
+        <section class="ov-unit cp-u-pumps">
+          <h4>BOOSTER SET</h4>
+          <div class="ov-pump-row"><div class="ov-pump run"><i></i><span>P-CP-101</span><b>RUN</b></div><div class="ov-pump standby"><i></i><span>P-CP-102</span><b>STBY</b></div></div>
+          <div class="ov-instrument"><small>PT-CP-202</small><b data-ov-key="cp-pressure">4.40 bar</b></div>
+        </section>
+        <section class="ov-unit cp-u-quality">
+          <h4>CHLORINATION</h4>
+          <div class="ov-analyzer"><span>AIT-CP-301</span><b data-ov-key="cp-cl">0.72 mg/L</b><small>FREE CHLORINE</small></div>
+        </section>
+        <section class="ov-unit cp-u-zone">
+          <h4>HIGH ZONE</h4>
+          <div class="ov-zone-panel"><span>FT-CP-401</span><b data-ov-key="cp-flow">2,380 L/s</b><em>OPEN</em></div>
+        </section>
+        <div class="ov-pipe cp-line-1"></div><div class="ov-pipe cp-line-2"></div><div class="ov-pipe cp-line-3"></div>
+        <div class="ov-valve cp-v1 open"><i></i><span>XV-CP-201</span></div>
       </div>
-      <div class="municipal-native-foot">
-        <div><strong>Hillside booster & elevated storage</strong><small>2-pump duty/standby · gravity-assisted high-zone feed</small></div>
-        <button class="btn station-open" data-station-open="0">OPEN HILLSIDE OPERATIONS</button>
+      <div class="scada-ov-summary">
+        <div><span>PLC</span><b class="ok-text">PLC-CP-01 OK</b></div><div><span>RTU</span><b class="ok-text">RTU-CP-01 OK</b></div><div><span>ACTIVE ALARMS</span><b>0</b></div>
       </div>
+      <footer class="scada-ov-alarm ok"><b>NO ACTIVE PROCESS ALARMS</b><button class="btn station-open" data-station-open="0">OPEN PROCESS</button></footer>
     </article>
 
-    <article class="municipal-native-card municipal-native-sl">
-      <div class="mini-scada-head"><span>SAINT LOUIS</span><b>LARGE · METROPOLITAN PRIMARY WORKS</b></div>
-      <div class="mini-scada-canvas sl-mini">
-        <div class="mini-label sl-l-storage">RAW WATER / STORAGE</div>
-        <div class="mini-label sl-l-pumps">HIGH-LIFT PUMPING</div>
-        <div class="mini-label sl-l-quality">QUALITY / REGULATION</div>
-        <div class="mini-label sl-l-dist">3-ZONE DISTRIBUTION</div>
-
-        <div class="mini-tank sl-mt1"><i style="height:68%"></i><b>RWT-SL-01</b><span>68%</span></div>
-        <div class="mini-tank sl-mt2"><i style="height:51%"></i><b>RWT-SL-02</b><span>51%</span></div>
-
-        <div class="mini-pump sl-mp1"><i></i><b>P-SL-201</b><span>RUN</span></div>
-        <div class="mini-pump sl-mp2"><i></i><b>P-SL-202</b><span>RUN</span></div>
-        <div class="mini-pump sl-mp3"><i></i><b>P-SL-203</b><span>RUN</span></div>
-        <div class="mini-pump sl-mp4 standby"><i></i><b>P-SL-204</b><span>STBY</span></div>
-
-        <div class="mini-quality sl-mq"><b>QCS-SL-01</b><span>Cl₂ 0.72 · NTU 0.34</span></div>
-        <div class="mini-header sl-mh"><b>HDR-SL-01</b><span>5.2 bar · 3,420 L/s</span></div>
-
-        <div class="mini-zone sl-z1"><b>ZONE A</b><span>Central / commercial</span></div>
-        <div class="mini-zone sl-z2"><b>ZONE B</b><span>Residential / university</span></div>
-        <div class="mini-zone sl-z3"><b>ZONE C</b><span>Industrial / airport</span></div>
-
-        <div class="mini-pipe sl-pipe-1"></div><div class="mini-pipe sl-pipe-2"></div><div class="mini-pipe sl-pipe-3"></div>
-        <div class="mini-pipe sl-pipe-4"></div><div class="mini-pipe sl-pipe-5"></div><div class="mini-pipe sl-pipe-6"></div>
+    <article class="scada-overview scada-sl">
+      <header class="scada-ov-head">
+        <div><strong>SAINT LOUIS</strong><span>METROPOLITAN PRIMARY WORKS</span></div>
+        <div class="scada-ov-status"><i></i><b>AUTO</b><time data-ov-clock>--:--:--</time></div>
+      </header>
+      <nav class="scada-ov-tabs"><b class="active">SYNOPTIC</b><b>RAW WATER</b><b>PUMPING</b><b>QUALITY</b><b>DISTRIBUTION</b><b>ALARMS</b></nav>
+      <div class="scada-ov-process sl-overview-process">
+        <section class="ov-unit sl-u-intake">
+          <h4>RAW WATER INTAKE</h4>
+          <div class="ov-intake-symbol"><i></i><i></i><i></i></div>
+          <div class="ov-instrument"><small>FIT-SL-001</small><b data-ov-key="sl-intake">3.47 m³/s</b></div>
+          <div class="ov-instrument mini"><small>AIT-SL-001</small><b data-ov-key="sl-turb">0.34 NTU</b></div>
+        </section>
+        <section class="ov-unit sl-u-storage">
+          <h4>RAW WATER STORAGE</h4>
+          <div class="ov-tank-pair">
+            <div class="ov-tank"><div class="ov-water" data-ov-level="sl1" style="height:68%"></div><span>RWT-SL-01</span><b data-ov-key="sl-l1">68%</b></div>
+            <div class="ov-tank"><div class="ov-water" data-ov-level="sl2" style="height:51%"></div><span>RWT-SL-02</span><b data-ov-key="sl-l2">51%</b></div>
+          </div>
+        </section>
+        <section class="ov-unit sl-u-pumps">
+          <h4>HIGH-LIFT PUMPING</h4>
+          <div class="ov-pump-grid">
+            <div class="ov-pump run"><i></i><span>P-SL-201</span><b>RUN</b><small>50 Hz</small></div>
+            <div class="ov-pump run"><i></i><span>P-SL-202</span><b>RUN</b><small>50 Hz</small></div>
+            <div class="ov-pump run"><i></i><span>P-SL-203</span><b>RUN</b><small>45 Hz</small></div>
+            <div class="ov-pump fault"><i></i><span>P-SL-204</span><b>FAULT</b><small>0 Hz</small></div>
+          </div>
+        </section>
+        <section class="ov-unit sl-u-quality">
+          <h4>QUALITY / CHLORINATION</h4>
+          <div class="ov-analyzer"><span>AIT-SL-301</span><b data-ov-key="sl-cl">1.05 mg/L</b><small>FREE Cl₂</small></div>
+          <div class="ov-analyzer"><span>AIT-SL-302</span><b data-ov-key="sl-ph">7.40 pH</b><small>FINAL WATER</small></div>
+        </section>
+        <section class="ov-unit sl-u-header">
+          <h4>PRESSURE HEADER</h4>
+          <div class="ov-instrument"><small>PT-SL-401</small><b data-ov-key="sl-pressure">5.20 bar</b></div>
+          <div class="ov-instrument"><small>FIT-SL-402</small><b data-ov-key="sl-flow">3.36 m³/s</b></div>
+        </section>
+        <section class="ov-unit sl-u-dist">
+          <h4>DISTRIBUTION</h4>
+          <div class="ov-zone-line zone-a"><span>ZONE A · NORTH</span><b data-ov-key="sl-za">1.28 m³/s</b><em>4.8 bar</em></div>
+          <div class="ov-zone-line zone-b"><span>ZONE B · CENTRAL</span><b data-ov-key="sl-zb">1.15 m³/s</b><em>4.6 bar</em></div>
+          <div class="ov-zone-line zone-c"><span>ZONE C · SOUTH</span><b data-ov-key="sl-zc">0.93 m³/s</b><em>4.4 bar</em></div>
+        </section>
+        <div class="ov-pipe sl-line-a"></div><div class="ov-pipe sl-line-b"></div><div class="ov-pipe sl-line-c"></div><div class="ov-pipe sl-line-d"></div>
+        <div class="ov-valve sl-v1 open"><i></i><span>XV-SL-301</span></div><div class="ov-valve sl-v2 open"><i></i><span>XV-SL-401</span></div>
       </div>
-      <div class="municipal-native-foot">
-        <div><strong>Metropolitan primary works</strong><small>Dual storage · 4-pump high-lift bank · quality regulation · 3 distribution trunks</small></div>
-        <button class="btn station-open" data-station-open="4">OPEN METROPOLITAN OPERATIONS</button>
+      <div class="scada-ov-summary sl-summary">
+        <div><span>TOTAL PRODUCTION</span><b data-ov-key="sl-prod">3.52 m³/s</b></div>
+        <div><span>SYSTEM PRESSURE</span><b data-ov-key="sl-pressure2">5.20 bar</b></div>
+        <div><span>PLC / RTU</span><b class="ok-text">6 / 6 ONLINE</b></div>
+        <div><span>ACTIVE ALARMS</span><b class="warn-text">2</b></div>
       </div>
+      <footer class="scada-ov-alarm alarm"><b>P-SL-204 · FAULT / OVERCURRENT</b><span>F-SL-103 · HIGH ΔP</span><button class="btn station-open" data-station-open="4">OPEN PROCESS</button></footer>
     </article>
 
-    <article class="municipal-native-card municipal-native-so">
-      <div class="mini-scada-head"><span>SOLEDADE</span><b>MEDIUM · EASTERN DISTRIBUTION WORKS</b></div>
-      <div class="mini-scada-canvas so-mini">
-        <div class="mini-label so-l-intake">INTAKE</div>
-        <div class="mini-label so-l-booster">BOOSTER</div>
-        <div class="mini-label so-l-prv">PRESSURE CONTROL</div>
-        <div class="mini-label so-l-storage">BREAK TANK</div>
-        <div class="mini-label so-l-dist">2 SERVICE SECTORS</div>
-
-        <div class="mini-intake so-mi"><b>INT-SO-101</b><span>0.92 m³/s</span></div>
-        <div class="mini-pump so-mp1"><i></i><b>P-SO-101</b><span>RUN</span></div>
-        <div class="mini-pump so-mp2"><i></i><b>P-SO-102</b><span>RUN</span></div>
-        <div class="mini-pump so-mp3 standby"><i></i><b>P-SO-103</b><span>LOCAL</span></div>
-        <div class="mini-prv so-prv"><i></i><b>PRV-SO-01</b><span>8.5 → 5.1 bar</span></div>
-        <div class="mini-tank so-mt"><i style="height:62%"></i><b>RVT-SO-01</b><span>62%</span></div>
-        <div class="mini-quality so-mq"><b>CHL-SO-01</b><span>Cl₂ 1.02 mg/L</span></div>
-        <div class="mini-zone so-z1"><b>NORTH / INDUSTRIAL</b><span>0.76 m³/s</span></div>
-        <div class="mini-zone so-z2"><b>SOUTH / RESIDENTIAL</b><span>0.52 m³/s</span></div>
-
-        <div class="mini-pipe so-pipe-1"></div><div class="mini-pipe so-pipe-2"></div><div class="mini-pipe so-pipe-3"></div>
-        <div class="mini-pipe so-pipe-4"></div><div class="mini-pipe so-pipe-5"></div>
+    <article class="scada-overview scada-so">
+      <header class="scada-ov-head">
+        <div><strong>SOLEDADE</strong><span>EASTERN DISTRIBUTION WORKS</span></div>
+        <div class="scada-ov-status"><i></i><b>AUTO</b><time data-ov-clock>--:--:--</time></div>
+      </header>
+      <nav class="scada-ov-tabs"><b class="active">SYNOPTIC</b><b>BOOSTER</b><b>PRESSURE</b><b>QUALITY</b><b>ALARMS</b></nav>
+      <div class="scada-ov-process so-overview-process">
+        <section class="ov-unit so-u-intake">
+          <h4>EASTERN INTAKE</h4>
+          <div class="ov-intake-symbol"><i></i><i></i><i></i></div>
+          <div class="ov-instrument"><small>FIT-SO-101</small><b data-ov-key="so-intake">0.92 m³/s</b></div>
+        </section>
+        <section class="ov-unit so-u-pumps">
+          <h4>BOOSTER STATION</h4>
+          <div class="ov-pump-row">
+            <div class="ov-pump run"><i></i><span>P-SO-101</span><b>RUN</b><small>50 Hz</small></div>
+            <div class="ov-pump run"><i></i><span>P-SO-102</span><b>RUN</b><small>50 Hz</small></div>
+            <div class="ov-pump standby"><i></i><span>P-SO-103</span><b>LOCAL</b><small>0 Hz</small></div>
+          </div>
+        </section>
+        <section class="ov-unit so-u-prv">
+          <h4>PRESSURE CONTROL</h4>
+          <div class="ov-prv-symbol"><i></i><span>PCV-SO-201</span></div>
+          <div class="ov-control-box"><small>PIC-SO-201</small><b>SP 5.0 bar</b><strong data-ov-key="so-prv">PV 5.1 bar</strong><em>AUTO</em></div>
+        </section>
+        <section class="ov-unit so-u-quality">
+          <h4>CHLORINATION</h4>
+          <div class="ov-analyzer"><span>AIT-SO-301</span><b data-ov-key="so-cl">1.02 mg/L</b><small>FREE Cl₂</small></div>
+        </section>
+        <section class="ov-unit so-u-tank">
+          <h4>BREAK-PRESSURE TANK</h4>
+          <div class="ov-tank so-tank"><div class="ov-water" data-ov-level="so" style="height:62%"></div><span>RVT-SO-01</span><b data-ov-key="so-level">62%</b></div>
+        </section>
+        <section class="ov-unit so-u-dist">
+          <h4>DISTRIBUTION</h4>
+          <div class="ov-zone-line zone-a"><span>NORTH / INDUSTRIAL</span><b data-ov-key="so-z1">0.76 m³/s</b><em>4.8 bar</em></div>
+          <div class="ov-zone-line zone-b"><span>SOUTH / RESIDENTIAL</span><b data-ov-key="so-z2">0.52 m³/s</b><em>4.6 bar</em></div>
+        </section>
+        <div class="ov-pipe so-line-a"></div><div class="ov-pipe so-line-b"></div><div class="ov-pipe so-line-c"></div><div class="ov-pipe so-line-d"></div>
+        <div class="ov-valve so-v1 open"><i></i><span>XV-SO-401</span></div><div class="ov-valve so-v2 open"><i></i><span>XV-SO-402</span></div>
       </div>
-      <div class="municipal-native-foot">
-        <div><strong>Eastern booster & pressure control</strong><small>3-pump booster hall · PRV regulation · chlorination · break-pressure storage · 2 sectors</small></div>
-        <button class="btn station-open" data-station-open="8">OPEN EASTERN OPERATIONS</button>
+      <div class="scada-ov-summary">
+        <div><span>BOOSTED FLOW</span><b data-ov-key="so-boost">1.34 m³/s</b></div>
+        <div><span>DOWNSTREAM P</span><b data-ov-key="so-pressure">4.80 bar</b></div>
+        <div><span>PLC / RTU</span><b class="ok-text">4 / 4 ONLINE</b></div>
+        <div><span>ACTIVE ALARMS</span><b class="warn-text">1</b></div>
       </div>
+      <footer class="scada-ov-alarm warn"><b>P-SO-103 · NO FEEDBACK</b><span>PT-SO-401 · LOW PRESSURE</span><button class="btn station-open" data-station-open="8">OPEN PROCESS</button></footer>
     </article>
+
   </div>
 </section>
 
