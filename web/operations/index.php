@@ -226,81 +226,46 @@ $pressureZones=18;
     </aside>
   </div>
 
-  <div class="municipal-native-grid">
-    <article class="municipal-native-card municipal-native-cp">
-      <div class="mini-scada-head"><span>CERRO DE SAN PABLO</span><b>COMPACT · HILLSIDE BOOSTER</b></div>
-      <div class="mini-scada-canvas cp-mini">
-        <div class="mini-label l1">ELEVATED STORAGE</div>
-        <div class="mini-tower"><i></i><b>TQ-CP-02</b><span>78%</span></div>
-        <div class="mini-pump cp-mp1"><i></i><b>P-CP-101</b><span>RUN</span></div>
-        <div class="mini-pump cp-mp2 standby"><i></i><b>P-CP-102</b><span>STBY</span></div>
-        <div class="mini-quality cp-mq"><b>CL-CP-01</b><span>Cl₂ 0.72 mg/L</span></div>
-        <div class="mini-zone cp-mz"><b>HIGH ZONE</b><span>2,380 L/s</span></div>
-        <div class="mini-pipe cp-pipe-1"></div><div class="mini-pipe cp-pipe-2"></div><div class="mini-pipe cp-pipe-3"></div>
+  <div class="municipal-process-grid">
+    <article class="municipal-process-card municipal-process-cp">
+      <div class="municipal-process-head">
+        <div><span>CERRO DE SAN PABLO</span><strong>HILLSIDE BOOSTER STATION</strong></div>
+        <b>PROCESS OVERVIEW</b>
       </div>
-      <div class="municipal-native-foot">
-        <div><strong>Hillside booster & elevated storage</strong><small>2-pump duty/standby · gravity-assisted high-zone feed</small></div>
-        <button class="btn station-open" data-station-open="0">OPEN HILLSIDE OPERATIONS</button>
+      <div class="municipal-process-viewport">
+        <div class="pid-scene overview-process-scene" data-process-overview="Cerro de San Pablo"></div>
+      </div>
+      <div class="municipal-process-foot">
+        <span>Same live-process topology · compact system</span>
+        <button class="btn station-open" data-station-open="0">OPEN PROCESS</button>
       </div>
     </article>
 
-    <article class="municipal-native-card municipal-native-sl">
-      <div class="mini-scada-head"><span>SAINT LOUIS</span><b>LARGE · METROPOLITAN PRIMARY WORKS</b></div>
-      <div class="mini-scada-canvas sl-mini">
-        <div class="mini-label sl-l-storage">RAW WATER / STORAGE</div>
-        <div class="mini-label sl-l-pumps">HIGH-LIFT PUMPING</div>
-        <div class="mini-label sl-l-quality">QUALITY / REGULATION</div>
-        <div class="mini-label sl-l-dist">3-ZONE DISTRIBUTION</div>
-
-        <div class="mini-tank sl-mt1"><i style="height:68%"></i><b>RWT-SL-01</b><span>68%</span></div>
-        <div class="mini-tank sl-mt2"><i style="height:51%"></i><b>RWT-SL-02</b><span>51%</span></div>
-
-        <div class="mini-pump sl-mp1"><i></i><b>P-SL-201</b><span>RUN</span></div>
-        <div class="mini-pump sl-mp2"><i></i><b>P-SL-202</b><span>RUN</span></div>
-        <div class="mini-pump sl-mp3"><i></i><b>P-SL-203</b><span>RUN</span></div>
-        <div class="mini-pump sl-mp4 standby"><i></i><b>P-SL-204</b><span>STBY</span></div>
-
-        <div class="mini-quality sl-mq"><b>QCS-SL-01</b><span>Cl₂ 0.72 · NTU 0.34</span></div>
-        <div class="mini-header sl-mh"><b>HDR-SL-01</b><span>5.2 bar · 3,420 L/s</span></div>
-
-        <div class="mini-zone sl-z1"><b>ZONE A</b><span>Central / commercial</span></div>
-        <div class="mini-zone sl-z2"><b>ZONE B</b><span>Residential / university</span></div>
-        <div class="mini-zone sl-z3"><b>ZONE C</b><span>Industrial / airport</span></div>
-
-        <div class="mini-pipe sl-pipe-1"></div><div class="mini-pipe sl-pipe-2"></div><div class="mini-pipe sl-pipe-3"></div>
-        <div class="mini-pipe sl-pipe-4"></div><div class="mini-pipe sl-pipe-5"></div><div class="mini-pipe sl-pipe-6"></div>
+    <article class="municipal-process-card municipal-process-sl">
+      <div class="municipal-process-head">
+        <div><span>SAINT LOUIS</span><strong>METROPOLITAN PRIMARY WORKS</strong></div>
+        <b>PROCESS OVERVIEW</b>
       </div>
-      <div class="municipal-native-foot">
-        <div><strong>Metropolitan primary works</strong><small>Dual storage · 4-pump high-lift bank · quality regulation · 3 distribution trunks</small></div>
-        <button class="btn station-open" data-station-open="4">OPEN METROPOLITAN OPERATIONS</button>
+      <div class="municipal-process-viewport">
+        <div class="pid-scene overview-process-scene" data-process-overview="Saint Louis"></div>
+      </div>
+      <div class="municipal-process-foot">
+        <span>Same live-process topology · large metropolitan system</span>
+        <button class="btn station-open" data-station-open="4">OPEN PROCESS</button>
       </div>
     </article>
 
-    <article class="municipal-native-card municipal-native-so">
-      <div class="mini-scada-head"><span>SOLEDADE</span><b>MEDIUM · EASTERN DISTRIBUTION WORKS</b></div>
-      <div class="mini-scada-canvas so-mini">
-        <div class="mini-label so-l-intake">INTAKE</div>
-        <div class="mini-label so-l-booster">BOOSTER</div>
-        <div class="mini-label so-l-prv">PRESSURE CONTROL</div>
-        <div class="mini-label so-l-storage">BREAK TANK</div>
-        <div class="mini-label so-l-dist">2 SERVICE SECTORS</div>
-
-        <div class="mini-intake so-mi"><b>INT-SO-101</b><span>0.92 m³/s</span></div>
-        <div class="mini-pump so-mp1"><i></i><b>P-SO-101</b><span>RUN</span></div>
-        <div class="mini-pump so-mp2"><i></i><b>P-SO-102</b><span>RUN</span></div>
-        <div class="mini-pump so-mp3 standby"><i></i><b>P-SO-103</b><span>LOCAL</span></div>
-        <div class="mini-prv so-prv"><i></i><b>PRV-SO-01</b><span>8.5 → 5.1 bar</span></div>
-        <div class="mini-tank so-mt"><i style="height:62%"></i><b>RVT-SO-01</b><span>62%</span></div>
-        <div class="mini-quality so-mq"><b>CHL-SO-01</b><span>Cl₂ 1.02 mg/L</span></div>
-        <div class="mini-zone so-z1"><b>NORTH / INDUSTRIAL</b><span>0.76 m³/s</span></div>
-        <div class="mini-zone so-z2"><b>SOUTH / RESIDENTIAL</b><span>0.52 m³/s</span></div>
-
-        <div class="mini-pipe so-pipe-1"></div><div class="mini-pipe so-pipe-2"></div><div class="mini-pipe so-pipe-3"></div>
-        <div class="mini-pipe so-pipe-4"></div><div class="mini-pipe so-pipe-5"></div>
+    <article class="municipal-process-card municipal-process-so">
+      <div class="municipal-process-head">
+        <div><span>SOLEDADE</span><strong>EASTERN DISTRIBUTION WORKS</strong></div>
+        <b>PROCESS OVERVIEW</b>
       </div>
-      <div class="municipal-native-foot">
-        <div><strong>Eastern booster & pressure control</strong><small>3-pump booster hall · PRV regulation · chlorination · break-pressure storage · 2 sectors</small></div>
-        <button class="btn station-open" data-station-open="8">OPEN EASTERN OPERATIONS</button>
+      <div class="municipal-process-viewport">
+        <div class="pid-scene overview-process-scene" data-process-overview="Soledade"></div>
+      </div>
+      <div class="municipal-process-foot">
+        <span>Same live-process topology · medium pressure-control system</span>
+        <button class="btn station-open" data-station-open="8">OPEN PROCESS</button>
       </div>
     </article>
   </div>
