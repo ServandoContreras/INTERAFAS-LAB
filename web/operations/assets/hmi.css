@@ -633,3 +633,21 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
  .process-status-strip{grid-template-columns:repeat(2,1fr)}
  .pid-legend{display:none}
 }
+
+
+/* HMI V5.1 — live statistics and pilot lamps */
+.pilot.pilot-ok{background:#43ef75;box-shadow:0 0 9px rgba(67,239,117,.82)}
+.pilot.pilot-warn{background:#ffd54f;box-shadow:0 0 10px rgba(255,213,79,.78)}
+.pilot.pilot-alarm{background:#ff4f4f;box-shadow:0 0 12px rgba(255,79,79,.9);animation:alarmBlink .85s steps(2,start) infinite}
+.pilot.pilot-off{background:#737d84;box-shadow:none}
+.pilot.pilot-service{background:#51cfff;box-shadow:0 0 10px rgba(81,207,255,.72)}
+.live-statistics-strip{display:grid;grid-template-columns:repeat(5,minmax(135px,1fr));gap:7px;margin-bottom:10px}
+.live-statistics-strip>div{position:relative;background:#081720;border:1px solid #183a49;padding:10px 11px;min-height:68px}
+.live-statistics-strip>div:before{content:"";position:absolute;left:0;top:0;bottom:0;width:2px;background:#2e829e}
+.live-statistics-strip span{display:block;color:#6e8997;font-size:7px;letter-spacing:.1em}
+.live-statistics-strip strong{display:inline-block;margin-top:7px;font:700 17px ui-monospace,SFMono-Regular,Consolas,monospace;color:#d9f1f7}
+.live-statistics-strip small{margin-left:4px;font-size:8px;color:#63808f}
+.live-stat-updated:before{background:#49b676!important}
+.live-stat-updated strong{color:#77efa0}
+@media(max-width:1250px){.live-statistics-strip{grid-template-columns:repeat(3,1fr)}}
+@media(max-width:760px){.live-statistics-strip{grid-template-columns:1fr 1fr}}
