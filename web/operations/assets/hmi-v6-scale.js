@@ -219,6 +219,9 @@ function renderCityProcess(city){
   const subtitle=document.querySelector('.pid-titlebar span');
   if(title)title.textContent=p.label;
   if(subtitle)subtitle.textContent=p.scale+' PROCESS · '+p.assets+' observed assets · '+p.pumps+' pump trains · '+p.branches+' distribution branches';
+
+  const idx=(window.INTERAFAS_STATIONS||[]).findIndex(s=>s.id===currentStation());
+  if(idx>=0) window.INTERAFAS_LIVE?.setStation?.(idx);
 }
 
 function applyCityProfile(city){
