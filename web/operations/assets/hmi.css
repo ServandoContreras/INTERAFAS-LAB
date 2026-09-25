@@ -651,3 +651,94 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 .live-stat-updated strong{color:#77efa0}
 @media(max-width:1250px){.live-statistics-strip{grid-template-columns:repeat(3,1fr)}}
 @media(max-width:760px){.live-statistics-strip{grid-template-columns:1fr 1fr}}
+
+
+/* HMI V6 — municipality-specific P&ID scale + high-volume live motion */
+.live-volume{display:inline-flex;align-items:center;gap:6px}
+.live-volume b{font-variant-numeric:tabular-nums}
+.v6-volume-strip{display:grid;grid-template-columns:repeat(4,minmax(150px,1fr));gap:8px;margin:0 0 10px}
+.v6-volume-strip>div{background:#091722;border:1px solid #18394a;padding:10px 12px;position:relative;overflow:hidden}
+.v6-volume-strip>div:after{content:"";position:absolute;left:-35%;bottom:0;width:35%;height:1px;background:#4cb2d4;animation:v6-scan 2.8s linear infinite}
+.v6-volume-strip span{display:block;font-size:8px;color:#718d9d;letter-spacing:.09em}
+.v6-volume-strip b{display:block;font:650 18px ui-monospace,SFMono-Regular,Consolas,monospace;margin:5px 0 2px}
+.v6-volume-strip small{font-size:8px;color:#597787}
+.v6-row-enter{animation:v6-row .5s ease both}
+@keyframes v6-row{from{opacity:0;transform:translateY(-7px);background:#123044}to{opacity:1;transform:none;background:transparent}}
+@keyframes v6-scan{to{left:110%}}
+
+.pid-scene{transition:background .45s ease}
+.pid-scene:before{content:attr(data-city);position:absolute;right:18px;top:18px;font:800 46px/1 ui-monospace,SFMono-Regular,Consolas,monospace;color:rgba(111,166,190,.035);letter-spacing:.12em;pointer-events:none}
+.v6-process-extras{position:absolute;inset:0;pointer-events:none}
+.v6-extra{display:none;position:absolute;z-index:6;background:#0c1d29;border:1px solid #31596d;box-shadow:0 8px 22px rgba(0,0,0,.18);font-size:8px;color:#7f9aaa}
+.v6-extra b,.v6-extra span,.v6-extra strong{display:block}
+.v6-extra b{font:700 9px ui-monospace,SFMono-Regular,Consolas,monospace;color:#d9e7ef}
+.v6-extra strong{color:#72d4aa;margin-top:4px}
+.v6-tank{width:92px;height:116px;padding:8px;text-align:center;border-radius:4px 4px 12px 12px}
+.v6-tank>i{display:block;height:54px;margin:7px 8px;border:1px solid #285266;background:linear-gradient(0deg,rgba(47,126,160,.6) 0 72%,transparent 72%);position:relative;overflow:hidden}
+.v6-tank>i:after{content:"";position:absolute;left:-30%;right:-30%;top:24%;height:7px;border-top:1px solid rgba(130,214,238,.45);animation:v6-water 2.4s ease-in-out infinite}
+.v6-pump{width:88px;height:62px;border-radius:50%;display:none;place-items:center;text-align:center;padding:8px}
+.v6-pump>i{position:absolute;width:22px;height:22px;border:3px solid #4f8196;border-right-color:#72d4aa;border-radius:50%;animation:v6-spin var(--v6-flow-speed,1s) linear infinite}
+.v6-pump b,.v6-pump span{position:relative;z-index:2;text-shadow:0 1px 2px #071018}
+.v6-valve{width:72px;padding:7px;text-align:center}
+.v6-valve>i{display:block;width:24px;height:24px;margin:0 auto 3px;border:2px solid #5d93a8;transform:rotate(45deg);animation:v6-valve 3s ease-in-out infinite}
+.v6-zone{width:120px;padding:9px;text-align:center}
+.v6-flow-pulse{position:absolute;width:7px;height:7px;border-radius:50%;background:#72d4aa;box-shadow:0 0 12px rgba(114,212,170,.85);z-index:9;animation:v6-flow var(--v6-flow-speed,1s) linear infinite}
+.pulse-a{top:53%;left:16%}.pulse-b{top:53%;left:38%;animation-delay:-.3s}.pulse-c{top:53%;left:61%;animation-delay:-.6s}
+.v6-scanline{position:absolute;left:0;right:0;height:1px;top:0;background:linear-gradient(90deg,transparent,rgba(76,178,212,.25),transparent);z-index:15;animation:v6-scanline 6s linear infinite}
+@keyframes v6-spin{to{transform:rotate(360deg)}}
+@keyframes v6-water{50%{transform:translateY(12px)}}
+@keyframes v6-valve{50%{transform:rotate(135deg)}}
+@keyframes v6-flow{0%{transform:translateX(0);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateX(320px);opacity:0}}
+@keyframes v6-scanline{from{top:5%}to{top:95%}}
+
+.pipe.flow-active:after{animation-duration:var(--v6-flow-speed,1s)!important}
+.pump-unit.running .motor-rotor{animation-duration:calc(var(--v6-flow-speed,1s) * .8)!important}
+.rtu-led-row i{animation:v6-led 1.9s steps(2,end) infinite}
+.rtu-led-row i:nth-child(2){animation-delay:.45s}.rtu-led-row i:nth-child(3){animation-delay:.9s}.rtu-led-row i:nth-child(4){animation-delay:1.35s}
+@keyframes v6-led{50%{filter:brightness(1.9);box-shadow:0 0 8px currentColor}}
+
+/* Saint Louis: largest process — dual storage, four pump positions and three distribution branches */
+.pid-scene.city-sl{min-height:620px;background:
+  radial-gradient(circle at 38% 52%,rgba(76,178,212,.08),transparent 24%),
+  linear-gradient(rgba(52,91,110,.08) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(52,91,110,.08) 1px,transparent 1px),#08131d;background-size:auto,24px 24px,24px 24px}
+.city-sl .sl-res-2,.city-sl .sl-pump-3,.city-sl .sl-pump-4,.city-sl .sl-valve-3,.city-sl .sl-zone-3{display:grid}
+.city-sl .sl-res-2{left:5%;top:8%}
+.city-sl .sl-pump-3{left:37%;top:19%}.city-sl .sl-pump-4{left:37%;top:68%}
+.city-sl .sl-valve-3{right:9%;top:70%}.city-sl .sl-zone-3{right:2%;bottom:4%}
+.city-sl .quality-skid{transform:translate(2%,-6%)}
+.city-sl .controller-rack{transform:translate(-4%,0)}
+.city-sl .distribution-zone.dist-a{top:18%;right:2%}
+.city-sl .distribution-zone.dist-b{top:47%;right:2%}
+.city-sl .pipe-main.p5{width:29%}
+
+/* Soledade: medium process — break tank + booster train, two service branches */
+.pid-scene.city-so{min-height:570px;background:
+  radial-gradient(circle at 52% 48%,rgba(114,212,170,.055),transparent 30%),
+  linear-gradient(rgba(52,91,110,.08) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(52,91,110,.08) 1px,transparent 1px),#08131d;background-size:auto,24px 24px,24px 24px}
+.city-so .so-pump-3,.city-so .so-break{display:grid}
+.city-so .so-pump-3{left:39%;top:68%}.city-so .so-break{left:58%;top:8%}
+.city-so .reservoir-vessel{transform:scale(.92) translate(-2%,5%)}
+.city-so .pump-a{transform:translate(3%,2%)}.city-so .pump-b{transform:translate(3%,12%)}
+.city-so .quality-skid{transform:translate(1%,7%)}
+.city-so .distribution-zone.dist-a{right:3%;top:28%}
+.city-so .distribution-zone.dist-b{right:3%;top:61%}
+
+/* Cerro de San Pablo: compact hillside booster — one principal branch and elevated storage */
+.pid-scene.city-cp{min-height:500px;background:
+  radial-gradient(circle at 20% 25%,rgba(230,189,98,.04),transparent 22%),
+  linear-gradient(rgba(52,91,110,.07) 1px,transparent 1px),
+  linear-gradient(90deg,rgba(52,91,110,.07) 1px,transparent 1px),#08131d;background-size:auto,24px 24px,24px 24px}
+.city-cp .cp-tower{display:grid;left:8%;top:8%}
+.city-cp .reservoir-vessel{transform:scale(.82) translate(-7%,29%)}
+.city-cp .pump-a{transform:translate(-3%,8%)}
+.city-cp .pump-b{transform:scale(.86) translate(-8%,2%)}
+.city-cp .quality-skid{transform:scale(.88) translate(-8%,15%)}
+.city-cp .valve-2,.city-cp .distribution-zone.dist-b,.city-cp .pipe-main.p5,.city-cp .pipe-vertical.pv3{opacity:.12;filter:grayscale(1)}
+.city-cp .distribution-zone.dist-a{right:5%;top:43%;transform:scale(1.08)}
+.city-cp .pressure-header{transform:translate(-4%,5%)}
+.city-cp .pulse-c{display:none}
+
+@media(max-width:1150px){.v6-volume-strip{grid-template-columns:repeat(2,1fr)}}
+@media(max-width:760px){.v6-volume-strip{grid-template-columns:1fr 1fr}.pid-scene.city-sl,.pid-scene.city-so,.pid-scene.city-cp{min-height:520px}}
