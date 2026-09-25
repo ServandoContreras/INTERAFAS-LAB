@@ -43,7 +43,6 @@ if(!$internal){
     exit;
 }
 
-$bridgeEstablished=establish_ops_bridge_context();
 $state=ot_call('/state');
 
 if(empty($state) || isset($state['error'])){
@@ -77,7 +76,6 @@ echo json_encode([
     'gateway'=>'operations-bridge',
     'zone'=>'operational',
     'access'=>'read-only',
-    'bridge_context'=>$bridgeEstablished?'established':'not-established',
     'source'=>[
         'observed_remote'=>$remote,
         'trusted_client'=>$claimed
@@ -91,6 +89,7 @@ echo json_encode([
         'alarms'=>$state['alarms']??[]
     ],
     'links'=>[
-        'monitoring'=>'/operations/'
+        'operator_login'=>'/operations/login.php',
+        'monitoring'=>'/operations/monitor.php'
     ]
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
