@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/common.php'; $ctx=require_lab_attempt();
+require __DIR__.'/common.php'; require_ops_bridge_context(); $ctx=require_lab_attempt();
 
 header('X-INTERAFAS-Monitoring-Authorization: lab-attempt-token');
 header('X-INTERAFAS-Access-Scope: operational-monitoring');
