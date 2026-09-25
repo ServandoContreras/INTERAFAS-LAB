@@ -1321,3 +1321,118 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 @media(max-width:900px){
   .scada-tag,.scada-status-bank,.scada-valve,.scada-motor-state{transform:scale(.9);transform-origin:top left}
 }
+
+
+/* V12 — Overview is the exact Process View topology, scaled down */
+.municipal-native-grid{display:none!important}
+.municipal-process-grid{
+  display:grid;
+  grid-template-columns:minmax(280px,.78fr) minmax(560px,1.55fr) minmax(430px,1.16fr);
+  gap:10px;
+  align-items:end;
+}
+.municipal-process-card{
+  background:#08151e;
+  border:1px solid #234253;
+  box-shadow:0 10px 26px rgba(0,0,0,.2);
+  overflow:hidden
+}
+.municipal-process-cp{border-color:#294653}
+.municipal-process-sl{border-color:#315c70}
+.municipal-process-so{border-color:#315860}
+
+.municipal-process-head{
+  height:42px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:12px;
+  padding:0 10px;
+  background:#0d212d;
+  border-bottom:1px solid #284959
+}
+.municipal-process-head span{
+  display:block;
+  color:#dcebf1;
+  font:800 10px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em
+}
+.municipal-process-head strong{
+  display:block;
+  margin-top:3px;
+  color:#7895a4;
+  font-size:7px;
+  letter-spacing:.06em
+}
+.municipal-process-head>b{
+  color:#668493;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.08em;
+  white-space:nowrap
+}
+
+.municipal-process-viewport{
+  position:relative;
+  overflow:hidden;
+  background:#07131d;
+  border-bottom:1px solid #203d4b
+}
+.municipal-process-cp .municipal-process-viewport{height:194px}
+.municipal-process-sl .municipal-process-viewport{height:326px}
+.municipal-process-so .municipal-process-viewport{height:258px}
+
+.overview-process-scene{
+  position:absolute!important;
+  left:0;
+  top:0;
+  width:1100px!important;
+  height:615px!important;
+  min-width:1100px!important;
+  pointer-events:none;
+  transform-origin:top left;
+  overflow:hidden!important
+}
+.municipal-process-cp .overview-process-scene{transform:scale(.315)}
+.municipal-process-sl .overview-process-scene{transform:scale(.53)}
+.municipal-process-so .overview-process-scene{transform:scale(.42)}
+
+.overview-process-scene .city-process{
+  width:1100px!important;
+  height:615px!important;
+  min-width:1100px!important
+}
+.overview-process-scene .scada-tag,
+.overview-process-scene .scada-status-bank,
+.overview-process-scene .scada-valve,
+.overview-process-scene .scada-motor-state{
+  transform:none!important
+}
+.overview-process-scene .cp-route.active:after{
+  animation-duration:2.2s!important;
+  opacity:.55!important
+}
+
+.municipal-process-foot{
+  min-height:58px;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  padding:8px 10px;
+  background:#0a1922
+}
+.municipal-process-foot span{
+  color:#718d9b;
+  font-size:8px;
+  line-height:1.35
+}
+
+@media(max-width:1250px){
+  .municipal-process-grid{grid-template-columns:1fr}
+  .municipal-process-cp .municipal-process-viewport,
+  .municipal-process-sl .municipal-process-viewport,
+  .municipal-process-so .municipal-process-viewport{height:385px}
+  .municipal-process-cp .overview-process-scene,
+  .municipal-process-sl .overview-process-scene,
+  .municipal-process-so .overview-process-scene{transform:scale(.63)}
+}
