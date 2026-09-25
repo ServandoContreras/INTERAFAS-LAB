@@ -1,6 +1,6 @@
 <?php
 require __DIR__.'/common.php';
-require_operational_network();
+require_operational_network(true);
 
 if(operational_is_auth()){
     header('Location: /operations/');
