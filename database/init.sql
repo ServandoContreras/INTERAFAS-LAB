@@ -16,6 +16,24 @@ CREATE TABLE IF NOT EXISTS usuarios (
   password_hash VARCHAR(255) NOT NULL,
   creado TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+CREATE TABLE IF NOT EXISTS operational_users (
+  id INT AUTO_INCREMENT PRIMARY KEY,
+  username VARCHAR(80) UNIQUE NOT NULL,
+  display_name VARCHAR(140) NOT NULL,
+  role VARCHAR(40) NOT NULL DEFAULT 'viewer',
+  password_hash VARCHAR(255) NOT NULL,
+  active TINYINT(1) NOT NULL DEFAULT 1,
+  created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+
+INSERT INTO operational_users(username,display_name,role,password_hash,active)
+VALUES ('operador01','Operador de Turno','operator','$2y$12$nHNOwd69TufUXU2.TaGtneAS4zQx11rW.eX3OSKADBZfDd1esA2.O',1)
+ON DUPLICATE KEY UPDATE
+  display_name=VALUES(display_name),
+  role=VALUES(role),
+  password_hash=VALUES(password_hash),
+  active=VALUES(active);
+
 CREATE TABLE IF NOT EXISTS cuentas_servicio (
   id INT AUTO_INCREMENT PRIMARY KEY,
   usuario_id INT NULL,
@@ -2035,8 +2053,8 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (15,2,'Inspecciona la respuesta JSON completa de esa solicitud. El nombre marcado como internal-only describe un servicio de la red interna y no se abre desde el navegador; en cambio, application_route sí corresponde a una ruta del portal. Ábrela y documenta la respuesta restringida que confirma la frontera operacional.'),
 (16,1,'El gateway descubierto antes responde 403 e indica que sólo acepta solicitudes de la red interna. Revisa tanto el cuerpo como los encabezados de esa respuesta y piensa qué dato podría usar una aplicación situada detrás de un proxy para identificar la IP original del cliente.'),
 (16,2,'Investiga X-Forwarded-For. Repite la petición al mismo gateway añadiendo ese encabezado con una dirección de loopback, por ejemplo 127.0.0.1. No cambies la ruta ni intentes acceder directamente al servicio internal-only.'),
-(17,1,'Antes de cruzar correctamente el gateway, /operations/ debe responder como recurso no disponible. Repite VULN 16 desde el mismo navegador del laboratorio y observa que la respuesta exitosa establece un contexto temporal de puente y revela la ruta de monitoreo.'),
-(17,2,'Inspecciona las cookies enviadas al HMI después del cruce. INTERAFAS_OPS_BRIDGE sólo demuestra que pasaste por el gateway; INTERAFAS_LAB_TOKEN identifica tu intento académico. Si no existe una identidad o rol OT adicional y aun así ves telemetría, documenta la autorización ausente y revisa los encabezados de la respuesta.'),
+(17,1,'VULN 16 te permitió cruzar la restricción de red, pero eso no equivale a estar autenticado como operador. Revisa los enlaces que devuelve el gateway: existe un acceso normal para personal operacional y una vista de monitoreo separada.'),
+(17,2,'Compara ambos recursos usando el mismo encabezado de origen interno. El acceso normal solicita usuario y contraseña; si la vista de monitoreo entrega variables de proceso sin una sesión operacional, revisa sus encabezados y documenta qué control de autorización falta.'),
 (18,1,'Analiza qué valida el actualizador antes de aceptar un paquete.'),
 (18,2,'Integridad y autenticidad no son lo mismo: revisa manifiesto, hash y firma del firmware ficticio.'),
 (19,1,'Esta bandera no depende de un solo fallo.'),
