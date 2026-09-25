@@ -401,3 +401,78 @@ button,input,select{font:inherit}
   .image-hotspot{position:static;margin:0 8px}
   .service-share{grid-template-columns:1fr}
 }
+
+
+/* HMI V4 — interaction, motion and professional analytics */
+.view.active.view-enter{animation:viewEnter .28s ease-out}
+@keyframes viewEnter{from{opacity:.25;transform:translateY(6px)}to{opacity:1;transform:none}}
+.metric,.station-large-card,.municipal-card,.job-card,.node,.event-row,.event-timeline>div,.data-table tbody tr{transition:transform .16s ease,border-color .16s ease,background .16s ease,box-shadow .16s ease}
+.metric{cursor:pointer}
+.metric:hover{transform:translateY(-2px);border-color:#2a6077;box-shadow:0 8px 18px rgba(0,0,0,.16)}
+.station-large-card:hover,.municipal-card:hover{transform:translateY(-2px);border-color:#2c6279;box-shadow:0 12px 28px rgba(0,0,0,.22)}
+.job-card:hover,.event-row:hover,.event-timeline>div:hover,.data-table tbody tr:hover,.interactive-node:hover{background:#0d202d;cursor:pointer}
+.interactive-node:hover{transform:translateY(-1px);border-color:#559ab6}
+.value-flash{animation:valueFlash .38s ease}
+@keyframes valueFlash{0%{text-shadow:0 0 0 rgba(76,178,212,0)}50%{text-shadow:0 0 13px rgba(76,178,212,.9)}100%{text-shadow:none}}
+
+.trend-range .tool-chip{cursor:pointer}
+.trend-range .tool-chip.active{border-color:#43829c;background:#123143;color:#e1f2f8}
+.analytics-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px;margin-bottom:10px}
+.analytics-card{background:var(--panel);border:1px solid var(--line-soft);padding:0;overflow:hidden}
+.analytics-card.wide{grid-column:span 1}
+.analytics-card header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px;padding:12px 14px 8px;border-bottom:1px solid #132d3b;background:#0a1823}
+.analytics-card header span{display:block;font-size:8px;color:#607f8f;letter-spacing:.11em}
+.analytics-card header h3{font-size:11px;font-weight:600;margin:3px 0 0}
+.analytics-card footer{display:flex;justify-content:space-between;gap:12px;padding:7px 14px 10px;font-size:8px;color:#587584;border-top:1px solid #122b39}
+.ops-chart{display:block;width:100%;height:270px}
+.ops-chart.compact{height:225px}
+.live-badge{font-size:8px;color:#79cda9;display:flex;align-items:center;gap:6px}
+.live-badge i{width:7px;height:7px;border-radius:50%;background:#72d4aa;box-shadow:0 0 0 0 rgba(114,212,170,.5);animation:livePulse 1.9s infinite}
+@keyframes livePulse{0%{box-shadow:0 0 0 0 rgba(114,212,170,.48)}70%{box-shadow:0 0 0 7px rgba(114,212,170,0)}100%{box-shadow:0 0 0 0 rgba(114,212,170,0)}}
+.legend-inline{font-size:8px;color:#738e9d;display:flex;gap:6px;align-items:center}
+.legend-inline i{width:13px;height:2px;background:#4cb2d4}.legend-inline i:nth-of-type(2){background:#72d4aa}.legend-inline i:nth-of-type(3){background:#e6bd62}
+.trend-bottom-grid{display:grid;grid-template-columns:minmax(0,1.7fr) minmax(300px,.7fr);gap:10px}
+.diagnostic-item{display:grid;grid-template-columns:10px 1fr;gap:9px;padding:9px 0;border-bottom:1px solid #132b3a}
+.diagnostic-item:last-child{border-bottom:0}
+.diagnostic-item i{width:8px;height:8px;border-radius:50%;margin-top:3px}
+.diagnostic-item i.ok{background:#72d4aa;box-shadow:0 0 8px rgba(114,212,170,.35)}
+.diagnostic-item i.warn{background:#e6bd62;box-shadow:0 0 8px rgba(230,189,98,.3)}
+.diagnostic-item b{display:block;font-size:9px}
+.diagnostic-item span{display:block;font-size:8px;color:#6d8998;margin-top:3px;line-height:1.45}
+
+.chart-tooltip{position:fixed;z-index:1000;display:none;min-width:180px;background:rgba(5,16,24,.96);border:1px solid #285269;box-shadow:0 10px 30px rgba(0,0,0,.35);padding:9px 10px;pointer-events:none}
+.chart-tooltip.show{display:block}
+.chart-tooltip>div{display:grid;grid-template-columns:9px 1fr auto;gap:7px;align-items:center;font-size:9px;padding:3px 0}
+.chart-tooltip i{width:7px;height:7px;border-radius:50%}
+.chart-tooltip b{font-weight:500;color:#adc5d0}
+.chart-tooltip span{color:#e3eef2;font-family:ui-monospace,SFMono-Regular,Consolas,monospace}
+
+.detail-drawer{position:fixed;z-index:900;top:62px;right:0;bottom:0;width:min(440px,92vw);background:#08151f;border-left:1px solid #285066;box-shadow:-16px 0 42px rgba(0,0,0,.34);transform:translateX(103%);transition:transform .24s ease;overflow:auto}
+.detail-drawer.open{transform:none}
+.drawer-head{position:sticky;top:0;z-index:2;background:#0a1924;border-bottom:1px solid #1a3b4c;padding:15px;display:flex;justify-content:space-between;gap:14px}
+.drawer-head span{font-size:8px;color:#628293;letter-spacing:.12em}
+.drawer-head h3{font-size:15px;margin:4px 0 0}
+.drawer-close{border:1px solid #31576b;background:#0e2432;color:#b8ced8;width:32px;height:32px;cursor:pointer;font-size:20px}
+.drawer-body{padding:16px}
+.drawer-kpi{font-size:38px;font-weight:650;margin:4px 0 8px}
+.drawer-body p{font-size:10px;color:#829ba8;line-height:1.6}
+.drawer-chart{margin:15px 0;background:#07131c;border:1px solid #153545;padding:8px}
+.drawer-chart canvas{width:100%;height:190px}
+.drawer-meta{display:grid;grid-template-columns:110px 1fr;margin-top:15px;border-top:1px solid #173342}
+.drawer-meta span,.drawer-meta b{padding:8px 0;border-bottom:1px solid #142c3a;font-size:9px}
+.drawer-meta span{color:#607f8f}.drawer-meta b{font-weight:500}
+.drawer-record p{display:grid;grid-template-columns:90px 1fr;gap:8px;margin:0;border-bottom:1px solid #142d3b;padding:8px 0}
+.drawer-record p span{color:#5f7e8e}
+.drawer-record p b{font-weight:500;color:#c3d4dc}
+
+.metro-image-stage img,.municipal-card img,.station-image img{transition:transform 7s ease,filter .3s ease}
+.metro-image-stage:hover>img{transform:scale(1.025)}
+.municipal-card:hover img,.station-large-card:hover .station-image img{transform:scale(1.035);filter:saturate(.95) contrast(1.08)}
+.image-hotspot{animation:hotspotFloat 5s ease-in-out infinite}
+.image-hotspot:nth-of-type(2){animation-delay:.8s}.image-hotspot:nth-of-type(3){animation-delay:1.6s}.image-hotspot:nth-of-type(4){animation-delay:2.4s}
+@keyframes hotspotFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-3px)}}
+
+@media(max-width:1050px){
+  .analytics-grid,.trend-bottom-grid{grid-template-columns:1fr}
+  .analytics-card.wide{grid-column:auto}
+}
