@@ -48,26 +48,26 @@ const cityProfiles={
 };
 
 const alarmTemplates=[
-  ['ВЫСОКИЙ','Уровень резервуара приближается к нижнему рабочему пределу','LT'],
-  ['СРЕДНИЙ','Отклонение давления в коллекторе','PT'],
-  ['СРЕДНИЙ','Превышение задержки связи RTU','RTU'],
-  ['НИЗКИЙ','Проверка резервного насоса задержана','P'],
-  ['НИЗКИЙ','Отклонение расхода выше базового профиля','FT'],
-  ['ИНФО','Сигнал калибровки анализатора качества','AIT'],
-  ['ИНФО','Диагностика цикла PLC зарегистрирована','PLC'],
-  ['ИНФО','Проверка хода клапана завершена','V']
+  ['HIGH','Reservoir low-level operating margin','LT'],
+  ['MEDIUM','Header pressure deviation','PT'],
+  ['MEDIUM','RTU communications latency threshold','RTU'],
+  ['LOW','Standby pump availability test delayed','P'],
+  ['LOW','Flow variance above adaptive baseline','FT'],
+  ['INFO','Quality analyzer calibration heartbeat','AIT'],
+  ['INFO','PLC scan-cycle diagnostic recorded','PLC'],
+  ['INFO','Valve travel verification completed','V']
 ];
 const eventTemplates=[
-  ['ИНФО','Пакет архиватора сохранен','HIST-01'],
-  ['ИНФО','Цикл PLC синхронизирован','PLC'],
-  ['ИНФО','Расчет баланса потребления завершен','OT-AUTO-01'],
-  ['ИНФО','Обновление операторского экрана завершено','HMI-OPS-01'],
-  ['ПРЕДУПР','Обнаружено отклонение задержки RTU','RTU'],
-  ['ИНФО','Проба качества принята','QCS'],
-  ['ИНФО','Счетчик наработки насоса обновлен','P'],
-  ['ИНФО','Телеметрия состояния клапана архивирована','V'],
-  ['ИНФО','Контрольная сумма инженерного проекта проверена','EWS-01'],
-  ['ИНФО','Каталог восстановления проверен','BRS-01']
+  ['INFO','Historian batch committed','HIST-01'],
+  ['INFO','PLC scan cycle synchronized','PLC'],
+  ['INFO','Demand balancing calculation completed','OT-AUTO-01'],
+  ['INFO','Operator display refresh completed','HMI-OPS-01'],
+  ['WARN','RTU latency variance observed','RTU'],
+  ['INFO','Quality sample accepted','QCS'],
+  ['INFO','Pump runtime accumulator updated','P'],
+  ['INFO','Valve state telemetry archived','V'],
+  ['INFO','Engineering checksum observed','EWS-01'],
+  ['INFO','Recovery catalog heartbeat verified','BRS-01']
 ];
 
 const fmt=n=>Math.round(n).toLocaleString('en-US');
@@ -110,8 +110,8 @@ function makeAlarmRow(){
   const city=document.querySelector('[data-current-city]')?.textContent?.trim()||state.city;
   const code=(station.match(/EST-([A-Z]{2})/)||[])[1]||'SL';
   const src=kind==='RTU'?('RTU-'+code+'-'+(1+Math.floor(Math.random()*5))):(kind+'-'+code+'-'+String(101+Math.floor(Math.random()*105)));
-  const status=Math.random()<.7?'НЕПОДТВ.':(Math.random()<.6?'ПОДТВ.':'СНЯТО');
-  const cls=priority==='ВЫСОКИЙ'||priority==='СРЕДНИЙ'?'warn-text':'';
+  const status=Math.random()<.7?'UNACK':(Math.random()<.6?'ACK':'CLEARED');
+  const cls=priority==='HIGH'||priority==='MEDIUM'?'warn-text':'';
   return '<tr class="v6-row-enter"><td>'+time()+'</td><td class="'+cls+'">'+priority+'</td><td>'+city+'</td><td>'+src+'</td><td>'+message+'</td><td>'+status+'</td></tr>';
 }
 
@@ -150,54 +150,52 @@ function processTemplates(){
   return {
     'Saint Louis':
       '<div class="city-process city-process-sl">'+
-      '<div class="scada-ru-mark"><b>АСУ ТП</b><span>ТЕХНОЛОГИЧЕСКАЯ СХЕМА · АВТО</span></div>'+
-      '<div class="cp-section sl-storage"><span>СЫРАЯ ВОДА / RAW WATER</span></div>'+
-      '<div class="cp-section sl-lift"><span>НАСОСЫ ВЫСОКОГО ДАВЛЕНИЯ</span></div>'+
-      '<div class="cp-section sl-treatment"><span>ОЧИСТКА / РЕГУЛИРОВАНИЕ</span></div>'+
-      '<div class="cp-section sl-distribution"><span>ГОРОДСКОЕ РАСПРЕДЕЛЕНИЕ</span></div>'+
-      '<div class="sl-raw-intake eq-click" data-equipment="INT-SL-01"><b>ПРИЕМ СЫРОЙ ВОДЫ</b><span>INT-SL-01</span><strong data-live-tag="FLOW">—</strong><small data-live-tag="TURBIDITY">—</small></div>'+
+      '<div class="cp-section sl-storage"><span>RAW WATER STORAGE</span></div>'+
+      '<div class="cp-section sl-lift"><span>HIGH-LIFT PUMPING</span></div>'+
+      '<div class="cp-section sl-treatment"><span>TREATMENT / REGULATION</span></div>'+
+      '<div class="cp-section sl-distribution"><span>METROPOLITAN DISTRIBUTION</span></div>'+
+      '<div class="sl-raw-intake eq-click" data-equipment="INT-SL-01"><b>RAW WATER INTAKE</b><span>INT-SL-01</span><strong data-live-tag="FLOW">—</strong><small data-live-tag="TURBIDITY">—</small></div>'+
       '<div class="cp-tank sl-tank-a eq-click" data-equipment="TQ-SL-01"><b>TQ-SL-01</b><span>Primary reservoir</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
       '<div class="cp-tank sl-tank-b eq-click" data-equipment="TQ-SL-02"><b>TQ-SL-02</b><span>Secondary reservoir</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
       '<div class="sl-level-tag sl-lt1"><small>LT-SL-101</small><b data-live-tag="LEVEL">—</b></div><div class="sl-level-tag sl-lt2"><small>LT-SL-102</small><b>51 %</b></div>'+
-      '<div class="cp-pump sl-p1 running eq-click" data-pump-state="P101" data-equipment="P-SL-101"><i></i><b>P-SL-101</b><span>НАСОС A</span><strong data-live-tag="P101" data-live-format="state" data-on="РАБОТА" data-off="СТОП">РАБОТА</strong></div>'+
-      '<div class="cp-pump sl-p2 running eq-click" data-pump-state="P101" data-equipment="P-SL-102"><i></i><b>P-SL-102</b><span>НАСОС B</span><strong>РАБОТА</strong></div>'+
-      '<div class="cp-pump sl-p3 running eq-click" data-pump-state="P101" data-equipment="P-SL-103"><i></i><b>P-SL-103</b><span>НАСОС C</span><strong>РАБОТА</strong></div>'+
-      '<div class="cp-pump sl-p4 eq-click" data-pump-state="P102" data-equipment="P-SL-104"><i></i><b>P-SL-104</b><span>РЕЗЕРВ D</span><strong data-live-tag="P102" data-live-format="state" data-on="РАБОТА" data-off="РЕЗЕРВ">РЕЗЕРВ</strong></div>'+
-      '<div class="sl-suction-header eq-click" data-equipment="HDR-SL-SUC"><b>ВСАСЫВАЮЩИЙ КОЛЛЕКТОР</b><span>2.18 bar</span></div>'+
-      '<div class="sl-discharge-header eq-click" data-equipment="HDR-SL-DIS"><b>НАПОРНЫЙ КОЛЛЕКТОР</b><span data-live-tag="PRESS">—</span></div>'+
-      '<div class="sl-filter-bank eq-click" data-equipment="FLT-SL-01"><b>ФИЛЬТРЫ</b><div><span>F-101</span><i class="ok"></i><small>ΔP 0.18</small></div><div><span>F-102</span><i class="ok"></i><small>ΔP 0.20</small></div><div><span>F-103</span><i class="warn"></i><small>ΔP 0.65</small></div></div>'+
-      '<div class="cp-skid sl-qcs eq-click" data-equipment="QCS-SL-01"><b>QCS-SL-01</b><span>КАЧЕСТВО ВОДЫ / QUALITY</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
-      '<div class="sl-chem eq-click" data-equipment="CHEM-SL-01"><b>NaOCl</b><span>ДОЗИРОВАНИЕ</span><strong>АВТО</strong></div>'+
-      '<div class="cp-header sl-header eq-click" data-equipment="HDR-SL-01"><b>HDR-SL-01</b><span>ГЛАВНЫЙ КОЛЛЕКТОР</span><strong data-live-tag="PRESS">—</strong></div>'+
+      '<div class="cp-pump sl-p1 running eq-click" data-pump-state="P101" data-equipment="P-SL-101"><i></i><b>P-SL-101</b><span>HIGH-LIFT A</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
+      '<div class="cp-pump sl-p2 running eq-click" data-pump-state="P101" data-equipment="P-SL-102"><i></i><b>P-SL-102</b><span>HIGH-LIFT B</span><strong>RUN</strong></div>'+
+      '<div class="cp-pump sl-p3 running eq-click" data-pump-state="P101" data-equipment="P-SL-103"><i></i><b>P-SL-103</b><span>HIGH-LIFT C</span><strong>RUN</strong></div>'+
+      '<div class="cp-pump sl-p4 eq-click" data-pump-state="P102" data-equipment="P-SL-104"><i></i><b>P-SL-104</b><span>STANDBY D</span><strong data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</strong></div>'+
+      '<div class="sl-suction-header eq-click" data-equipment="HDR-SL-SUC"><b>SUCTION MANIFOLD</b><span>2.18 bar</span></div>'+
+      '<div class="sl-discharge-header eq-click" data-equipment="HDR-SL-DIS"><b>DISCHARGE MANIFOLD</b><span data-live-tag="PRESS">—</span></div>'+
+      '<div class="sl-filter-bank eq-click" data-equipment="FLT-SL-01"><b>FILTER BANK</b><div><span>F-101</span><i class="ok"></i><small>ΔP 0.18</small></div><div><span>F-102</span><i class="ok"></i><small>ΔP 0.20</small></div><div><span>F-103</span><i class="warn"></i><small>ΔP 0.65</small></div></div>'+
+      '<div class="cp-skid sl-qcs eq-click" data-equipment="QCS-SL-01"><b>QCS-SL-01</b><span>Final water quality</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
+      '<div class="sl-chem eq-click" data-equipment="CHEM-SL-01"><b>NaOCl</b><span>DOSING</span><strong>AUTO</strong></div>'+
+      '<div class="cp-header sl-header eq-click" data-equipment="HDR-SL-01"><b>HDR-SL-01</b><span>Main metropolitan header</span><strong data-live-tag="PRESS">—</strong></div>'+
       '<div class="cp-meter sl-flow"><b>FT-SL-101</b><strong data-live-tag="FLOW">—</strong></div>'+
       '<div class="cp-zone sl-zone-a"><b>ZONE A</b><span>Central / commercial</span><small>FT-SL-501 · 1.28 m³/s</small><em>PT-SL-501 · 4.8 bar</em></div>'+
       '<div class="cp-zone sl-zone-b"><b>ZONE B</b><span>Residential / university</span><small>FT-SL-502 · 1.15 m³/s</small><em>PT-SL-502 · 4.6 bar</em></div>'+
       '<div class="cp-zone sl-zone-c"><b>ZONE C</b><span>Industrial / airport</span><small>FT-SL-503 · 0.93 m³/s</small><em>PT-SL-503 · 4.4 bar</em></div>'+
-      '<div class="sl-inst sl-fit101"><i>F</i><small>FIT-SL-101 · РАСХОД</small><b data-live-tag="FLOW">—</b></div>'+
-      '<div class="sl-inst sl-pt201"><i>P</i><small>PT-SL-201 · ДАВЛЕНИЕ</small><b>2.18 bar</b></div>'+
-      '<div class="sl-inst sl-pt401"><i>P</i><small>PT-SL-401 · ДАВЛЕНИЕ</small><b data-live-tag="PRESS">—</b></div>'+
-      '<div class="sl-inst sl-ait301"><i>A</i><small>AIT-SL-301 · КАЧЕСТВО</small><b data-live-tag="TURBIDITY">—</b></div>'+
+      '<div class="sl-inst sl-fit101"><i>F</i><small>FIT-SL-101</small><b data-live-tag="FLOW">—</b></div>'+
+      '<div class="sl-inst sl-pt201"><i>P</i><small>PT-SL-201</small><b>2.18 bar</b></div>'+
+      '<div class="sl-inst sl-pt401"><i>P</i><small>PT-SL-401</small><b data-live-tag="PRESS">—</b></div>'+
+      '<div class="sl-inst sl-ait301"><i>A</i><small>AIT-SL-301</small><b data-live-tag="TURBIDITY">—</b></div>'+
       '<div class="sl-inst sl-fit501"><i>F</i><small>FIT-SL-501</small><b>1.28</b></div>'+
       '<div class="sl-inst sl-fit502"><i>F</i><small>FIT-SL-502</small><b>1.15</b></div>'+
       '<div class="sl-inst sl-fit503"><i>F</i><small>FIT-SL-503</small><b>0.93</b></div>'+
-      '<div class="scada-status-bank sl-status"><div><i></i><span>PLC-SL-01</span><b>РАБОТА</b></div><div><i></i><span>RTU-SL-01</span><b>СВЯЗЬ</b></div><div><i></i><span>QCS-SL-01</span><b>НОРМА</b></div><div><i class="warn"></i><span>P-SL-104</span><b>РЕЗЕРВ</b></div></div>'+
+      '<div class="scada-status-bank sl-status"><div><i></i><span>PLC-SL-01</span><b>RUN</b></div><div><i></i><span>RTU-SL-01</span><b>ONLINE</b></div><div><i></i><span>QCS-SL-01</span><b>VALID</b></div><div><i class="warn"></i><span>P-SL-104</span><b>STBY</b></div></div>'+
       '<div class="scada-valve sl-v-a open"><i></i><span>XV-SL-501</span></div><div class="scada-valve sl-v-b open"><i></i><span>XV-SL-502</span></div><div class="scada-valve sl-v-c open"><i></i><span>XV-SL-503</span></div>'+
       '<div class="scada-valve sl-v-suc-a open"><i></i><span>XV-SL-101</span></div><div class="scada-valve sl-v-suc-b open"><i></i><span>XV-SL-102</span></div>'+
       '<div class="sl-check sl-cv1"><i></i><span>CV-201</span></div><div class="sl-check sl-cv2"><i></i><span>CV-202</span></div><div class="sl-check sl-cv3"><i></i><span>CV-203</span></div><div class="sl-check sl-cv4"><i></i><span>CV-204</span></div>'+
       '<div class="sl-isolation sl-iso-in"><i></i><span>XV-SL-110</span></div><div class="sl-isolation sl-iso-out"><i></i><span>XV-SL-410</span></div>'+
-      '<div class="sl-bypass"><b>ОБХОД / BYPASS</b><span>XV-SL-420 · ЗАКРЫТ</span></div>'+
-      '<div class="sl-main-header-label"><small>ГЛАВНЫЙ КОЛЛЕКТОР</small><b>HDR-SL-01</b><strong data-live-tag="PRESS">—</strong></div>'+
-      '<div class="scada-motor-state sl-mcc">MCC-SL-01 · ШИНА НОРМА · АВТО · 3 РАБОТА / 1 РЕЗЕРВ</div>'+
+      '<div class="sl-bypass"><b>MAINTENANCE BYPASS</b><span>XV-SL-420 · CLOSED</span></div>'+
+      '<div class="sl-main-header-label"><small>METROPOLITAN HEADER</small><b>HDR-SL-01</b><strong data-live-tag="PRESS">—</strong></div>'+
+      '<div class="scada-motor-state sl-mcc">MCC-SL-01 · BUS HEALTHY · AUTO · 3 RUN / 1 STBY</div>'+
       '<div class="cp-route sl-intake-r active"></div><div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
       '</div>',
 
     'Soledade':
       '<div class="city-process city-process-so">'+
-      '<div class="scada-ru-mark"><b>АСУ ТП</b><span>РАСПРЕДЕЛЕНИЕ · АВТО</span></div>'+
-      '<div class="cp-section so-intake"><span>ВХОД / BOOSTER</span></div>'+
-      '<div class="cp-section so-control"><span>РЕГУЛИРОВАНИЕ ДАВЛЕНИЯ</span></div>'+
-      '<div class="cp-section so-storage"><span>РЕЗЕРВУАР ДАВЛЕНИЯ</span></div>'+
-      '<div class="cp-section so-service"><span>ПОДАЧА В СЕКТОРЫ</span></div>'+
+      '<div class="cp-section so-intake"><span>INTAKE / BOOSTER</span></div>'+
+      '<div class="cp-section so-control"><span>PRESSURE CONTROL</span></div>'+
+      '<div class="cp-section so-storage"><span>BREAK-PRESSURE STORAGE</span></div>'+
+      '<div class="cp-section so-service"><span>EAST / SOUTH SERVICE</span></div>'+
       '<div class="cp-source so-source"><b>INTAKE SO-01</b><span>Eastern feeder</span><strong data-live-tag="FLOW">—</strong></div>'+
       '<div class="cp-pump so-p1 running eq-click" data-pump-state="P101" data-equipment="P-SO-101"><i></i><b>P-SO-101</b><span>BOOSTER A</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
       '<div class="cp-pump so-p2 running eq-click" data-pump-state="P101" data-equipment="P-SO-102"><i></i><b>P-SO-102</b><span>BOOSTER B</span><strong>RUN</strong></div>'+
@@ -218,11 +216,10 @@ function processTemplates(){
 
     'Cerro de San Pablo':
       '<div class="city-process city-process-cp">'+
-      '<div class="scada-ru-mark"><b>АСУ ТП</b><span>НАСОСНАЯ СТАНЦИЯ · АВТО</span></div>'+
-      '<div class="cp-section cp-storage"><span>ВОДОНАПОРНЫЙ РЕЗЕРВУАР</span></div>'+
-      '<div class="cp-section cp-booster"><span>НАСОСНАЯ СТАНЦИЯ</span></div>'+
-      '<div class="cp-section cp-disinfection"><span>ОБЕЗЗАРАЖИВАНИЕ</span></div>'+
-      '<div class="cp-section cp-highzone"><span>ПОДАЧА В ВЕРХНЮЮ ЗОНУ</span></div>'+
+      '<div class="cp-section cp-storage"><span>ELEVATED STORAGE</span></div>'+
+      '<div class="cp-section cp-booster"><span>HILLSIDE BOOSTER</span></div>'+
+      '<div class="cp-section cp-disinfection"><span>DISINFECTION</span></div>'+
+      '<div class="cp-section cp-highzone"><span>HIGH-ZONE FEED</span></div>'+
       '<div class="cp-tower eq-click" data-equipment="TQ-CP-02"><div class="tower-bowl"><i data-level-fill="LEVEL"></i></div><div class="tower-legs"></div><b>TQ-CP-02</b><span>Elevated balance tank</span><strong data-live-tag="LEVEL">—</strong></div>'+
       '<div class="cp-pump cp-p1 running eq-click" data-pump-state="P101" data-equipment="P-CP-101"><i></i><b>P-CP-101</b><span>BOOSTER DUTY</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
       '<div class="cp-pump cp-p2 eq-click" data-pump-state="P102" data-equipment="P-CP-102"><i></i><b>P-CP-102</b><span>BOOSTER STANDBY</span><strong data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</strong></div>'+
@@ -255,9 +252,9 @@ function renderCityProcess(city){
 }
 
 function overviewDefaults(city){
-  if(city==='Saint Louis')return {FLOW:'3.42 m³/s',PRESS:'5.20 bar',LEVEL:'68 %',CHLORINE:'1.05 mg/L',TURBIDITY:'0.34 NTU',P101:'РАБОТА',P102:'РЕЗЕРВ'};
-  if(city==='Soledade')return {FLOW:'1.28 m³/s',PRESS:'4.80 bar',LEVEL:'62 %',CHLORINE:'1.02 mg/L',TURBIDITY:'0.32 NTU',P101:'РАБОТА',P102:'МЕСТН'};
-  return {FLOW:'2,380 L/s',PRESS:'4.40 bar',LEVEL:'78 %',CHLORINE:'0.72 mg/L',TURBIDITY:'0.28 NTU',P101:'РАБОТА',P102:'РЕЗЕРВ'};
+  if(city==='Saint Louis')return {FLOW:'3.42 m³/s',PRESS:'5.20 bar',LEVEL:'68 %',CHLORINE:'1.05 mg/L',TURBIDITY:'0.34 NTU',P101:'RUN',P102:'STBY'};
+  if(city==='Soledade')return {FLOW:'1.28 m³/s',PRESS:'4.80 bar',LEVEL:'62 %',CHLORINE:'1.02 mg/L',TURBIDITY:'0.32 NTU',P101:'RUN',P102:'LOCAL'};
+  return {FLOW:'2,380 L/s',PRESS:'4.40 bar',LEVEL:'78 %',CHLORINE:'0.72 mg/L',TURBIDITY:'0.28 NTU',P101:'RUN',P102:'STBY'};
 }
 function renderProcessOverviews(){
   const templates=processTemplates();
@@ -315,8 +312,8 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('.pid-scene .eq-click');
   if(!el)return;
   const name=el.dataset.equipment||'Process asset';
-  window.INTERAFAS_HMI?.openDrawer?.(name,'ОБЪЕКТ ПРОЦЕССА · LIVE',
-    '<div class="drawer-kpi">'+name+'</div><p>Контекст объекта в реальном времени · +state.city+'.</p><div class="drawer-meta"><span>Station</span><b>'+currentStation()+'</b><span>Municipality</span><b>'+state.city+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
+  window.INTERAFAS_HMI?.openDrawer?.(name,'LIVE PROCESS ASSET',
+    '<div class="drawer-kpi">'+name+'</div><p>Live asset context for '+state.city+'.</p><div class="drawer-meta"><span>Station</span><b>'+currentStation()+'</b><span>Municipality</span><b>'+state.city+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
 });
 
 function dynamicStatistics(){
