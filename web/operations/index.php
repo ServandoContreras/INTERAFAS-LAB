@@ -227,13 +227,16 @@ $pressureZones=18;
   </div>
 
   <div class="municipal-image-grid">
-    <article class="municipal-card municipal-card-cp">\n      <img src="/operations/assets/img/station-cp.svg" alt="Complejo de bombeo de Cerro de San Pablo">
+    <article class="municipal-card municipal-card-cp">
+      <img src="/operations/assets/img/station-cp.svg" alt="Complejo de bombeo de Cerro de San Pablo">
       <div class="municipal-overlay"><span>CERRO DE SAN PABLO</span><strong>Hillside booster & elevated storage</strong><small>Compact high-zone system · gravity-assisted storage · 2-pump booster duty/standby</small><button class="btn station-open" data-station-open="0">OPEN HILLSIDE OPERATIONS</button></div>
     </article>
-    <article class="municipal-card municipal-card-sl">\n      <img src="/operations/assets/img/station-sl.svg" alt="Complejo de regulación de Saint Louis">
+    <article class="municipal-card municipal-card-sl">
+      <img src="/operations/assets/img/station-sl.svg" alt="Complejo de regulación de Saint Louis">
       <div class="municipal-overlay"><span>SAINT LOUIS · LARGE SCADA</span><strong>Metropolitan primary works</strong><small>Raw-water intake · dual storage · filtration/chlorination · 4-pump high-lift bank · 3 distribution trunks</small><button class="btn station-open" data-station-open="4">OPEN METROPOLITAN OPERATIONS</button></div>
     </article>
-    <article class="municipal-card municipal-card-so">\n      <img src="/operations/assets/img/station-so.svg" alt="Complejo de distribución de Soledade">
+    <article class="municipal-card municipal-card-so">
+      <img src="/operations/assets/img/station-so.svg" alt="Complejo de distribución de Soledade">
       <div class="municipal-overlay"><span>SOLEDADE · MEDIUM SCADA</span><strong>Eastern booster & pressure control</strong><small>Eastern intake · 3-pump booster hall · PRV regulation · chlorination · break-pressure tank · 2 service sectors</small><button class="btn station-open" data-station-open="8">OPEN EASTERN OPERATIONS</button></div>
     </article>
   </div>
