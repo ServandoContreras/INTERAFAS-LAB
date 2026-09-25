@@ -1962,3 +1962,148 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 /* Overview remains exact same topology */
 .overview-process-scene.city-sl .sl-bypass{opacity:.9}
 .overview-process-scene.city-sl .sl-main-header-label{font-size:6px}
+
+
+/* V16 — Saint Louis integrated P&ID/HMI layout */
+.city-process-sl .sl-raw-intake{
+  position:absolute;z-index:5;
+  left:1.8%;top:40%;
+  width:105px;
+  padding:7px 8px;
+  background:#081a23;
+  border:1px solid #3a5d6d;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-raw-intake b{display:block;color:#dcebf1;font-size:8px}
+.city-process-sl .sl-raw-intake span{display:block;margin-top:2px;color:#7896a5;font-size:6px}
+.city-process-sl .sl-raw-intake strong{display:block;margin-top:5px;color:#58eaff;font-size:9px}
+.city-process-sl .sl-raw-intake small{display:block;margin-top:2px;color:#72d4aa;font-size:6px}
+
+.city-process-sl .sl-level-tag{
+  position:absolute;z-index:7;
+  min-width:54px;
+  padding:3px 5px;
+  background:#061118;
+  border:1px solid #345362;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-level-tag small{display:block;color:#718e9d;font-size:6px}
+.city-process-sl .sl-level-tag b{display:block;color:#58eaff;font-size:8px;margin-top:1px}
+.city-process-sl .sl-lt1{left:13%;top:29%}
+.city-process-sl .sl-lt2{left:13%;top:59%}
+
+/* Compact inline field instruments */
+.city-process-sl .sl-inst{
+  position:absolute;
+  z-index:8;
+  width:62px;
+  text-align:center;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-inst i{
+  display:flex;
+  width:24px;height:24px;
+  margin:0 auto 2px;
+  align-items:center;justify-content:center;
+  border-radius:50%;
+  border:2px solid #5b7e8d;
+  background:#07141b;
+  color:#77dff2;
+  font-size:8px;
+  font-style:normal
+}
+.city-process-sl .sl-inst small{
+  display:block;
+  color:#7893a0;
+  font-size:5px;
+  background:#061118;
+  border:1px solid #213e4b;
+  padding:1px 2px
+}
+.city-process-sl .sl-inst b{
+  display:block;
+  margin-top:1px;
+  color:#d9edf4;
+  font-size:6px
+}
+.city-process-sl .sl-fit101{left:17%;top:43%}
+.city-process-sl .sl-pt201{left:29%;top:43%}
+.city-process-sl .sl-pt401{left:64%;top:43%}
+.city-process-sl .sl-ait301{left:58%;top:54%}
+.city-process-sl .sl-fit501{left:78%;top:21%}
+.city-process-sl .sl-fit502{left:78%;top:47%}
+.city-process-sl .sl-fit503{left:78%;top:73%}
+
+/* Raw-water inlet now clearly feeds both storage reservoirs */
+.city-process-sl .sl-intake-r{
+  left:10.5%!important;
+  top:49%!important;
+  width:9%!important;
+  height:7px!important
+}
+.city-process-sl .sl-storage:before{
+  content:"";
+  position:absolute;
+  left:7%;top:27%;
+  width:5px;height:45%;
+  background:#285f79;
+  border:1px solid #173f52;
+  z-index:1
+}
+
+/* Reduce section-box dominance; process should read first */
+.city-process-sl .cp-section{
+  background:rgba(8,25,35,.08)!important;
+  border-color:rgba(63,100,117,.22)!important
+}
+.city-process-sl .cp-section>span{
+  opacity:.78
+}
+
+/* Metropolitan header becomes the dominant distribution spine */
+.city-process-sl .sl-r6{
+  left:76%!important;
+  top:24%!important;
+  height:62%!important;
+  width:9px!important;
+  background:#3b819c!important;
+  border-color:#285d72!important
+}
+.city-process-sl .sl-main-header-label{
+  left:68.5%!important;
+  top:39%!important;
+  width:120px!important;
+  border-color:#4b7586!important
+}
+.city-process-sl .sl-branch-a{right:13.5%!important;top:27%!important;width:11.5%!important}
+.city-process-sl .sl-branch-b{right:13.5%!important;top:53%!important;width:11.5%!important}
+.city-process-sl .sl-branch-c{right:13.5%!important;top:79%!important;width:11.5%!important}
+
+/* Cleaner treatment train alignment */
+.city-process-sl .sl-filter-bank{left:50.5%!important;top:15%!important}
+.city-process-sl .sl-chem{left:63%!important;top:19%!important}
+.city-process-sl .sl-qcs{left:56.5%!important;top:62%!important}
+.city-process-sl .sl-header{left:66%!important;top:55%!important}
+.city-process-sl .sl-flow{display:none!important}
+
+/* Keep old floating tags out; instrumentation is now mounted on process */
+.city-process-sl .sl-tag-flow,
+.city-process-sl .sl-tag-p1,
+.city-process-sl .sl-tag-q{display:none!important}
+
+/* Slightly clearer active-flow hierarchy */
+.city-process-sl .sl-r1,
+.city-process-sl .sl-r2,
+.city-process-sl .sl-r3,
+.city-process-sl .sl-r4,
+.city-process-sl .sl-r5,
+.city-process-sl .sl-branch-a,
+.city-process-sl .sl-branch-b,
+.city-process-sl .sl-branch-c{
+  background:#2c6a84!important
+}
+.city-process-sl .sl-r6{background:#3b819c!important}
+
+/* Overview uses exactly the same P&ID elements, only scaled */
+.overview-process-scene.city-sl .sl-inst{transform:scale(.92);transform-origin:center}
+.overview-process-scene.city-sl .sl-level-tag{font-size:5px}
