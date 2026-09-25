@@ -1814,3 +1814,151 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 .overview-process-scene.city-sl .sl-filter-bank>div{padding:4px 0}
 .overview-process-scene.city-sl .sl-suction-header,
 .overview-process-scene.city-sl .sl-discharge-header{font-size:6px}
+
+
+/* V15 — Saint Louis final hydraulic detailing */
+.city-process-sl .sl-check,
+.city-process-sl .sl-isolation{
+  position:absolute;
+  z-index:7;
+  width:38px;
+  text-align:center;
+  font:700 6px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-check i{
+  display:block;
+  width:0;height:0;
+  margin:0 auto;
+  border-top:9px solid transparent;
+  border-bottom:9px solid transparent;
+  border-left:16px solid #67cfa2;
+  filter:drop-shadow(0 0 2px rgba(103,207,162,.3))
+}
+.city-process-sl .sl-check span,
+.city-process-sl .sl-isolation span{
+  display:block;
+  margin-top:3px;
+  color:#86a6b5;
+  background:#07141b;
+  border:1px solid #254351;
+  padding:2px
+}
+.city-process-sl .sl-isolation i{
+  display:block;
+  width:16px;height:16px;
+  margin:0 auto;
+  border:2px solid #6a8b99;
+  transform:rotate(45deg);
+  background:#16303b
+}
+.city-process-sl .sl-cv1{left:34%;top:29%}
+.city-process-sl .sl-cv2{left:45%;top:29%}
+.city-process-sl .sl-cv3{left:34%;top:69%}
+.city-process-sl .sl-cv4{left:45%;top:69%}
+.city-process-sl .sl-iso-in{left:23%;top:44%}
+.city-process-sl .sl-iso-out{left:67%;top:44%}
+
+.city-process-sl .sl-bypass{
+  position:absolute;z-index:3;
+  left:48%;top:81%;
+  width:20%;height:44px;
+  border:1px dashed #7d6f41;
+  background:rgba(44,38,18,.28);
+  color:#c8b66b;
+  padding:6px 8px;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-bypass:before{
+  content:"";
+  position:absolute;
+  left:-6%;right:-6%;top:21px;
+  height:4px;
+  background:#6f6338;
+  opacity:.8
+}
+.city-process-sl .sl-bypass b,
+.city-process-sl .sl-bypass span{
+  position:relative;z-index:2;
+  display:block
+}
+.city-process-sl .sl-bypass span{
+  margin-top:4px;
+  color:#d2c883
+}
+
+.city-process-sl .sl-main-header-label{
+  position:absolute;z-index:6;
+  left:69%;top:41%;
+  width:112px;
+  padding:6px 7px;
+  background:#06131a;
+  border:1px solid #3e6676;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.city-process-sl .sl-main-header-label small{
+  display:block;
+  color:#7394a2;
+  font-size:6px
+}
+.city-process-sl .sl-main-header-label b{
+  display:block;
+  margin-top:2px;
+  color:#d9e8ef;
+  font-size:8px
+}
+.city-process-sl .sl-main-header-label strong{
+  display:block;
+  margin-top:4px;
+  color:#69e39a;
+  font-size:10px
+}
+
+/* Stronger central distribution spine */
+.city-process-sl .sl-r6{
+  background:#367b97!important;
+  border-color:#24586e!important;
+  box-shadow:0 0 0 1px rgba(79,151,179,.12)!important
+}
+.city-process-sl .sl-branch-a,
+.city-process-sl .sl-branch-b,
+.city-process-sl .sl-branch-c{
+  background:#2b708e!important;
+  border-color:#1d4d63!important
+}
+
+/* More compact, readable zone boxes */
+.city-process-sl .sl-zone-a,
+.city-process-sl .sl-zone-b,
+.city-process-sl .sl-zone-c{
+  padding:8px 9px!important;
+  min-height:72px!important
+}
+.city-process-sl .sl-zone-a b,
+.city-process-sl .sl-zone-b b,
+.city-process-sl .sl-zone-c b{
+  font-size:9px!important;
+  letter-spacing:.05em
+}
+.city-process-sl .sl-zone-a span,
+.city-process-sl .sl-zone-b span,
+.city-process-sl .sl-zone-c span{
+  margin-top:3px!important;
+  font-size:7px!important
+}
+
+/* Emphasize active pumping train without bright decoration */
+.city-process-sl .sl-p1,
+.city-process-sl .sl-p2,
+.city-process-sl .sl-p3{
+  border-color:#3e7660!important
+}
+.city-process-sl .sl-p4{
+  border-color:#6f6340!important
+}
+.city-process-sl .sl-p4 strong{
+  color:#f1cf68!important
+}
+
+/* Overview remains exact same topology */
+.overview-process-scene.city-sl .sl-bypass{opacity:.9}
+.overview-process-scene.city-sl .sl-main-header-label{font-size:6px}
