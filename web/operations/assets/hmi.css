@@ -742,3 +742,24 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 
 @media(max-width:1150px){.v6-volume-strip{grid-template-columns:repeat(2,1fr)}}
 @media(max-width:760px){.v6-volume-strip{grid-template-columns:1fr 1fr}.pid-scene.city-sl,.pid-scene.city-so,.pid-scene.city-cp{min-height:520px}}
+
+
+/* V6 municipal overview hierarchy: Saint Louis > Soledade > Cerro de San Pablo */
+.municipal-image-grid{grid-template-columns:minmax(240px,.8fr) minmax(420px,1.45fr) minmax(300px,1fr);align-items:stretch}
+.municipal-card:nth-child(1){min-height:230px}
+.municipal-card:nth-child(1) img{height:230px}
+.municipal-card:nth-child(2){min-height:310px;border-color:#28586d;box-shadow:0 12px 28px rgba(0,0,0,.18)}
+.municipal-card:nth-child(2) img{height:310px}
+.municipal-card:nth-child(2) .municipal-overlay>strong{font-size:18px}
+.municipal-card:nth-child(3){min-height:270px}
+.municipal-card:nth-child(3) img{height:270px}
+.municipal-card:nth-child(1):before,.municipal-card:nth-child(2):before,.municipal-card:nth-child(3):before{position:absolute;z-index:3;right:10px;top:10px;padding:5px 7px;background:rgba(5,18,27,.88);border:1px solid #2b5669;font:700 8px ui-monospace,SFMono-Regular,Consolas,monospace;letter-spacing:.09em;color:#85a8b8}
+.municipal-card:nth-child(1):before{content:"COMPACT · HILLSIDE"}
+.municipal-card:nth-child(2):before{content:"LARGE · METROPOLITAN CORE"}
+.municipal-card:nth-child(3):before{content:"MEDIUM · EASTERN WORKS"}
+
+@media(max-width:1150px){
+  .municipal-image-grid{grid-template-columns:1fr}
+  .municipal-card:nth-child(1),.municipal-card:nth-child(2),.municipal-card:nth-child(3){min-height:250px}
+  .municipal-card:nth-child(1) img,.municipal-card:nth-child(2) img,.municipal-card:nth-child(3) img{height:250px}
+}
