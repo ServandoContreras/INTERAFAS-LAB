@@ -20,6 +20,6 @@ ON DUPLICATE KEY UPDATE
   active=VALUES(active);
 
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
-(17,1,'VULN 16 te permitió alcanzar la aplicación operacional, pero la consola principal sigue exigiendo autenticación. Revisa las rutas que devuelve el gateway y piensa qué servicio necesita el HMI para actualizar nivel, caudal, presión y alarmas sin recargar toda la página.'),
-(17,2,'La consola autenticada consulta periódicamente un endpoint de telemetría. Compara el comportamiento de ese recurso con el de la consola principal y revisa si ambos aplican el mismo control de sesión antes de entregar información de proceso.')
+(17,1,'VULN 16 revela únicamente la puerta de entrada legítima del Centro de Operaciones. Ábrela con la misma condición de red interna y revisa qué recursos JavaScript carga la página antes de intentar adivinar otras rutas.'),
+(17,2,'El cliente web compartido contiene la configuración que utiliza el HMI para refrescar datos de proceso. Localiza el endpoint de telemetría en ese recurso y compara su respuesta sin sesión operacional con la protección aplicada a /operations/.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
