@@ -48,26 +48,26 @@ const cityProfiles={
 };
 
 const alarmTemplates=[
-  ['HIGH','Reservoir low-level operating margin','LT'],
-  ['MEDIUM','Header pressure deviation','PT'],
-  ['MEDIUM','RTU communications latency threshold','RTU'],
-  ['LOW','Standby pump availability test delayed','P'],
-  ['LOW','Flow variance above adaptive baseline','FT'],
-  ['INFO','Quality analyzer calibration heartbeat','AIT'],
-  ['INFO','PLC scan-cycle diagnostic recorded','PLC'],
-  ['INFO','Valve travel verification completed','V']
+  ['ВЫСОКИЙ','Уровень резервуара приближается к нижнему рабочему пределу','LT'],
+  ['СРЕДНИЙ','Отклонение давления в коллекторе','PT'],
+  ['СРЕДНИЙ','Превышение задержки связи RTU','RTU'],
+  ['НИЗКИЙ','Проверка резервного насоса задержана','P'],
+  ['НИЗКИЙ','Отклонение расхода выше базового профиля','FT'],
+  ['ИНФО','Сигнал калибровки анализатора качества','AIT'],
+  ['ИНФО','Диагностика цикла PLC зарегистрирована','PLC'],
+  ['ИНФО','Проверка хода клапана завершена','V']
 ];
 const eventTemplates=[
-  ['INFO','Historian batch committed','HIST-01'],
-  ['INFO','PLC scan cycle synchronized','PLC'],
-  ['INFO','Demand balancing calculation completed','OT-AUTO-01'],
-  ['INFO','Operator display refresh completed','HMI-OPS-01'],
-  ['WARN','RTU latency variance observed','RTU'],
-  ['INFO','Quality sample accepted','QCS'],
-  ['INFO','Pump runtime accumulator updated','P'],
-  ['INFO','Valve state telemetry archived','V'],
-  ['INFO','Engineering checksum observed','EWS-01'],
-  ['INFO','Recovery catalog heartbeat verified','BRS-01']
+  ['ИНФО','Пакет архиватора сохранен','HIST-01'],
+  ['ИНФО','Цикл PLC синхронизирован','PLC'],
+  ['ИНФО','Расчет баланса потребления завершен','OT-AUTO-01'],
+  ['ИНФО','Обновление операторского экрана завершено','HMI-OPS-01'],
+  ['ПРЕДУПР','Обнаружено отклонение задержки RTU','RTU'],
+  ['ИНФО','Проба качества принята','QCS'],
+  ['ИНФО','Счетчик наработки насоса обновлен','P'],
+  ['ИНФО','Телеметрия состояния клапана архивирована','V'],
+  ['ИНФО','Контрольная сумма инженерного проекта проверена','EWS-01'],
+  ['ИНФО','Каталог восстановления проверен','BRS-01']
 ];
 
 const fmt=n=>Math.round(n).toLocaleString('en-US');
@@ -110,8 +110,8 @@ function makeAlarmRow(){
   const city=document.querySelector('[data-current-city]')?.textContent?.trim()||state.city;
   const code=(station.match(/EST-([A-Z]{2})/)||[])[1]||'SL';
   const src=kind==='RTU'?('RTU-'+code+'-'+(1+Math.floor(Math.random()*5))):(kind+'-'+code+'-'+String(101+Math.floor(Math.random()*105)));
-  const status=Math.random()<.7?'UNACK':(Math.random()<.6?'ACK':'CLEARED');
-  const cls=priority==='HIGH'||priority==='MEDIUM'?'warn-text':'';
+  const status=Math.random()<.7?'НЕПОДТВ.':(Math.random()<.6?'ПОДТВ.':'СНЯТО');
+  const cls=priority==='ВЫСОКИЙ'||priority==='СРЕДНИЙ'?'warn-text':'';
   return '<tr class="v6-row-enter"><td>'+time()+'</td><td class="'+cls+'">'+priority+'</td><td>'+city+'</td><td>'+src+'</td><td>'+message+'</td><td>'+status+'</td></tr>';
 }
 
@@ -315,8 +315,8 @@ document.addEventListener('click',e=>{
   const el=e.target.closest('.pid-scene .eq-click');
   if(!el)return;
   const name=el.dataset.equipment||'Process asset';
-  window.INTERAFAS_HMI?.openDrawer?.(name,'LIVE PROCESS ASSET',
-    '<div class="drawer-kpi">'+name+'</div><p>Live asset context for '+state.city+'.</p><div class="drawer-meta"><span>Station</span><b>'+currentStation()+'</b><span>Municipality</span><b>'+state.city+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
+  window.INTERAFAS_HMI?.openDrawer?.(name,'ОБЪЕКТ ПРОЦЕССА · LIVE',
+    '<div class="drawer-kpi">'+name+'</div><p>Контекст объекта в реальном времени · +state.city+'.</p><div class="drawer-meta"><span>Station</span><b>'+currentStation()+'</b><span>Municipality</span><b>'+state.city+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
 });
 
 function dynamicStatistics(){
