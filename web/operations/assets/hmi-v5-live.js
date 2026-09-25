@@ -125,7 +125,11 @@ function renderTags(){
       el.textContent=text;
       el.classList.remove('tag-pulse'); void el.offsetWidth; el.classList.add('tag-pulse');
     }
-    setStateClass(el,stateFor(t));
+    const st=stateFor(t);
+    setStateClass(el,st);
+    const host=el.closest('.process-status-strip>div,.instrument-list>div');
+    const pilot=host?.querySelector('.pilot');
+    if(pilot){pilot.classList.remove('pilot-ok','pilot-warn','pilot-alarm','pilot-off','pilot-service');pilot.classList.add('pilot-'+st);}
   });
   document.querySelectorAll('[data-level-fill]').forEach(el=>{
     const t=live.tags[el.dataset.levelFill];
