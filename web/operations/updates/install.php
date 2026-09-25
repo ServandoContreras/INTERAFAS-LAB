@@ -5,6 +5,25 @@ require_operational_network(true);
 header('Content-Type: application/json; charset=utf-8');
 header('Cache-Control: no-store');
 
+$maintenanceUser=(string)($_SERVER['PHP_AUTH_USER']??'');
+$maintenancePass=(string)($_SERVER['PHP_AUTH_PW']??'');
+$maintenanceIdentity=null;
+
+if($maintenanceUser!==''){
+    $q=db()->prepare("SELECT id,username,display_name,role,password_hash,active FROM firmware_support_users WHERE username=? LIMIT 1");
+    $q->execute([$maintenanceUser]);
+    $maintenanceIdentity=$q->fetch();
+}
+
+if(!$maintenanceIdentity
+   || (int)$maintenanceIdentity['active']!==1
+   || !password_verify($maintenancePass,(string)$maintenanceIdentity['password_hash'])){
+    header('WWW-Authenticate: Basic realm="INTERAFAS Firmware Support"');
+    http_response_code(401);
+    echo json_encode(['ok'=>false,'error'=>'maintenance-auth-required'],JSON_UNESCAPED_UNICODE);
+    exit;
+}
+
 if($_SERVER['REQUEST_METHOD']!=='POST'){
     http_response_code(405);
     header('Allow: POST');
@@ -96,7 +115,9 @@ if($nonApprovedPackage){
             'provided_hash'=>$providedHash,
             'signature_verified'=>false,
             'mode'=>$mode,
-            'diagnostic'=>$diagnostic
+            'diagnostic'=>$diagnostic,
+            'maintenance_identity'=>$maintenanceIdentity['username']??'',
+            'maintenance_role'=>$maintenanceIdentity['role']??''
         ],
         'ot-sim',
         'critical',
