@@ -37,8 +37,9 @@ if(!$internal){
         'error'=>'restricted-gateway',
         'message'=>'El gateway operacional requiere autorización adicional.',
         'policy'=>[
-            'required_zone'=>'internal',
-            'source_validation'=>'proxy-client-address'
+            'required_zone'=>'operations',
+            'source_validation'=>'proxy-client-address',
+            'network_scope'=>'private-operational-segment'
         ]
     ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
     exit;
