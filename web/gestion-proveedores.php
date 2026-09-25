@@ -137,7 +137,6 @@ include __DIR__.'/includes/header.php';
 <button class="btn btn-light" type="submit">Restaurar vigente</button>
 <?php endif;?>
 </form>
-<a class="text-link" href="/gestion-contratos.php?provider_id=<?= (int)$r['id']?>">Revisar contratos →</a>
 </td>
 </tr><?php endforeach;?>
 </tbody></table></div>
