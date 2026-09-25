@@ -7,7 +7,9 @@ header('Cache-Control: no-store');
 ?>
 window.INTERAFAS_OPS = Object.freeze({
   telemetryEndpoint: '/operations/telemetry.php',
-  refreshInterval: 5000
+  firmwareStatusEndpoint: '/operations/firmware-status.php',
+  refreshInterval: 5000,
+  firmwareRefreshInterval: 30000
 });
 
 (function () {
