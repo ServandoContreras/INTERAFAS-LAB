@@ -145,66 +145,107 @@ function updateVolumeCounters(alarmBurst=0,eventBurst=0){
   document.querySelectorAll('[data-v6-event-rate]').forEach(n=>n.textContent=fmt(eventRate));
 }
 
-function ensureProcessExtras(){
+
+function processTemplates(){
+  return {
+    'Saint Louis':
+      '<div class="city-process city-process-sl">'+
+      '<div class="cp-section sl-storage"><span>RAW WATER STORAGE</span></div>'+
+      '<div class="cp-section sl-lift"><span>HIGH-LIFT PUMPING</span></div>'+
+      '<div class="cp-section sl-treatment"><span>TREATMENT / REGULATION</span></div>'+
+      '<div class="cp-section sl-distribution"><span>METROPOLITAN DISTRIBUTION</span></div>'+
+      '<div class="cp-tank sl-tank-a eq-click" data-equipment="TQ-SL-01"><b>TQ-SL-01</b><span>Primary reservoir</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
+      '<div class="cp-tank sl-tank-b eq-click" data-equipment="TQ-SL-02"><b>TQ-SL-02</b><span>Secondary reservoir</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
+      '<div class="cp-pump sl-p1 running eq-click" data-pump-state="P101" data-equipment="P-SL-101"><i></i><b>P-SL-101</b><span>HIGH-LIFT A</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
+      '<div class="cp-pump sl-p2 running eq-click" data-pump-state="P101" data-equipment="P-SL-102"><i></i><b>P-SL-102</b><span>HIGH-LIFT B</span><strong>RUN</strong></div>'+
+      '<div class="cp-pump sl-p3 running eq-click" data-pump-state="P101" data-equipment="P-SL-103"><i></i><b>P-SL-103</b><span>HIGH-LIFT C</span><strong>RUN</strong></div>'+
+      '<div class="cp-pump sl-p4 eq-click" data-pump-state="P102" data-equipment="P-SL-104"><i></i><b>P-SL-104</b><span>STANDBY D</span><strong data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</strong></div>'+
+      '<div class="cp-skid sl-qcs eq-click" data-equipment="QCS-SL-01"><b>QCS-SL-01</b><span>Quality / dosing</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
+      '<div class="cp-header sl-header eq-click" data-equipment="HDR-SL-01"><b>HDR-SL-01</b><span>Main metropolitan header</span><strong data-live-tag="PRESS">—</strong></div>'+
+      '<div class="cp-meter sl-flow"><b>FT-SL-101</b><strong data-live-tag="FLOW">—</strong></div>'+
+      '<div class="cp-zone sl-zone-a"><b>ZONE A</b><span>Central / commercial</span></div>'+
+      '<div class="cp-zone sl-zone-b"><b>ZONE B</b><span>Residential / university</span></div>'+
+      '<div class="cp-zone sl-zone-c"><b>ZONE C</b><span>Industrial / airport</span></div>'+
+      '<div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
+      '</div>',
+
+    'Soledade':
+      '<div class="city-process city-process-so">'+
+      '<div class="cp-section so-intake"><span>INTAKE / BOOSTER</span></div>'+
+      '<div class="cp-section so-control"><span>PRESSURE CONTROL</span></div>'+
+      '<div class="cp-section so-storage"><span>BREAK-PRESSURE STORAGE</span></div>'+
+      '<div class="cp-section so-service"><span>EAST / SOUTH SERVICE</span></div>'+
+      '<div class="cp-source so-source"><b>INTAKE SO-01</b><span>Eastern feeder</span><strong data-live-tag="FLOW">—</strong></div>'+
+      '<div class="cp-pump so-p1 running eq-click" data-pump-state="P101" data-equipment="P-SO-101"><i></i><b>P-SO-101</b><span>BOOSTER A</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
+      '<div class="cp-pump so-p2 running eq-click" data-pump-state="P101" data-equipment="P-SO-102"><i></i><b>P-SO-102</b><span>BOOSTER B</span><strong>RUN</strong></div>'+
+      '<div class="cp-pump so-p3 eq-click" data-pump-state="P102" data-equipment="P-SO-103"><i></i><b>P-SO-103</b><span>STANDBY C</span><strong data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</strong></div>'+
+      '<div class="cp-control so-prv eq-click" data-equipment="PRV-SO-01"><b>PRV-SO-01</b><span>Pressure reducing station</span><strong data-live-tag="PRESS">—</strong></div>'+
+      '<div class="cp-tank so-break eq-click" data-equipment="BRK-SO-01"><b>BRK-SO-01</b><span>Break-pressure tank</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
+      '<div class="cp-skid so-qcs eq-click" data-equipment="QCS-SO-01"><b>QCS-SO-01</b><span>Distribution quality</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
+      '<div class="cp-zone so-zone-n"><b>NORTH / INDUSTRIAL</b><span>Primary service sector</span></div>'+
+      '<div class="cp-zone so-zone-s"><b>SOUTH / RESIDENTIAL</b><span>Secondary service sector</span></div>'+
+      '<div class="cp-route so-r1 active"></div><div class="cp-route so-r2 active"></div><div class="cp-route so-r3 active"></div><div class="cp-route so-up active"></div><div class="cp-route so-down active"></div>'+
+      '</div>',
+
+    'Cerro de San Pablo':
+      '<div class="city-process city-process-cp">'+
+      '<div class="cp-section cp-storage"><span>ELEVATED STORAGE</span></div>'+
+      '<div class="cp-section cp-booster"><span>HILLSIDE BOOSTER</span></div>'+
+      '<div class="cp-section cp-disinfection"><span>DISINFECTION</span></div>'+
+      '<div class="cp-section cp-highzone"><span>HIGH-ZONE FEED</span></div>'+
+      '<div class="cp-tower eq-click" data-equipment="TQ-CP-02"><div class="tower-bowl"><i data-level-fill="LEVEL"></i></div><div class="tower-legs"></div><b>TQ-CP-02</b><span>Elevated balance tank</span><strong data-live-tag="LEVEL">—</strong></div>'+
+      '<div class="cp-pump cp-p1 running eq-click" data-pump-state="P101" data-equipment="P-CP-101"><i></i><b>P-CP-101</b><span>BOOSTER DUTY</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
+      '<div class="cp-pump cp-p2 eq-click" data-pump-state="P102" data-equipment="P-CP-102"><i></i><b>P-CP-102</b><span>BOOSTER STANDBY</span><strong data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</strong></div>'+
+      '<div class="cp-skid cp-chlor eq-click" data-equipment="CL-CP-01"><b>CL-CP-01</b><span>Compact chlorination</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div></div>'+
+      '<div class="cp-meter cp-pressure"><b>PT-CP-201</b><strong data-live-tag="PRESS">—</strong></div>'+
+      '<div class="cp-zone cp-zone-main"><b>HIGH ZONE</b><span>Single municipal feed</span><strong data-live-tag="FLOW">—</strong></div>'+
+      '<div class="cp-overflow"><b>OVERFLOW / DRAIN</b><span>Gravity safety path</span></div>'+
+      '<div class="cp-route cp-r1 active"></div><div class="cp-route cp-r2 active"></div><div class="cp-route cp-r3 active"></div><div class="cp-route cp-gravity"></div>'+
+      '</div>'
+  };
+}
+
+function renderCityProcess(city){
   const scene=document.querySelector('.pid-scene');
-  if(!scene || scene.dataset.v6Ready)return;
-  scene.dataset.v6Ready='1';
-  const extras=document.createElement('div');
-  extras.className='v6-process-extras';
-  extras.innerHTML=
-    '<div class="v6-extra v6-tank sl-res-2"><b>TQ-SL-02</b><span>Secondary Reservoir</span><i></i><strong data-live-tag="LEVEL">—</strong></div>'+
-    '<div class="v6-extra v6-pump sl-pump-3" data-pump-state="P101"><i></i><b>P-SL-103</b><span>High-Lift C</span></div>'+
-    '<div class="v6-extra v6-pump sl-pump-4" data-pump-state="P102"><i></i><b>P-SL-104</b><span>High-Lift D</span></div>'+
-    '<div class="v6-extra v6-valve sl-valve-3" data-valve-state="V201"><i></i><b>V-SL-203</b><span>ZONE C</span></div>'+
-    '<div class="v6-extra v6-zone sl-zone-3"><b>ZONE C</b><span>Industrial / airport</span><strong data-live-tag="FLOW">—</strong></div>'+
-    '<div class="v6-extra v6-pump so-pump-3" data-pump-state="P101"><i></i><b>P-SO-103</b><span>Booster C</span></div>'+
-    '<div class="v6-extra v6-tank so-break"><b>BRK-SO-01</b><span>Pressure Break</span><i></i><strong data-live-tag="LEVEL">—</strong></div>'+
-    '<div class="v6-extra v6-tank cp-tower"><b>TQ-CP-02</b><span>Elevated Balance</span><i></i><strong data-live-tag="LEVEL">—</strong></div>'+
-    '<div class="v6-flow-pulse pulse-a"></div><div class="v6-flow-pulse pulse-b"></div><div class="v6-flow-pulse pulse-c"></div>'+
-    '<div class="v6-scanline"></div>';
-  scene.appendChild(extras);
+  if(!scene)return;
+  const templates=processTemplates();
+  const p=cityProfiles[city]||cityProfiles['Saint Louis'];
+  state.city=cityProfiles[city]?city:'Saint Louis';
+  scene.className='pid-scene '+p.cls;
+  scene.dataset.city=p.code;
+  scene.innerHTML=templates[state.city];
+
+  const title=document.querySelector('.pid-titlebar strong');
+  const subtitle=document.querySelector('.pid-titlebar span');
+  if(title)title.textContent=p.label;
+  if(subtitle)subtitle.textContent=p.scale+' PROCESS · '+p.assets+' observed assets · '+p.pumps+' pump trains · '+p.branches+' distribution branches';
 }
 
 function applyCityProfile(city){
-  state.city=cityProfiles[city]?city:'Saint Louis';
-  const p=cityProfiles[state.city];
-  const scene=document.querySelector('.pid-scene');
-  if(!scene)return;
-  scene.classList.remove('city-sl','city-so','city-cp');
-  scene.classList.add(p.cls);
-  scene.dataset.city=p.code;
-  const zones=[...scene.querySelectorAll('.pid-zone')];
-  zones.forEach((z,i)=>{if(p.zones[i])z.textContent=p.zones[i];});
-  const title=document.querySelector('.pid-titlebar strong');
-  if(title) title.textContent=p.label;
-  const subtitle=document.querySelector('.pid-titlebar span');
-  if(subtitle) subtitle.textContent=p.scale+' PROCESS · '+p.assets+' observed assets · '+p.pumps+' pump trains · '+p.branches+' distribution branches';
-
-  // City-specific naming makes the schematic read as a different plant, not a reused template.
-  const code=p.code;
-  const replacements=[
-    ['.reservoir-vessel .equipment-label b','TQ-'+code+'-01'],
-    ['.pump-a .equipment-label b','P-'+code+'-101'],
-    ['.pump-b .equipment-label b','P-'+code+'-102'],
-    ['.quality-skid .equipment-label b','QCS-'+code+'-01'],
-    ['.pressure-header .equipment-label b','HDR-'+code+'-01'],
-    ['.valve-1 span','V-'+code+'-201'],
-    ['.valve-2 span','V-'+code+'-202']
-  ];
-  replacements.forEach(([sel,val])=>{const el=scene.querySelector(sel);if(el)el.textContent=val;});
-
-  const distA=scene.querySelector('.dist-a span'), distB=scene.querySelector('.dist-b span');
-  if(state.city==='Saint Louis'){if(distA)distA.textContent='Central / commercial grid';if(distB)distB.textContent='Residential / university grid';}
-  if(state.city==='Soledade'){if(distA)distA.textContent='North / industrial distribution';if(distB)distB.textContent='South / residential distribution';}
-  if(state.city==='Cerro de San Pablo'){if(distA)distA.textContent='High-zone municipal feed';if(distB)distB.textContent='Reserve bypass';}}
+  renderCityProcess(city);
+}
 
 function observeStationChanges(){
   const city=document.querySelector('[data-current-city]');
   if(!city)return;
-  const sync=()=>applyCityProfile(city.textContent.trim());
+  let last='';
+  const sync=()=>{
+    const next=city.textContent.trim();
+    if(!next || next===last)return;
+    last=next;
+    applyCityProfile(next);
+  };
   new MutationObserver(sync).observe(city,{childList:true,characterData:true,subtree:true});
   sync();
 }
+
+document.addEventListener('click',e=>{
+  const el=e.target.closest('.pid-scene .eq-click');
+  if(!el)return;
+  const name=el.dataset.equipment||'Process asset';
+  window.INTERAFAS_HMI?.openDrawer?.(name,'LIVE PROCESS ASSET',
+    '<div class="drawer-kpi">'+name+'</div><p>Live asset context for '+state.city+'.</p><div class="drawer-meta"><span>Station</span><b>'+currentStation()+'</b><span>Municipality</span><b>'+state.city+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
+});
 
 function dynamicStatistics(){
   const view=document.querySelector('.view[data-view="statistics"]');
@@ -276,7 +317,6 @@ function statisticsPulse(){ dynamicStatistics(); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   ensureLiveBadges();
-  ensureProcessExtras();
   const initialIndex=(window.INTERAFAS_STATIONS||[]).findIndex(s=>s.id===currentStation());
   if(initialIndex>=0) window.INTERAFAS_LIVE?.setStation?.(initialIndex);
   observeStationChanges();
