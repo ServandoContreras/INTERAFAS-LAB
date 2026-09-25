@@ -236,6 +236,45 @@ function renderCityProcess(city){
   if(idx>=0) window.INTERAFAS_LIVE?.setStation?.(idx);
 }
 
+function overviewDefaults(city){
+  if(city==='Saint Louis')return {FLOW:'3.42 m³/s',PRESS:'5.20 bar',LEVEL:'68 %',CHLORINE:'1.05 mg/L',TURBIDITY:'0.34 NTU',P101:'RUN',P102:'STBY'};
+  if(city==='Soledade')return {FLOW:'1.28 m³/s',PRESS:'4.80 bar',LEVEL:'62 %',CHLORINE:'1.02 mg/L',TURBIDITY:'0.32 NTU',P101:'RUN',P102:'LOCAL'};
+  return {FLOW:'2,380 L/s',PRESS:'4.40 bar',LEVEL:'78 %',CHLORINE:'0.72 mg/L',TURBIDITY:'0.28 NTU',P101:'RUN',P102:'STBY'};
+}
+function renderProcessOverviews(){
+  const templates=processTemplates();
+  document.querySelectorAll('[data-process-overview]').forEach(scene=>{
+    const city=scene.dataset.processOverview;
+    const p=cityProfiles[city]||cityProfiles['Saint Louis'];
+    scene.className='pid-scene overview-process-scene '+p.cls;
+    scene.dataset.city=p.code;
+    scene.innerHTML=templates[city]||templates['Saint Louis'];
+
+    const vals=overviewDefaults(city);
+    scene.querySelectorAll('[data-live-tag]').forEach(el=>{
+      const key=el.dataset.liveTag;
+      if(vals[key]!==undefined)el.textContent=vals[key];
+      el.removeAttribute('data-live-tag');
+      el.removeAttribute('data-live-format');
+      el.removeAttribute('data-on');
+      el.removeAttribute('data-off');
+    });
+    scene.querySelectorAll('[data-level-fill]').forEach(el=>{
+      const n=parseFloat(vals.LEVEL)||65;
+      el.style.height=Math.max(8,Math.min(94,n))+'%';
+      el.removeAttribute('data-level-fill');
+    });
+    scene.querySelectorAll('[data-pump-state],[data-pipe-state]').forEach(el=>{
+      el.removeAttribute('data-pump-state');
+      el.removeAttribute('data-pipe-state');
+    });
+    scene.querySelectorAll('.eq-click').forEach(el=>{
+      el.classList.remove('eq-click');
+      el.removeAttribute('data-equipment');
+    });
+  });
+}
+
 function applyCityProfile(city){
   renderCityProcess(city);
 }
@@ -382,6 +421,7 @@ document.addEventListener('DOMContentLoaded',()=>{
   const initialIndex=(window.INTERAFAS_STATIONS||[]).findIndex(s=>s.id===currentStation());
   if(initialIndex>=0) window.INTERAFAS_LIVE?.setStation?.(initialIndex);
   observeStationChanges();
+  renderProcessOverviews();
   updateVolumeCounters();
   dynamicStatistics();
   state.ready=true;
