@@ -80,11 +80,11 @@ function pushLog(severity,source,message){
 
 function maybeEvent(){
   const r=Math.random();
-  if(r<.07) pushLog('INFO','HIST-01','Снимок архиватора сохранен для тегов метрополитенского процесса.');
-  else if(r<.105) pushLog('INFO','OT-AUTO-01','Цикл балансировки потребления завершен; действия оператора не требуются.');
-  else if(r<.135) pushLog('WARN','RTU-SL-02','Задержка связи превысила предупредительный диапазон.');
-  else if(r<.16) pushLog('INFO','BRS-01','Сигнал каталога восстановления подтвержден.');
-  else if(r<.18) pushLog('INFO','EWS-01','Контрольная сумма инженерного проекта проверена.');
+  if(r<.07) pushLog('INFO','HIST-01','Historian snapshot committed for metropolitan process tags.');
+  else if(r<.105) pushLog('INFO','OT-AUTO-01','Demand-balancing cycle completed; no operator action required.');
+  else if(r<.135) pushLog('WARN','RTU-SL-02','Communication latency exceeded the warning envelope.');
+  else if(r<.16) pushLog('INFO','BRS-01','Recovery catalog heartbeat verified.');
+  else if(r<.18) pushLog('INFO','EWS-01','Engineering baseline checksum observed.');
 }
 
 function detectAlarms(){
@@ -94,9 +94,9 @@ function detectAlarms(){
     const prev=live.alarms.get(name)||'ok';
     if(state!==prev){
       const s=stationMeta[live.stationIndex]||{};
-      if(state==='warn') pushLog('WARN',name,(s.id||'STATION')+' '+name+' вошел в предупредительный диапазон: '+formatTag(t));
-      if(state==='alarm') pushLog('ALARM',name,(s.id||'STATION')+' '+name+' превысил технологический предел: '+formatTag(t));
-      if(prev!=='ok' && state==='ok') pushLog('INFO',name,(s.id||'STATION')+' '+name+' вернулся в нормальный рабочий диапазон.');
+      if(state==='warn') pushLog('WARN',name,(s.id||'STATION')+' '+name+' entered warning range: '+formatTag(t));
+      if(state==='alarm') pushLog('ALARM',name,(s.id||'STATION')+' '+name+' exceeded process limit: '+formatTag(t));
+      if(prev!=='ok' && state==='ok') pushLog('INFO',name,(s.id||'STATION')+' '+name+' returned to normal operating range.');
       live.alarms.set(name,state);
     }
   });
@@ -104,7 +104,7 @@ function detectAlarms(){
 
 function formatTag(t){
   if(!t)return '—';
-  if(t.type==='bool')return t.value?'РАБОТА/ОТКРЫТ':'СТОП/ЗАКРЫТ';
+  if(t.type==='bool')return t.value?'RUN/OPEN':'STOP/CLOSED';
   if(t.type==='state')return t.value;
   return Number(t.value).toFixed(t.decimals??1)+(t.unit?' '+t.unit:'');
 }
@@ -120,7 +120,7 @@ function renderTags(){
     const key=el.dataset.liveTag;
     const t=live.tags[key];
     if(!t)return;
-    const text=el.dataset.liveFormat==='state' ? (t.type==='bool'?(t.value?(el.dataset.on||'РАБОТА'):(el.dataset.off||'СТОП')):formatTag(t)) : formatTag(t);
+    const text=el.dataset.liveFormat==='state' ? (t.type==='bool'?(t.value?(el.dataset.on||'RUN'):(el.dataset.off||'STOP')):formatTag(t)) : formatTag(t);
     if(el.textContent!==text){
       el.textContent=text;
       el.classList.remove('tag-pulse'); void el.offsetWidth; el.classList.add('tag-pulse');
@@ -240,18 +240,18 @@ function setStation(index){
   document.querySelectorAll('[data-current-controller]').forEach(el=>el.textContent=s.controller||'—');
   document.querySelectorAll('[data-current-gateway]').forEach(el=>el.textContent=s.gateway||'—');
   document.querySelectorAll('[data-current-function]').forEach(el=>el.textContent=s.function||'—');
-  pushLog('INFO',s.id||'STATION','Выбрана технологическая схема: '+(s.name||s.city||'station')+'.');
+  pushLog('INFO',s.id||'STATION','Live process view selected: '+(s.name||s.city||'station')+'.');
   renderTags();recalcStats();
 }
 
 function seedLogs(){
   const seeds=[
-    ['INFO','HMI-OPS-01','Сеанс телеметрии метросистемы инициализирован.'],
-    ['INFO','HIST-01','Поток данных архиватора синхронизирован.'],
-    ['WARN','RTU-SL-02','Задержка связи близка к предупредительному порогу.'],
-    ['INFO','PLC-CP-03','Сигнал вспомогательного управления резервуаром получен.'],
-    ['INFO','QCS-SO-01','Проба качества воды принята.'],
-    ['INFO','OT-AUTO-01','Сигнал планировщика техобслуживания завершен.']
+    ['INFO','HMI-OPS-01','Live metropolitan telemetry session initialized.'],
+    ['INFO','HIST-01','Historian ingestion stream synchronized.'],
+    ['WARN','RTU-SL-02','Communication latency operating near warning threshold.'],
+    ['INFO','PLC-CP-03','Reservoir auxiliary control heartbeat received.'],
+    ['INFO','QCS-SO-01','Water quality sample accepted.'],
+    ['INFO','OT-AUTO-01','Maintenance scheduler heartbeat completed.']
   ];
   seeds.forEach((x,i)=>live.logs.push({ts:new Date(Date.now()-i*37000),severity:x[0],source:x[1],message:x[2]}));
   renderLogs();
