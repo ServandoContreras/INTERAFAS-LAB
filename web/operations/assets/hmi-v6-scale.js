@@ -176,6 +176,10 @@ function processTemplates(){
       '<div class="scada-status-bank sl-status"><div><i></i><span>PLC-SL-01</span><b>RUN</b></div><div><i></i><span>RTU-SL-01</span><b>ONLINE</b></div><div><i></i><span>QCS-SL-01</span><b>VALID</b></div><div><i class="warn"></i><span>P-SL-104</span><b>STBY</b></div></div>'+
       '<div class="scada-valve sl-v-a open"><i></i><span>XV-SL-501</span></div><div class="scada-valve sl-v-b open"><i></i><span>XV-SL-502</span></div><div class="scada-valve sl-v-c open"><i></i><span>XV-SL-503</span></div>'+
       '<div class="scada-valve sl-v-suc-a open"><i></i><span>XV-SL-101</span></div><div class="scada-valve sl-v-suc-b open"><i></i><span>XV-SL-102</span></div>'+
+      '<div class="sl-check sl-cv1"><i></i><span>CV-201</span></div><div class="sl-check sl-cv2"><i></i><span>CV-202</span></div><div class="sl-check sl-cv3"><i></i><span>CV-203</span></div><div class="sl-check sl-cv4"><i></i><span>CV-204</span></div>'+
+      '<div class="sl-isolation sl-iso-in"><i></i><span>XV-SL-110</span></div><div class="sl-isolation sl-iso-out"><i></i><span>XV-SL-410</span></div>'+
+      '<div class="sl-bypass"><b>MAINTENANCE BYPASS</b><span>XV-SL-420 · CLOSED</span></div>'+
+      '<div class="sl-main-header-label"><small>METROPOLITAN HEADER</small><b>HDR-SL-01</b><strong data-live-tag="PRESS">—</strong></div>'+
       '<div class="scada-motor-state sl-mcc">MCC-SL-01 · BUS HEALTHY · AUTO · 3 RUN / 1 STBY</div>'+
       '<div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
       '</div>',
