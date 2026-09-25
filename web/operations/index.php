@@ -1,30 +1,26 @@
 <?php
-require __DIR__.'/common.php'; require_ops_bridge_context(); $ctx=require_lab_attempt();
-
-header('X-INTERAFAS-Monitoring-Authorization: lab-attempt-token');
-header('X-INTERAFAS-Access-Scope: operational-monitoring');
-header('X-INTERAFAS-Validation: UPSLP_CNOIV-EYES-ON-THE-PLANT-17');
+require __DIR__.'/common.php';
+require_operational_network();
+$ops=require_operational_auth();
 
 lab_event(
-    'VULN17_MONITORING_AUTH_BYPASS',
-    'HMI operacional autorizado únicamente por contexto académico',
+    'OT_HMI_ACCESS',
+    'Acceso autenticado al HMI operacional',
     '/operations/',
     [
-        'challenge'=>17,
-        'attempt_id'=>(int)($ctx['attempt_id']??0),
-        'authorization_context'=>'INTERAFAS_LAB_TOKEN',
-        'operational_identity_checked'=>false,
+        'operator'=>$ops['username']??'',
+        'role'=>$ops['role']??'',
         'plant'=>'Planta Metropolitana Norte'
     ],
     'ot-hmi',
-    'warning',
+    'notice',
     5
 );
 
 $state=ot_call('/state'); $fw=$state['firmware']??[];
 ?><!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Centro de Operaciones · INTERAFAS</title><link rel="stylesheet" href="/assets/style.css"><style>
 body{background:#07111f;color:#dce8f5}.ops-shell{max-width:1500px;margin:auto;padding:24px}.ops-top{display:flex;justify-content:space-between;gap:20px;align-items:center;margin-bottom:20px}.ops-brand small,.muted{color:#8ea7bf}.ops-grid{display:grid;grid-template-columns:2fr 1fr;gap:18px}.ops-card{background:#0d1b2d;border:1px solid #183754;border-radius:18px;padding:20px}.ops-metrics{display:grid;grid-template-columns:repeat(4,1fr);gap:12px}.ops-metric{background:#11253b;border-radius:14px;padding:16px}.ops-metric span{display:block;color:#86a0b8}.ops-metric strong{font-size:28px}.ok{color:#75e0a7}.alarm{color:#ffb2a7}.asset{display:flex;justify-content:space-between;align-items:center;padding:18px 0;border-bottom:1px solid #183754}.asset:last-child{border:0}.ops-btn{border:1px solid #2b638c;background:#153959;color:#fff;border-radius:10px;padding:10px 14px;cursor:pointer}.ops-btn.danger{background:#642a33;border-color:#93414c}.diagram{min-height:330px;display:grid;place-items:center;background:linear-gradient(135deg,#091728,#10243a);border-radius:14px;margin-top:16px}.pipe{width:80%;height:10px;background:#2d8bc5;border-radius:20px;position:relative}.pipe:before,.pipe:after{content:"";position:absolute;width:70px;height:70px;border:8px solid #2d8bc5;border-radius:50%;top:-30px}.pipe:before{left:10%}.pipe:after{right:10%}.fwbox pre{white-space:pre-wrap;background:#07111f;padding:14px;border-radius:12px}.eventlog{font-family:monospace;font-size:13px;min-height:80px}.ops-footer{margin-top:18px;color:#708aa3;font-size:13px}@media(max-width:900px){.ops-grid,.ops-metrics{grid-template-columns:1fr 1fr}}@media(max-width:600px){.ops-grid,.ops-metrics{grid-template-columns:1fr}}
-</style></head><body><div class="ops-shell"><div class="ops-top"><div class="ops-brand"><small>INTERAFAS · Red operacional</small><h1>Centro de Operaciones</h1><span class="muted">Planta Metropolitana Norte · RTU-GW-07</span></div><div><span class="ok">● EN LÍNEA</span> · Intento #<?= (int)$ctx['attempt_id']?></div></div>
+</style></head><body><div class="ops-shell"><div class="ops-top"><div class="ops-brand"><small>INTERAFAS · Red operacional</small><h1>Centro de Operaciones</h1><span class="muted">Planta Metropolitana Norte · RTU-GW-07</span></div><div><span class="ok">● EN LÍNEA</span> · <?=htmlspecialchars((string)($ops['display_name']??$ops['username']??'Operador'))?> · <a href="logout.php" style="color:#a6dcff">Cerrar sesión</a></div></div>
 <div class="ops-metrics"><div class="ops-metric"><span>Nivel TK-01</span><strong id="tank"><?=htmlspecialchars((string)($state['tank']??'—'))?>%</strong></div><div class="ops-metric"><span>Caudal FLOW-01</span><strong id="flow"><?=htmlspecialchars((string)($state['flow']??'—'))?> L/s</strong></div><div class="ops-metric"><span>Presión</span><strong id="pressure"><?=htmlspecialchars((string)($state['pressure']??'—'))?> bar</strong></div><div class="ops-metric"><span>Calidad</span><strong id="quality"><?=htmlspecialchars((string)($state['quality']??'—'))?></strong></div></div>
 <div class="ops-grid" style="margin-top:18px"><section class="ops-card"><h2>Sinóptico operacional</h2><div class="diagram"><div class="pipe"></div></div><div class="asset"><div><b>P-101</b><div class="muted">Bomba principal de impulsión</div></div><div><strong id="p101"><?=htmlspecialchars((string)($state['p101']??'—'))?></strong> <button class="ops-btn" data-state="ON">Arrancar</button> <button class="ops-btn danger" data-state="OFF">Detener</button></div></div><div class="asset"><div><b>P-102</b><div class="muted">Bomba de respaldo</div></div><strong><?=htmlspecialchars((string)($state['p102']??'—'))?></strong></div><div class="asset"><div><b>V-201</b><div class="muted">Válvula de distribución</div></div><strong><?=htmlspecialchars((string)($state['v201']??'—'))?></strong></div></section>
 <aside><section class="ops-card"><h2>Alarmas</h2><div id="alarms"><?=empty($state['alarms'])?'<span class="ok">Sin alarmas activas</span>':'<span class="alarm">'.htmlspecialchars(implode(', ',$state['alarms'])).'</span>'?></div></section><section class="ops-card fwbox" style="margin-top:18px"><h2>RTU-GW-07</h2><pre id="fw">Firmware <?=htmlspecialchars((string)($fw['version']??'—'))?>\nModo <?=htmlspecialchars((string)($fw['mode']??'—'))?>\nDiagnóstico <?=htmlspecialchars((string)($fw['diagnostic']??'—'))?></pre><a class="ops-btn" href="firmware.php">Administrar firmware</a></section><section class="ops-card" style="margin-top:18px"><h2>Eventos de sesión</h2><div class="eventlog" id="eventlog">HMI cargado.</div></section></aside></div><div class="ops-footer">Entorno operacional simulado para fines académicos. Ninguna acción se comunica con infraestructura física.</div></div>
