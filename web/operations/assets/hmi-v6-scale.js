@@ -349,7 +349,7 @@ function dynamicStatistics(){
 }
 
 function animateTelemetry(){
-  const scene=document.querySelector('.pid-scene');
+  const scene=document.querySelector('.view[data-view="process"] .pid-scene');
   if(!scene)return;
   scene.style.setProperty('--v6-flow-speed',(0.7+Math.abs(Math.sin(state.tick/9))*.7).toFixed(2)+'s');
   scene.style.setProperty('--v6-pulse-offset',String((state.tick*17)%100)+'%');
