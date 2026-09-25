@@ -1436,3 +1436,235 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   .municipal-process-sl .overview-process-scene,
   .municipal-process-so .overview-process-scene{transform:scale(.63)}
 }
+
+
+/* V13 — equal overview cards + refined Saint Louis / Soledade process synoptics */
+
+/* All municipal overviews use the same card geometry and the same process scale */
+.municipal-process-grid{
+  grid-template-columns:repeat(3,minmax(0,1fr))!important;
+  align-items:stretch!important;
+}
+.municipal-process-card{
+  min-height:410px!important;
+  height:410px!important;
+  display:grid!important;
+  grid-template-rows:42px 310px 58px!important;
+}
+.municipal-process-cp .municipal-process-viewport,
+.municipal-process-sl .municipal-process-viewport,
+.municipal-process-so .municipal-process-viewport{
+  height:310px!important;
+}
+.municipal-process-cp .overview-process-scene,
+.municipal-process-sl .overview-process-scene,
+.municipal-process-so .overview-process-scene{
+  transform:scale(.505)!important;
+}
+.municipal-process-foot{min-height:58px!important;height:58px!important}
+
+/* Base process refinement shared by overview and live process */
+.city-process-sl,.city-process-so{
+  background:
+    linear-gradient(rgba(53,91,108,.055) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(53,91,108,.055) 1px,transparent 1px)!important;
+  background-size:22px 22px!important;
+}
+.city-process-sl .cp-section,
+.city-process-so .cp-section{
+  background:rgba(8,25,35,.20)!important;
+  border:1px solid rgba(58,94,111,.36)!important;
+  border-radius:2px!important;
+}
+.city-process-sl .cp-section>span,
+.city-process-so .cp-section>span{
+  top:-11px!important;
+  left:8px!important;
+  color:#7493a2!important;
+  background:#07131d!important;
+  border:1px solid #294757!important;
+  padding:3px 7px!important;
+  font-size:7px!important;
+  letter-spacing:.10em!important;
+}
+
+/* Equipment now reads like HMI symbols instead of generic cards */
+.city-process-sl .cp-tank,
+.city-process-so .cp-tank{
+  border:2px solid #496676!important;
+  border-radius:46% 46% 11px 11px!important;
+  background:linear-gradient(90deg,#0c202b,#14313f 45%,#0a1b24)!important;
+}
+.city-process-sl .cp-level,
+.city-process-so .cp-level{
+  margin:9px 13px 6px!important;
+  height:76px!important;
+  background:#061219!important;
+  border-color:#3a5968!important;
+}
+.city-process-sl .cp-level i,
+.city-process-so .cp-level i{
+  background:linear-gradient(180deg,#37b7d9,#145c77)!important;
+  opacity:.85!important;
+}
+.city-process-sl .cp-pump,
+.city-process-so .cp-pump{
+  width:96px!important;
+  height:62px!important;
+  padding:7px 7px 6px 38px!important;
+  border-radius:4px!important;
+}
+.city-process-sl .cp-pump>i,
+.city-process-so .cp-pump>i{
+  left:8px!important;top:16px!important;
+  width:24px!important;height:24px!important;
+  border-width:4px!important;
+}
+.city-process-sl .cp-pump b,
+.city-process-so .cp-pump b{font-size:8px!important}
+.city-process-sl .cp-pump span,
+.city-process-so .cp-pump span{font-size:6px!important}
+.city-process-sl .cp-pump strong,
+.city-process-so .cp-pump strong{font-size:8px!important;padding:2px 4px!important}
+
+.city-process-sl .cp-skid,
+.city-process-so .cp-skid,
+.city-process-sl .cp-header,
+.city-process-so .cp-header,
+.city-process-sl .cp-control,
+.city-process-so .cp-control,
+.city-process-sl .cp-source,
+.city-process-so .cp-source,
+.city-process-sl .cp-zone,
+.city-process-so .cp-zone{
+  border-radius:2px!important;
+  background:#0a1a23!important;
+  box-shadow:none!important;
+}
+.city-process-sl .cp-zone,
+.city-process-so .cp-zone{
+  border-left:3px solid #4c9aa3!important;
+}
+.city-process-sl .cp-route,
+.city-process-so .cp-route{
+  height:7px!important;
+  background:#285f79!important;
+  border:1px solid #173f52!important;
+}
+.city-process-sl .cp-route[style*="width:5px"],
+.city-process-so .cp-route[style*="width:5px"]{width:7px!important}
+
+/* SAINT LOUIS — one metropolitan hydraulic train with a clear high-lift manifold */
+.city-process-sl .sl-storage{left:2%;top:8%;width:19%;height:84%}
+.city-process-sl .sl-lift{left:23%;top:8%;width:25%;height:84%}
+.city-process-sl .sl-treatment{left:50%;top:8%;width:20%;height:84%}
+.city-process-sl .sl-distribution{left:72%;top:8%;width:26%;height:84%}
+
+.city-process-sl .sl-tank-a{left:3.5%;top:23%}
+.city-process-sl .sl-tank-b{left:11%;top:52%}
+
+.city-process-sl .sl-p1{left:25.5%;top:22%}
+.city-process-sl .sl-p2{left:37%;top:22%}
+.city-process-sl .sl-p3{left:25.5%;top:54%}
+.city-process-sl .sl-p4{left:37%;top:54%}
+
+.city-process-sl .sl-qcs{left:51.5%;top:22%;width:145px!important}
+.city-process-sl .sl-header{left:52%;top:58%;width:168px!important}
+.city-process-sl .sl-flow{left:62%;top:45%}
+
+.city-process-sl .sl-zone-a{right:3%;top:20%;width:155px!important}
+.city-process-sl .sl-zone-b{right:3%;top:46%;width:155px!important}
+.city-process-sl .sl-zone-c{right:3%;top:72%;width:155px!important}
+
+/* Main hydraulic path and pump manifold */
+.city-process-sl .sl-r1{left:19.5%;top:35%;width:6.5%}
+.city-process-sl .sl-r2{left:19.5%;top:67%;width:6.5%}
+.city-process-sl .sl-r3{left:45.5%;top:35%;width:7.5%}
+.city-process-sl .sl-r4{left:45.5%;top:67%;width:7.5%}
+.city-process-sl .sl-r5{left:66%;top:50%;width:10.5%}
+.city-process-sl .sl-r6{left:75%;top:28%;width:7px!important;height:55%!important}
+.city-process-sl .sl-branch-a{right:15%;top:28%;width:11%}
+.city-process-sl .sl-branch-b{right:15%;top:54%;width:11%}
+.city-process-sl .sl-branch-c{right:15%;top:80%;width:11%}
+
+.city-process-sl .sl-tag-flow{left:12%;top:40%}
+.city-process-sl .sl-tag-p1{left:40%;top:12%}
+.city-process-sl .sl-tag-q{left:57%;top:39%}
+.city-process-sl .sl-status{right:3%;bottom:1.5%;width:155px}
+.city-process-sl .sl-v-a{left:74%;top:22%}
+.city-process-sl .sl-v-b{left:74%;top:48%}
+.city-process-sl .sl-v-c{left:74%;top:74%}
+.city-process-sl .sl-mcc{left:30%;bottom:2%}
+
+/* Subtle manifold line behind the four high-lift pumps */
+.city-process-sl:before{
+  content:"";
+  position:absolute;
+  left:24.5%;top:47%;
+  width:23%;
+  height:8px;
+  background:#234f66;
+  border:1px solid #173c4e;
+  z-index:1
+}
+
+/* SOLEDADE — linear booster/PRV train with break-pressure storage before sector split */
+.city-process-so .so-intake{left:2%;top:10%;width:22%;height:80%}
+.city-process-so .so-control{left:26%;top:10%;width:27%;height:80%}
+.city-process-so .so-storage{left:55%;top:10%;width:21%;height:80%}
+.city-process-so .so-service{left:78%;top:10%;width:20%;height:80%}
+
+.city-process-so .so-source{left:4%;top:40%;width:135px!important}
+
+.city-process-so .so-p1{left:27.5%;top:20%}
+.city-process-so .so-p2{left:27.5%;top:43%}
+.city-process-so .so-p3{left:27.5%;top:66%}
+.city-process-so .so-prv{left:41%;top:39%;width:150px!important}
+
+.city-process-so .so-break{left:58%;top:28%;height:180px!important}
+.city-process-so .so-qcs{left:57%;top:66%;width:150px!important}
+
+.city-process-so .so-zone-n{right:3%;top:28%;width:158px!important}
+.city-process-so .so-zone-s{right:3%;top:61%;width:158px!important}
+
+.city-process-so .so-r1{left:16%;top:49%;width:12%}
+.city-process-so .so-r2{left:37%;top:49%;width:20%}
+.city-process-so .so-r3{left:69%;top:49%;width:14%}
+.city-process-so .so-up{left:81%;top:34%;width:7px!important;height:16%!important}
+.city-process-so .so-down{left:81%;top:49%;width:7px!important;height:20%!important}
+
+.city-process-so .so-tag-flow{left:8%;top:33%}
+.city-process-so .so-tag-up{left:40%;top:28%}
+.city-process-so .so-tag-down{left:44%;top:56%}
+.city-process-so .so-status{right:3%;bottom:1.5%;width:150px}
+.city-process-so .so-v-n{left:79%;top:29%}
+.city-process-so .so-v-s{left:79%;top:62%}
+.city-process-so .so-mcc{left:27%;bottom:2%}
+
+/* Long process line makes the hydraulic direction immediately obvious */
+.city-process-so:before{
+  content:"";
+  position:absolute;
+  left:14%;right:12%;top:48%;
+  height:8px;
+  background:#234f66;
+  border:1px solid #173c4e;
+  z-index:1
+}
+
+/* Better distinction for controlled vs distribution side */
+.city-process-so .so-prv{border-color:#817545!important}
+.city-process-so .so-prv strong{color:#ffd766!important}
+.city-process-so .so-zone-n,
+.city-process-so .so-zone-s{border-left-color:#55b58f!important}
+
+@media(max-width:1250px){
+  .municipal-process-grid{grid-template-columns:1fr!important}
+  .municipal-process-card{height:410px!important}
+  .municipal-process-cp .municipal-process-viewport,
+  .municipal-process-sl .municipal-process-viewport,
+  .municipal-process-so .municipal-process-viewport{height:310px!important}
+  .municipal-process-cp .overview-process-scene,
+  .municipal-process-sl .overview-process-scene,
+  .municipal-process-so .overview-process-scene{transform:scale(.505)!important}
+}
