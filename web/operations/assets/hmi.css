@@ -1429,3 +1429,141 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   .scada-sl,.scada-so,.scada-cp{min-height:auto}
   .scada-sl .scada-ov-process,.scada-so .scada-ov-process,.scada-cp .scada-ov-process{height:330px}
 }
+
+
+/* V11 — process views return to dark SCADA; overview remains compact native style */
+.municipal-scada-grid{display:none!important}
+
+/* Neutralize the light-gray V8 overrides in live process views */
+.pid-scene.city-sl,.pid-scene.city-so,.pid-scene.city-cp{
+  background:
+    linear-gradient(rgba(51,88,104,.08) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(51,88,104,.08) 1px,transparent 1px),
+    radial-gradient(circle at 50% 50%,rgba(32,89,111,.08),transparent 48%),
+    #07131d!important;
+  background-size:24px 24px,24px 24px,auto,auto!important;
+  color:#d8e6ed!important;
+}
+.city-sl .city-process,.city-so .city-process,.city-cp .city-process{
+  background:transparent!important;
+}
+.city-sl .cp-section,.city-so .cp-section,.city-cp .cp-section{
+  background:rgba(8,25,35,.48)!important;
+  border:1px dashed #35596a!important;
+  box-shadow:none!important;
+}
+.city-sl .cp-section>span,.city-so .cp-section>span,.city-cp .cp-section>span{
+  color:#698a9a!important;
+  background:#0b1b25!important;
+  border:1px solid #254454!important;
+  font-weight:800
+}
+.city-sl .cp-tank,.city-so .cp-tank,
+.city-sl .cp-source,.city-so .cp-source,
+.city-sl .cp-header,.city-so .cp-header,
+.city-sl .cp-control,.city-so .cp-control,
+.city-sl .cp-skid,.city-so .cp-skid,
+.city-sl .cp-zone,.city-so .cp-zone,
+.city-sl .cp-meter,.city-so .cp-meter,
+.city-sl .cp-pump,.city-so .cp-pump{
+  background:#0b1b25!important;
+  color:#dcebf1!important;
+  border-color:#31576a!important;
+  box-shadow:0 7px 18px rgba(0,0,0,.18)!important;
+}
+.city-sl .cp-tank span,.city-so .cp-tank span,
+.city-sl .cp-source span,.city-so .cp-source span,
+.city-sl .cp-header span,.city-so .cp-header span,
+.city-sl .cp-control span,.city-so .cp-control span,
+.city-sl .cp-skid span,.city-so .cp-skid span,
+.city-sl .cp-zone span,.city-so .cp-zone span,
+.city-sl .cp-pump span,.city-so .cp-pump span{color:#7793a2!important}
+.city-sl .cp-tank strong,.city-so .cp-tank strong,
+.city-sl .cp-source strong,.city-so .cp-source strong,
+.city-sl .cp-header strong,.city-so .cp-header strong,
+.city-sl .cp-control strong,.city-so .cp-control strong,
+.city-sl .cp-skid strong,.city-so .cp-skid strong,
+.city-sl .cp-zone strong,.city-so .cp-zone strong,
+.city-sl .cp-meter strong,.city-so .cp-meter strong,
+.city-sl .cp-pump strong,.city-so .cp-pump strong{
+  background:#04090c!important;
+  color:#73ef9d!important;
+  border:1px solid #29404a!important;
+}
+.city-sl .cp-pump>i,.city-so .cp-pump>i{
+  border-color:#345667!important;
+  border-right-color:#71d3a9!important;
+  background:#0a2029!important;
+  box-shadow:none!important;
+}
+.city-sl .cp-route,.city-so .cp-route{
+  background:#2b708e!important;
+  border-color:#1d4d63!important;
+  box-shadow:none!important
+}
+.city-sl .cp-route.active:after,.city-so .cp-route.active:after{
+  background:repeating-linear-gradient(90deg,transparent 0 25px,rgba(112,224,255,.5) 25px 34px,transparent 34px 58px)!important;
+  opacity:.8
+}
+.city-sl .cp-zone,.city-so .cp-zone{background:#0b3036!important;border-color:#3d777d!important}
+.city-sl .cp-meter,.city-so .cp-meter{background:#040809!important;color:#54eaff!important;border-color:#54727e!important}
+.city-sl .sl-header{border-color:#4f6f7d!important}
+.city-sl .sl-r5,.city-sl .sl-r6{background:#2b708e!important;border-color:#1d4d63!important}
+.city-sl .sl-branch-a,.city-sl .sl-branch-b,.city-sl .sl-branch-c,
+.city-so .so-up,.city-so .so-down{background:#2b708e!important;border-color:#1d4d63!important}
+
+/* More SCADA instrumentation in live process views */
+.scada-tag{
+  position:absolute;z-index:7;
+  min-width:88px;
+  padding:4px 6px;
+  background:#04090c;
+  border:1px solid #4a6672;
+  box-shadow:2px 2px 0 rgba(0,0,0,.26);
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.scada-tag small{display:block;color:#758f9c;font-size:6px;letter-spacing:.04em}
+.scada-tag b{display:block;margin-top:2px;color:#58eaff;font-size:10px}
+.scada-tag em{display:block;margin-top:2px;color:#72d4aa;font-size:6px;font-style:normal}
+.scada-status-bank{
+  position:absolute;z-index:7;
+  background:#091821;border:1px solid #315466;
+  padding:6px 7px;display:grid;gap:4px;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.scada-status-bank div{display:grid;grid-template-columns:8px 1fr auto;gap:5px;align-items:center}
+.scada-status-bank i{width:7px;height:7px;border-radius:50%;background:#4be278;box-shadow:0 0 6px rgba(75,226,120,.5)}
+.scada-status-bank i.warn{background:#ffd456;box-shadow:0 0 6px rgba(255,212,86,.45)}
+.scada-status-bank span{color:#7d99a7}
+.scada-status-bank b{color:#d9e8ef}
+.scada-valve{
+  position:absolute;z-index:7;width:40px;text-align:center;
+  font:700 6px ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.scada-valve i{display:block;width:22px;height:22px;margin:auto;border:2px solid #5f8290;transform:rotate(45deg);background:#133641}
+.scada-valve.open i{border-color:#5bc48f}.scada-valve.closed i{border-color:#d56a6a}
+.scada-valve span{display:block;margin-top:4px;color:#93abb6;background:#09161e;border:1px solid #264350;padding:2px}
+.scada-motor-state{
+  position:absolute;z-index:7;padding:4px 6px;background:#08131a;border:1px solid #2f5363;
+  font:700 7px ui-monospace,SFMono-Regular,Consolas,monospace;color:#6ee39b
+}
+
+/* Saint Louis denser metropolitan process view */
+.city-sl .sl-tag-flow{left:19%;top:43%}
+.city-sl .sl-tag-p1{left:45%;top:14%}
+.city-sl .sl-tag-q{left:51%;top:43%}
+.city-sl .sl-status{right:1.5%;bottom:3%;width:155px}
+.city-sl .sl-v-a{left:72%;top:24%}.city-sl .sl-v-b{left:72%;top:50%}.city-sl .sl-v-c{left:72%;top:75%}
+.city-sl .sl-mcc{left:28%;bottom:3%}
+
+/* Soledade denser pressure-control process view */
+.city-so .so-tag-flow{left:12%;top:36%}
+.city-so .so-tag-up{left:43%;top:29%}
+.city-so .so-tag-down{left:54%;top:54%}
+.city-so .so-status{right:2%;bottom:2%;width:150px}
+.city-so .so-v-n{left:77%;top:33%}.city-so .so-v-s{left:77%;top:64%}
+.city-so .so-mcc{left:22%;bottom:3%}
+
+@media(max-width:900px){
+  .scada-tag,.scada-status-bank,.scada-valve,.scada-motor-state{transform:scale(.9);transform-origin:top left}
+}
