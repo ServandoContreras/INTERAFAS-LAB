@@ -717,6 +717,18 @@ $pressureZones=18;
 
 <section class="view" data-view="statistics">
   <div class="page-head"><div><div class="breadcrumb">Analysis / Statistics</div><h1>Metropolitan Operational Statistics</h1><p>Indicadores agregados de disponibilidad, eventos, mantenimiento y comportamiento por municipio.</p></div><div class="page-tools"><span class="tool-chip">24 H</span><span class="tool-chip">3 MUNICIPALITIES</span></div></div>
+  <div class="live-statistics-strip">
+    <div><span>LIVE SUPPLY</span><strong data-live-stat="supply" data-decimals="0">—</strong><small>L/s</small></div>
+    <div><span>LIVE DEMAND</span><strong data-live-stat="demand" data-decimals="0">—</strong><small>L/s</small></div>
+    <div><span>AVG PRESSURE</span><strong data-live-stat="pressure" data-decimals="2">—</strong><small>bar</small></div>
+    <div><span>AVG RESERVE</span><strong data-live-stat="reserve" data-decimals="1">—</strong><small>%</small></div>
+    <div><span>ENERGY</span><strong data-live-stat="energy" data-decimals="1">—</strong><small>MW</small></div>
+    <div><span>ACTIVE ALARMS</span><strong data-live-stat="active" data-decimals="0">—</strong></div>
+    <div><span>RTU LATENCY</span><strong data-live-stat="latency" data-decimals="0">—</strong><small>ms</small></div>
+    <div><span>AVAILABILITY</span><strong data-live-stat="availability" data-decimals="2">—</strong><small>%</small></div>
+    <div><span>RUNNING PUMPS</span><strong data-live-stat="runningPumps" data-decimals="0">—</strong><small>/ 46</small></div>
+    <div class="live-stat-updated"><span>LAST RECALC</span><strong data-live-updated>--:--:--</strong><small>1.2 s cycle</small></div>
+  </div>
   <div class="statistics-grid">
     <section class="panel"><div class="panel-head"><h2>Availability</h2><span>24 hours</span></div><div class="big-stat"><?=$availability?>%</div><div class="stat-lines"><span>PLC 100%</span><span>RTU 98.7%</span><span>OT Services 100%</span></div></section>
     <section class="panel"><div class="panel-head"><h2>Alarm Distribution</h2><span>By municipality</span></div><div class="horizontal-bars"><div><span>Cerro de San Pablo</span><i style="width:48%"></i><b>2</b></div><div><span>Saint Louis</span><i style="width:72%"></i><b>3</b></div><div><span>Soledade</span><i style="width:48%"></i><b>2</b></div><div><span>Metropolitan</span><i style="width:38%"></i><b>2</b></div></div></section>
