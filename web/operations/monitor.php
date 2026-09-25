@@ -4,27 +4,25 @@ require_operational_network();
 
 $state=ot_call('/state');
 $fw=$state['firmware']??[];
-$ctx=lab_context();
 
-if($ctx){
-    header('X-INTERAFAS-Monitoring-Authorization: network-only');
-    header('X-INTERAFAS-Operational-Session: missing');
-    header('X-INTERAFAS-Validation: UPSLP_CNOIV-EYES-ON-THE-PLANT-17');
-    lab_event(
-        'VULN17_MONITOR_WITHOUT_OPERATOR_AUTH',
-        'Telemetría operacional consultada sin sesión de operador',
-        '/operations/monitor.php',
-        [
-            'challenge'=>17,
-            'network_check'=>true,
-            'operational_identity_checked'=>false,
-            'plant'=>'Planta Metropolitana Norte'
-        ],
-        'ot-hmi',
-        'warning',
-        5
-    );
-}
+header('X-INTERAFAS-Monitoring-Authorization: network-only');
+header('X-INTERAFAS-Operational-Session: missing');
+header('X-INTERAFAS-Validation: UPSLP_CNOIV-EYES-ON-THE-PLANT-17');
+
+lab_event(
+    'VULN17_MONITOR_WITHOUT_OPERATOR_AUTH',
+    'Telemetría operacional consultada sin sesión de operador',
+    '/operations/monitor.php',
+    [
+        'challenge'=>17,
+        'network_check'=>true,
+        'operational_identity_checked'=>false,
+        'plant'=>'Planta Metropolitana Norte'
+    ],
+    'ot-hmi',
+    'warning',
+    5
+);
 ?><!doctype html>
 <html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Monitor operacional · INTERAFAS</title>
