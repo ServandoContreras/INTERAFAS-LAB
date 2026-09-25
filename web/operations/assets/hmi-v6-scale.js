@@ -166,6 +166,12 @@ function processTemplates(){
       '<div class="cp-zone sl-zone-a"><b>ZONE A</b><span>Central / commercial</span></div>'+
       '<div class="cp-zone sl-zone-b"><b>ZONE B</b><span>Residential / university</span></div>'+
       '<div class="cp-zone sl-zone-c"><b>ZONE C</b><span>Industrial / airport</span></div>'+
+      '<div class="scada-tag sl-tag-flow"><small>FIT-SL-101 · RAW WATER</small><b data-live-tag="FLOW">—</b><em>VALID · AUTO</em></div>'+
+      '<div class="scada-tag sl-tag-p1"><small>PT-SL-201 · SUCTION</small><b>2.18 bar</b><em>NORMAL</em></div>'+
+      '<div class="scada-tag sl-tag-q"><small>AIT-SL-301 · FINAL QUALITY</small><b data-live-tag="TURBIDITY">—</b><em>QUALITY OK</em></div>'+
+      '<div class="scada-status-bank sl-status"><div><i></i><span>PLC-SL-01</span><b>RUN</b></div><div><i></i><span>RTU-SL-01</span><b>ONLINE</b></div><div><i></i><span>QCS-SL-01</span><b>VALID</b></div><div><i class="warn"></i><span>P-SL-104</span><b>STBY</b></div></div>'+
+      '<div class="scada-valve sl-v-a open"><i></i><span>XV-SL-201</span></div><div class="scada-valve sl-v-b open"><i></i><span>XV-SL-202</span></div><div class="scada-valve sl-v-c open"><i></i><span>XV-SL-203</span></div>'+
+      '<div class="scada-motor-state sl-mcc">MCC-SL-01 · BUS HEALTHY · AUTO</div>'+
       '<div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
       '</div>',
 
@@ -184,6 +190,12 @@ function processTemplates(){
       '<div class="cp-skid so-qcs eq-click" data-equipment="QCS-SO-01"><b>QCS-SO-01</b><span>Distribution quality</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
       '<div class="cp-zone so-zone-n"><b>NORTH / INDUSTRIAL</b><span>Primary service sector</span></div>'+
       '<div class="cp-zone so-zone-s"><b>SOUTH / RESIDENTIAL</b><span>Secondary service sector</span></div>'+
+      '<div class="scada-tag so-tag-flow"><small>FIT-SO-101 · INTAKE</small><b data-live-tag="FLOW">—</b><em>VALID</em></div>'+
+      '<div class="scada-tag so-tag-up"><small>PT-SO-201 · PRV UPSTREAM</small><b>8.50 bar</b><em>HIGH SIDE</em></div>'+
+      '<div class="scada-tag so-tag-down"><small>PT-SO-202 · DOWNSTREAM</small><b data-live-tag="PRESS">—</b><em>CONTROLLED</em></div>'+
+      '<div class="scada-status-bank so-status"><div><i></i><span>PLC-SO-01</span><b>RUN</b></div><div><i></i><span>RTU-SO-01</span><b>ONLINE</b></div><div><i></i><span>PRV-SO-01</span><b>AUTO</b></div><div><i class="warn"></i><span>P-SO-103</span><b>LOCAL</b></div></div>'+
+      '<div class="scada-valve so-v-n open"><i></i><span>XV-SO-401</span></div><div class="scada-valve so-v-s open"><i></i><span>XV-SO-402</span></div>'+
+      '<div class="scada-motor-state so-mcc">MCC-SO-01 · 2 RUN / 1 LOCAL</div>'+
       '<div class="cp-route so-r1 active"></div><div class="cp-route so-r2 active"></div><div class="cp-route so-r3 active"></div><div class="cp-route so-up active"></div><div class="cp-route so-down active"></div>'+
       '</div>',
 
