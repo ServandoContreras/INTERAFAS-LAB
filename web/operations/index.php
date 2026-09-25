@@ -43,7 +43,7 @@ $assets=[
     ['id'=>'HIST-01','type'=>'Historian','station'=>'Metropolitan','zone'=>'СЕРВИСЫ OT','function'=>'Process data services','status'=>'ONLINE','vendor'=>'Industrial historian','related'=>'PLC-CP-01 · PLC-SL-01 · PLC-SO-01'],
     ['id'=>'EWS-01','type'=>'Engineering Workstation','station'=>'Metropolitan','zone'=>'Engineering','function'=>'Control engineering','status'=>'ONLINE','vendor'=>'Engineering station','related'=>'PLC-CP-01 · PLC-SL-01 · PLC-SO-01 · BRS-01'],
     ['id'=>'BRS-01','type'=>'Backup / Recovery','station'=>'Metropolitan','zone'=>'СЕРВИСЫ OT','function'=>'Configuration recovery','status'=>'ONLINE','vendor'=>'Recovery services','related'=>'EWS-01 · RTU-GW-07'],
-    ['id'=>'OT-AUTO-01','type'=>'Automation Engine','station'=>'Metropolitan','zone'=>'СЕРВИСЫ OT','function'=>'ТЕХОБСЛУЖИВАНИЕ automation','status'=>'ONLINE','vendor'=>'Automation service','related'=>'HIST-01 · EWS-01 · BRS-01'],
+    ['id'=>'OT-AUTO-01','type'=>'ДВИЖОК АВТОМАТИКИ','station'=>'Metropolitan','zone'=>'СЕРВИСЫ OT','function'=>'ТЕХОБСЛУЖИВАНИЕ automation','status'=>'ONLINE','vendor'=>'Automation service','related'=>'HIST-01 · EWS-01 · BRS-01'],
     ['id'=>'RTU-GW-07','type'=>'RTU / Gateway','station'=>'Metropolitan','zone'=>'OT Edge','function'=>'Remote interface','status'=>'ONLINE','vendor'=>'Remote terminal gateway','related'=>'HMI-OPS-01 · СЕРВИСЫ OT'],
     ['id'=>'PLC-CP-01','type'=>'PLC','station'=>'Cerro de San Pablo','zone'=>'Area Control','function'=>'Process control','status'=>'ONLINE','vendor'=>'Industrial control platform','related'=>'RTU-CP-01 · P-CP-101 · P-CP-102 · V-CP-201'],
     ['id'=>'RTU-CP-01','type'=>'RTU','station'=>'Cerro de San Pablo','zone'=>'OT Edge','function'=>'Station communications','status'=>'ONLINE','vendor'=>'Remote terminal unit','related'=>'PLC-CP-01 · RTU-GW-07'],
@@ -220,7 +220,7 @@ $pressureZones=18;
           <div><span>HIST-01</span><strong class="ok-text">ONLINE</strong></div>
           <div><span>EWS-01</span><strong class="ok-text">ONLINE</strong></div>
           <div><span>BRS-01</span><strong class="ok-text">ONLINE</strong></div>
-          <div><span>OT-AUTO-01</span><strong class="ok-text">READY</strong></div>
+          <div><span>OT-AUTO-01</span><strong class="ok-text">ГОТОВ</strong></div>
         </div>
       </section>
     </aside>
@@ -553,7 +553,7 @@ $pressureZones=18;
   </div>
 
   <div class="trend-bottom-grid">
-    <section class="panel"><div class="panel-head"><h2>Operational Correlation</h2><span>Current period</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Signal</th><th>Current</th><th>Avg</th><th>Min</th><th>Max</th><th>Δ</th></tr></thead><tbody>
+    <section class="panel"><div class="panel-head"><h2>Operational Correlation</h2><span>Текущий период</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Signal</th><th>Current</th><th>Avg</th><th>Min</th><th>Max</th><th>Δ</th></tr></thead><tbody>
       <tr><td>FLOW.METRO</td><td>8,380 L/s</td><td>8,214</td><td>7,802</td><td>8,612</td><td class="ok-text">+2.0%</td></tr>
       <tr><td>DEMAND.METRO</td><td>7,836 L/s</td><td>7,691</td><td>7,318</td><td>8,042</td><td class="warn-text">+1.9%</td></tr>
       <tr><td>PRESSURE.AVG</td><td>4.21 bar</td><td>4.18</td><td>3.86</td><td>4.58</td><td>+0.03</td></tr>
@@ -571,10 +571,10 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="alarms">
-  <div class="page-head"><div><div class="breadcrumb">Process / Alarms</div><h1>Metropolitan Alarm Management</h1><p>Condiciones activas, reconocidas y recientes por estación y servicio OT.</p></div><div class="page-tools"><span class="tool-chip"><?=$totalAlarms?> ACTIVE</span><span class="tool-chip"><?=$unackAlarms?> UNACK</span><span class="tool-chip">0 CRITICAL</span></div></div>
-  <div class="alarm-filter-strip"><span>ALL 12</span><span>HIGH 1</span><span>MEDIUM 3</span><span>LOW 3</span><span>INFO 5</span><span>UNACK <?=$unackAlarms?></span></div>
-  <div class="panel"><div class="panel-head"><h2>Alarm & Event Queue</h2><span>Priority ordered</span></div><div class="table-wrap"><table class="data-table">
-    <thead><tr><th>Time</th><th>Priority</th><th>Station</th><th>Source</th><th>Condition</th><th>State</th></tr></thead>
+  <div class="page-head"><div><div class="breadcrumb">Процесс / Аварии</div><h1>УПРАВЛЕНИЕ АВАРИЯМИ</h1><p>Condiciones activas, reconocidas y recientes por estación y servicio OT.</p></div><div class="page-tools"><span class="tool-chip"><?=$totalAlarms?> АКТИВНЫЕ</span><span class="tool-chip"><?=$unackAlarms?> НЕПОДТВ.</span><span class="tool-chip">0 КРИТИЧЕСКИЕ</span></div></div>
+  <div class="alarm-filter-strip"><span>ВСЕ 12</span><span>ВЫСОКИЙ 1</span><span>СРЕДНИЙ 3</span><span>НИЗКИЙ 3</span><span>ИНФО 5</span><span>UNACK <?=$unackAlarms?></span></div>
+  <div class="panel"><div class="panel-head"><h2>ОЧЕРЕДЬ АВАРИЙ И СОБЫТИЙ</h2><span>По приоритету</span></div><div class="table-wrap"><table class="data-table">
+    <thead><tr><th>ВРЕМЯ</th><th>ПРИОРИТЕТ</th><th>СТАНЦИЯ</th><th>ИСТОЧНИК</th><th>СОСТОЯНИЕ</th><th>СТАТУС</th></tr></thead>
     <tbody>
       <tr><td>11:46:03</td><td class="warn-text">HIGH</td><td>Cerro de San Pablo</td><td>TK-CP-01</td><td>Reservoir level approaching low operating threshold</td><td>UNACK</td></tr>
       <tr><td>11:39:12</td><td class="warn-text">MEDIUM</td><td>Saint Louis</td><td>PRESS-SL-01</td><td>Header pressure high deviation +0.4 bar</td><td>UNACK</td></tr>
@@ -593,33 +593,33 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="assets">
-  <div class="page-head"><div><div class="breadcrumb">System / Assets</div><h1>Metropolitan OT Asset Inventory</h1><p>Servicios OT, controladores y activos de campo observados en las tres estaciones.</p></div><div class="page-tools"><span class="tool-chip"><?=count($assets)?> ASSETS</span><span class="tool-chip">4 ZONES</span></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Система / Объекты</div><h1>ИНВЕНТАРЬ ОБЪЕКТОВ OT</h1><p>Servicios OT, controladores y activos de campo observados en las tres estaciones.</p></div><div class="page-tools"><span class="tool-chip"><?=count($assets)?> ОБЪЕКТОВ</span><span class="tool-chip">4 ЗОНЫ</span></div></div>
   <div class="asset-layout">
-    <div class="panel"><div class="panel-head"><h2>Observed Assets</h2><span>Operational inventory</span></div><div class="table-wrap asset-table-scroll"><table class="data-table"><thead><tr><th>Asset</th><th>Type</th><th>Station</th><th>Zone</th><th>Function</th><th>Status</th></tr></thead><tbody>
+    <div class="panel"><div class="panel-head"><h2>НАБЛЮДАЕМЫЕ ОБЪЕКТЫ</h2><span>Операционный инвентарь</span></div><div class="table-wrap asset-table-scroll"><table class="data-table"><thead><tr><th>ОБЪЕКТ</th><th>ТИП</th><th>СТАНЦИЯ</th><th>ЗОНА</th><th>Function</th><th>СТАТУС</th></tr></thead><tbody>
     <?php foreach($assets as $a): ?><tr data-asset-row='<?=htmlspecialchars(json_encode($a,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES),ENT_QUOTES)?>'><td class="asset-link"><?=htmlspecialchars($a['id'])?></td><td><?=htmlspecialchars($a['type'])?></td><td><?=htmlspecialchars($a['station'])?></td><td><?=htmlspecialchars($a['zone'])?></td><td><?=htmlspecialchars($a['function'])?></td><td class="<?=in_array($a['status'],['ONLINE','RUNNING','OPEN'])?'state-online':'state-standby'?>"><?=htmlspecialchars($a['status'])?></td></tr><?php endforeach; ?>
     </tbody></table></div></div>
-    <aside class="panel asset-detail"><div class="panel-head"><h2>Asset Context</h2><span>Selected system</span></div><div class="panel-body">
+    <aside class="panel asset-detail"><div class="panel-head"><h2>КОНТЕКСТ ОБЪЕКТА</h2><span>Выбранная система</span></div><div class="panel-body">
       <h3 id="asset-detail-id">HIST-01</h3><div class="type" id="asset-detail-type">Historian</div>
       <div class="kv"><span>Station</span><strong id="asset-detail-station">Metropolitan</strong></div>
       <div class="kv"><span>Zone</span><strong id="asset-detail-zone">СЕРВИСЫ OT</strong></div>
       <div class="kv"><span>ФУНКЦИЯ</span><strong id="asset-detail-function">Process data services</strong></div>
-      <div class="kv"><span>Platform</span><strong id="asset-detail-vendor">Industrial historian</strong></div>
-      <div class="kv"><span>Related systems</span><strong id="asset-detail-related">PLC-CP-01 · PLC-SL-01 · PLC-SO-01</strong></div>
+      <div class="kv"><span>ПЛАТФОРМА</span><strong id="asset-detail-vendor">Industrial historian</strong></div>
+      <div class="kv"><span>СВЯЗАННЫЕ СИСТЕМЫ</span><strong id="asset-detail-related">PLC-CP-01 · PLC-SL-01 · PLC-SO-01</strong></div>
       <p class="muted asset-research-note">El inventario expone contexto operativo, no definiciones. La función de cada clase de activo forma parte del análisis técnico del entorno.</p>
     </div></aside>
   </div>
 </section>
 
 <section class="view" data-view="network">
-  <div class="page-head"><div><div class="breadcrumb">System / Network</div><h1>Zones & Conduits</h1><p>Topología lógica metropolitana organizada por niveles funcionales OT.</p></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Система / Сеть</div><h1>ЗОНЫ И КАНАЛЫ СВЯЗИ</h1><p>Topología lógica metropolitana organizada por niveles funcionales OT.</p></div></div>
   <div class="network-layout">
-    <div class="panel"><div class="panel-head"><h2>Operational Architecture</h2><span>Logical / Purdue-inspired view</span></div><div class="zone-map purdue">
+    <div class="panel"><div class="panel-head"><h2>АРХИТЕКТУРА АСУ ТП</h2><span>Логическая архитектура / Purdue</span></div><div class="zone-map purdue">
       <div class="zone"><div class="zone-title">LEVEL 4 · Enterprise / Application Boundary</div><div class="zone-assets"><div class="node"><strong>INTERAFAS-WEB</strong>Application services</div></div></div>
-      <div class="conduit">▼ TRUST BOUNDARY · WEB-TO-OPERATIONS ▼</div>
+      <div class="conduit">▼ ГРАНИЦА ДОВЕРИЯ · WEB-TO-OPERATIONS ▼</div>
       <div class="zone"><div class="zone-title">LEVEL 3.5 · OT Edge · OPS-NET-20</div><div class="zone-assets"><div class="node"><strong>RTU-GW-07</strong>Remote operations gateway</div></div></div>
-      <div class="conduit">▼ OT SERVICES CONDUIT ▼</div>
+      <div class="conduit">▼ КАНАЛ СЕРВИСОВ OT ▼</div>
       <div class="zone"><div class="zone-title">LEVEL 3 · СЕРВИСЫ OT / Engineering</div><div class="zone-assets"><div class="node"><strong>HMI-OPS-01</strong>Operations console</div><div class="node"><strong>HIST-01</strong>Process data services</div><div class="node"><strong>EWS-01</strong>Engineering workstation</div><div class="node"><strong>BRS-01</strong>Backup / recovery</div><div class="node"><strong>OT-AUTO-01</strong>Automation engine</div></div></div>
-      <div class="conduit">▼ CONTROL CONDUIT ▼</div>
+      <div class="conduit">▼ КАНАЛ УПРАВЛЕНИЯ ▼</div>
       <div class="zone"><div class="zone-title">LEVEL 2 · Area Control</div><div class="zone-assets"><div class="node"><strong>PLC-CP-01</strong>Cerro de San Pablo</div><div class="node"><strong>PLC-SL-01</strong>Saint Louis</div><div class="node"><strong>PLC-SO-01</strong>Soledade</div></div></div>
       <div class="conduit">▼ FIELD / PROCESS CONDUIT ▼</div>
       <div class="zone"><div class="zone-title">LEVEL 1 · Process</div><div class="zone-assets"><div class="node"><strong>PUMPS</strong>Primary / standby</div><div class="node"><strong>VALVES</strong>Distribution control</div><div class="node"><strong>RESERVOIRS</strong>Regulation storage</div><div class="node"><strong>INSTRUMENTS</strong>Flow / pressure / quality</div></div></div>
@@ -635,62 +635,62 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="automation">
-  <div class="page-head"><div><div class="breadcrumb">System / Automation</div><h1>ТЕХОБСЛУЖИВАНИЕ Automation</h1><p>Tareas programadas sobre servicios y activos de la red metropolitana.</p></div><div class="page-tools"><span class="tool-chip">OT-AUTO-01</span><span class="tool-chip">ENGINE READY</span></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Система / Автоматика</div><h1>ТЕХОБСЛУЖИВАНИЕ Automation</h1><p>Tareas programadas sobre servicios y activos de la red metropolitana.</p></div><div class="page-tools"><span class="tool-chip">OT-AUTO-01</span><span class="tool-chip">ENGINE ГОТОВ</span></div></div>
   <div class="metrics automation-metrics">
     <div class="metric"><label>Jobs Today</label><strong>8</strong><span class="sub">ТЕХОБСЛУЖИВАНИЕ executions</span></div>
     <div class="metric"><label>Completed</label><strong>7</strong><span class="sub">Successful tasks</span></div>
-    <div class="metric"><label>Scheduled</label><strong>1</strong><span class="sub">Pending execution</span></div>
-    <div class="metric"><label>Failed</label><strong>0</strong><span class="sub">Last 24 hours</span></div>
+    <div class="metric"><label>ЗАПЛАНИРОВАНО</label><strong>1</strong><span class="sub">Pending execution</span></div>
+    <div class="metric"><label>Failed</label><strong>0</strong><span class="sub">Last 24 часа</span></div>
   </div>
   <div class="automation-layout">
-    <div class="panel"><div class="panel-head"><h2>Scheduled Jobs</h2><span>ТЕХОБСЛУЖИВАНИЕ scheduler</span></div><div class="panel-body">
+    <div class="panel"><div class="panel-head"><h2>ЗАПЛАНИРОВАНО Jobs</h2><span>ТЕХОБСЛУЖИВАНИЕ scheduler</span></div><div class="panel-body">
       <div class="job-card"><div class="job-top"><div><h3>Daily historian health check</h3><div class="job-meta">HIST-01 · Daily 02:00 · health-check</div></div><div class="job-state">COMPLETED</div></div></div>
       <div class="job-card"><div class="job-top"><div><h3>Engineering project validation</h3><div class="job-meta">EWS-01 · Daily 02:20 · project-validate</div></div><div class="job-state">COMPLETED</div></div></div>
       <div class="job-card"><div class="job-top"><div><h3>Recovery catalog validation</h3><div class="job-meta">BRS-01 · Sunday 03:00 · recovery-verify</div></div><div class="job-state">SCHEDULED</div></div></div>
       <div class="job-card"><div class="job-top"><div><h3>RTU configuration verification</h3><div class="job-meta">RTU-GW-07 · Daily 04:00 · config-verify</div></div><div class="job-state">COMPLETED</div></div></div>
       <div class="empty-note">Nueva automatización de mantenimiento disponible durante ventanas de servicio.</div>
     </div></div>
-    <aside class="panel"><div class="panel-head"><h2>Automation Engine</h2><span>OT-AUTO-01</span></div><div class="panel-body">
-      <div class="kv"><span>State</span><strong class="ok-text">READY</strong></div>
-      <div class="kv"><span>Execution mode</span><strong>Scheduled / Manual</strong></div>
+    <aside class="panel"><div class="panel-head"><h2>ДВИЖОК АВТОМАТИКИ</h2><span>OT-AUTO-01</span></div><div class="panel-body">
+      <div class="kv"><span>СОСТОЯНИЕ</span><strong class="ok-text">ГОТОВ</strong></div>
+      <div class="kv"><span>РЕЖИМ ВЫПОЛНЕНИЯ</span><strong>ПО РАСПИСАНИЮ / РУЧНОЙ</strong></div>
       <div class="kv"><span>ТЕХОБСЛУЖИВАНИЕ mode</span><strong><?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></strong></div>
-      <div class="kv"><span>Audit profile</span><strong>Standard</strong></div>
-      <div class="kv"><span>Service scope</span><strong>Metropolitan OT</strong></div>
+      <div class="kv"><span>ПРОФИЛЬ АУДИТА</span><strong>Standard</strong></div>
+      <div class="kv"><span>ОБЛАСТЬ ОБСЛУЖИВАНИЯ</span><strong>Metropolitan OT</strong></div>
       <p class="muted asset-research-note">El motor presenta tareas de mantenimiento legítimas sobre servicios OT. La creación interactiva de nuevos trabajos todavía no está habilitada.</p>
     </div></aside>
   </div>
 </section>
 
 <section class="view" data-view="maintenance">
-  <div class="page-head"><div><div class="breadcrumb">System / ТЕХОБСЛУЖИВАНИЕ</div><h1>ТЕХОБСЛУЖИВАНИЕ Operations Context</h1><p>Ventanas de servicio, firmware, validaciones técnicas y actividades recientes de la red metropolitana.</p></div><div class="page-tools"><span class="tool-chip">2 ACTIVE / PENDING</span><span class="tool-chip">SERVICE WINDOW</span></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Система / Техобслуживание</div><h1>КОНТЕКСТ ТЕХОБСЛУЖИВАНИЯ</h1><p>Ventanas de servicio, firmware, validaciones técnicas y actividades recientes de la red metropolitana.</p></div><div class="page-tools"><span class="tool-chip">2 АКТИВНО / ОЖИДАНИЕ</span><span class="tool-chip">ОКНО ОБСЛУЖИВАНИЯ</span></div></div>
   <div class="maintenance-kpis">
-    <div><span>Active Windows</span><strong>1</strong><small>RTU-GW-07</small></div>
-    <div><span>Scheduled</span><strong>2</strong><small>Next 12 hours</small></div>
-    <div><span>Firmware Reviews</span><strong>1</strong><small>Pending</small></div>
-    <div><span>Config Validations</span><strong>2</strong><small>Queued</small></div>
-    <div><span>Recovery Checks</span><strong>1</strong><small>Scheduled</small></div>
-    <div><span>Assets in Service</span><strong>1</strong><small>RTU-GW-07</small></div>
+    <div><span>АКТИВНЫЕ ОКНА</span><strong>1</strong><small>RTU-GW-07</small></div>
+    <div><span>ЗАПЛАНИРОВАНО</span><strong>2</strong><small>Next 12 hours</small></div>
+    <div><span>ПРОВЕРКИ ПРОШИВКИ</span><strong>1</strong><small>Pending</small></div>
+    <div><span>ПРОВЕРКИ КОНФИГУРАЦИИ</span><strong>2</strong><small>Queued</small></div>
+    <div><span>ПРОВЕРКИ ВОССТАНОВЛЕНИЯ</span><strong>1</strong><small>ЗАПЛАНИРОВАНО</small></div>
+    <div><span>ОБЪЕКТЫ В СЕРВИСЕ</span><strong>1</strong><small>RTU-GW-07</small></div>
   </div>
   <div class="maintenance-grid">
-    <section class="panel"><div class="panel-head"><h2>ТЕХОБСЛУЖИВАНИЕ Windows</h2><span>Current & scheduled</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Window</th><th>Asset</th><th>Scope</th><th>State</th><th>Owner</th></tr></thead><tbody>
+    <section class="panel"><div class="panel-head"><h2>ОКНА ТЕХОБСЛУЖИВАНИЯ</h2><span>Текущие и запланированные</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>ОКНО</th><th>ОБЪЕКТ</th><th>ОБЛАСТЬ</th><th>СТАТУС</th><th>ОТВЕТСТВЕННЫЙ</th></tr></thead><tbody>
       <tr><td>MW-260925-01</td><td>RTU-GW-07</td><td>Firmware / diagnostics</td><td class="warn-text">ACTIVE</td><td>OT Support</td></tr>
       <tr><td>MW-260925-02</td><td>EST-SL-01</td><td>Controller validation</td><td>SCHEDULED</td><td>Engineering</td></tr>
       <tr><td>MW-260926-01</td><td>BRS-01</td><td>Recovery catalog</td><td>SCHEDULED</td><td>СЕРВИСЫ OT</td></tr>
     </tbody></table></div></section>
-    <section class="panel"><div class="panel-head"><h2>Firmware Estate</h2><span>Edge / station devices</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Asset</th><th>Version</th><th>Diagnostic</th><th>State</th></tr></thead><tbody>
+    <section class="panel"><div class="panel-head"><h2>ПРОШИВКИ УСТРОЙСТВ</h2><span>Периферийные и станционные устройства</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>ОБЪЕКТ</th><th>ВЕРСИЯ</th><th>ДИАГНОСТИКА</th><th>СТАТУС</th></tr></thead><tbody>
       <tr><td>RTU-GW-07</td><td><?=htmlspecialchars((string)($fw['version']??'—'))?></td><td><?=htmlspecialchars((string)($fw['diagnostic']??'—'))?></td><td class="warn-text">SERVICE</td></tr>
       <tr><td>RTU-CP-01</td><td>2.9.8</td><td>LOCKED</td><td class="ok-text">CURRENT</td></tr>
       <tr><td>RTU-SL-01</td><td>3.1.2</td><td>LOCKED</td><td class="ok-text">CURRENT</td></tr>
       <tr><td>RTU-SO-01</td><td>3.0.7</td><td>LOCKED</td><td class="ok-text">CURRENT</td></tr>
     </tbody></table></div></section>
-    <section class="panel"><div class="panel-head"><h2>Recent ТЕХОБСЛУЖИВАНИЕ</h2><span>Last operations</span></div><div class="panel-body">
+    <section class="panel"><div class="panel-head"><h2>ПОСЛЕДНИЕ РАБОТЫ</h2><span>Last operations</span></div><div class="panel-body">
       <div class="maint-event"><b>11:35</b><span>RTU-GW-07 diagnostic changed to SERVICE</span><strong class="warn-text">ACTIVE</strong></div>
       <div class="maint-event"><b>09:42</b><span>PLC-SL-02 configuration verification</span><strong class="ok-text">PASS</strong></div>
       <div class="maint-event"><b>08:11</b><span>BRS-01 recovery catalog check</span><strong class="ok-text">PASS</strong></div>
       <div class="maint-event"><b>07:48</b><span>HIST-01 storage health validation</span><strong class="ok-text">PASS</strong></div>
       <div class="maint-event"><b>06:32</b><span>RTU-SO-02 communications test</span><strong class="warn-text">DEGRADED</strong></div>
     </div></section>
-    <section class="panel"><div class="panel-head"><h2>Pending Actions</h2><span>Operational queue</span></div><div class="panel-body">
+    <section class="panel"><div class="panel-head"><h2>ОЖИДАЮЩИЕ ДЕЙСТВИЯ</h2><span>Операционная очередь</span></div><div class="panel-body">
       <div class="kv"><span>Firmware review</span><strong>RTU-GW-07</strong></div>
       <div class="kv"><span>Config validation</span><strong>PLC-SL-02</strong></div>
       <div class="kv"><span>Config validation</span><strong>PLC-CP-03</strong></div>
@@ -701,9 +701,9 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="configuration">
-  <div class="page-head"><div><div class="breadcrumb">Engineering / Configuration</div><h1>Engineering Context</h1><p>Proyectos y controladores asociados a las estaciones metropolitanas.</p></div></div>
-  <div class="panel"><div class="panel-head"><h2>Control Projects</h2><span>Read-only context</span></div><div class="table-wrap"><table class="data-table">
-    <thead><tr><th>Project</th><th>Station</th><th>Controller</th><th>Revision</th><th>Engineering</th><th>Recovery</th></tr></thead>
+  <div class="page-head"><div><div class="breadcrumb">Инжиниринг / Конфигурация</div><h1>ИНЖЕНЕРНЫЙ КОНТЕКСТ</h1><p>Proyectos y controladores asociados a las estaciones metropolitanas.</p></div></div>
+  <div class="panel"><div class="panel-head"><h2>ПРОЕКТЫ УПРАВЛЕНИЯ</h2><span>Только чтение</span></div><div class="table-wrap"><table class="data-table">
+    <thead><tr><th>ПРОЕКТ</th><th>СТАНЦИЯ</th><th>КОНТРОЛЛЕР</th><th>РЕВИЗИЯ</th><th>ИНЖИНИРИНГ</th><th>ВОССТАНОВЛЕНИЕ</th></tr></thead>
     <tbody>
       <tr><td class="asset-link">PMN_CP_DISTRIBUTION</td><td>Cerro de San Pablo</td><td>PLC-CP-01</td><td>2026.09.12-r11</td><td>EWS-01</td><td>BRS-01</td></tr>
       <tr><td class="asset-link">PMN_SL_DISTRIBUTION</td><td>Saint Louis</td><td>PLC-SL-01</td><td>2026.09.14-r17</td><td>EWS-01</td><td>BRS-01</td></tr>
@@ -713,16 +713,16 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="events">
-  <div class="page-head"><div><div class="breadcrumb">Analysis / Events</div><h1>Operational Event Timeline</h1><p>Actividad reciente de estaciones, controladores, servicios OT y mantenimiento.</p></div><div class="page-tools"><span class="tool-chip">20 RECENT</span><span class="tool-chip">LIVE SESSION</span></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Анализ / События</div><h1>ЖУРНАЛ ОПЕРАЦИОННЫХ СОБЫТИЙ</h1><p>Actividad reciente de estaciones, controladores, servicios OT y mantenimiento.</p></div><div class="page-tools"><span class="tool-chip">20 ПОСЛЕДНИХ</span><span class="tool-chip">ТЕКУЩАЯ СЕССИЯ</span></div></div>
   <div class="panel live-log-panel">
-    <div class="panel-head"><h2>Live Operational Stream</h2><span><i class="live-dot"></i> ingesting · <b data-live-updated>--:--:--</b></span></div>
+    <div class="panel-head"><h2>ПОТОК СОБЫТИЙ</h2><span><i class="live-dot"></i> прием данных · <b data-live-updated>--:--:--</b></span></div>
     <div class="table-wrap live-log-wrap"><table class="data-table live-log-table">
-      <thead><tr><th>Time</th><th>Severity</th><th>Source</th><th>Message</th></tr></thead>
+      <thead><tr><th>ВРЕМЯ</th><th>КРИТИЧНОСТЬ</th><th>ИСТОЧНИК</th><th>СООБЩЕНИЕ</th></tr></thead>
       <tbody id="live-log-body"></tbody>
     </table></div>
   </div>
   <div class="log-gap"></div>
-  <div class="panel"><div class="panel-head"><h2>Timeline</h2><span>Metropolitan operations</span></div><div class="event-timeline">
+  <div class="panel"><div class="panel-head"><h2>ХРОНОЛОГИЯ</h2><span>Операции метросистемы</span></div><div class="event-timeline">
     <div><time>11:52:09</time><b>HMI-OPS-01</b><span>Metropolitan operator interface refresh completed</span><em>INFO</em></div>
     <div><time>11:46:03</time><b>TK-CP-01</b><span>Reservoir operating threshold advisory created</span><em class="warn-text">HIGH</em></div>
     <div><time>11:39:12</time><b>PRESS-SL-01</b><span>Pressure deviation detected in Saint Louis header</span><em class="warn-text">MED</em></div>
@@ -762,14 +762,14 @@ $pressureZones=18;
     <div class="live-stat-updated"><span>ПОСЛ. РАСЧЕТ</span><strong data-live-updated>--:--:--</strong><small>1.2 s cycle</small></div>
   </div>
   <div class="statistics-grid">
-    <section class="panel"><div class="panel-head"><h2>ГОТОВНОСТЬ</h2><span>24 hours</span></div><div class="big-stat"><?=$availability?>%</div><div class="stat-lines"><span>PLC 100%</span><span>RTU 98.7%</span><span>СЕРВИСЫ OT 100%</span></div></section>
-    <section class="panel"><div class="panel-head"><h2>РАСПРЕДЕЛЕНИЕ АВАРИЙ</h2><span>By municipality</span></div><div class="horizontal-bars"><div><span>Cerro de San Pablo</span><i style="width:48%"></i><b>2</b></div><div><span>Saint Louis</span><i style="width:72%"></i><b>3</b></div><div><span>Soledade</span><i style="width:48%"></i><b>2</b></div><div><span>Metropolitan</span><i style="width:38%"></i><b>2</b></div></div></section>
-    <section class="panel"><div class="panel-head"><h2>КРИТИЧНОСТЬ СОБЫТИЙ</h2><span>Last 24 hours</span></div><div class="donut-stat"><div class="donut"></div><div><span>High 4%</span><span>Medium 16%</span><span>Low 22%</span><span>Info 58%</span></div></div></section>
-    <section class="panel"><div class="panel-head"><h2>ТЕХОБСЛУЖИВАНИЕ Activity</h2><span>Last 24 hours</span></div><div class="big-stat">11</div><div class="stat-lines"><span>8 completed</span><span>2 scheduled</span><span>1 active</span></div></section>
-    <section class="panel wide"><div class="panel-head"><h2>ОБЪЕКТЫ С НАИБОЛЬШИМ ЧИСЛОМ СОБЫТИЙ</h2><span>Operational records</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Asset</th><th>Class</th><th>Events</th><th>Warnings</th><th>ГОТОВНОСТЬ</th></tr></thead><tbody><tr><td>RTU-GW-07</td><td>Gateway</td><td>21</td><td>3</td><td>99.4%</td></tr><tr><td>HIST-01</td><td>Historian</td><td>17</td><td>1</td><td>100%</td></tr><tr><td>PLC-SL-02</td><td>PLC</td><td>14</td><td>2</td><td>100%</td></tr><tr><td>RTU-SL-02</td><td>RTU</td><td>12</td><td>4</td><td>96.8%</td></tr><tr><td>BRS-01</td><td>Recovery</td><td>9</td><td>0</td><td>100%</td></tr></tbody></table></div></section>
-    <section class="panel wide"><div class="panel-head"><h2>ПРОФИЛЬ МУНИЦИПАЛЬНОЙ РАБОТЫ</h2><span>Current period</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Municipality</th><th>Supply</th><th>Demand</th><th>Reserve</th><th>Pressure</th><th>Alarms</th><th>ГОТОВНОСТЬ</th></tr></thead><tbody><tr><td>Cerro de San Pablo</td><td>2,380 L/s</td><td>2,248 L/s</td><td>78%</td><td>4.1 bar</td><td>4</td><td>99.91%</td></tr><tr><td>Saint Louis</td><td>3,420 L/s</td><td>3,239 L/s</td><td>80%</td><td>4.3 bar</td><td>7</td><td>99.72%</td></tr><tr><td>Soledade</td><td>2,580 L/s</td><td>2,349 L/s</td><td>80%</td><td>4.2 bar</td><td>4</td><td>99.83%</td></tr></tbody></table></div></section>
+    <section class="panel"><div class="panel-head"><h2>ГОТОВНОСТЬ</h2><span>24 часа</span></div><div class="big-stat"><?=$availability?>%</div><div class="stat-lines"><span>PLC 100%</span><span>RTU 98.7%</span><span>СЕРВИСЫ OT 100%</span></div></section>
+    <section class="panel"><div class="panel-head"><h2>РАСПРЕДЕЛЕНИЕ АВАРИЙ</h2><span>По муниципалитету</span></div><div class="horizontal-bars"><div><span>Cerro de San Pablo</span><i style="width:48%"></i><b>2</b></div><div><span>Saint Louis</span><i style="width:72%"></i><b>3</b></div><div><span>Soledade</span><i style="width:48%"></i><b>2</b></div><div><span>Metropolitan</span><i style="width:38%"></i><b>2</b></div></div></section>
+    <section class="panel"><div class="panel-head"><h2>КРИТИЧНОСТЬ СОБЫТИЙ</h2><span>Last 24 часа</span></div><div class="donut-stat"><div class="donut"></div><div><span>Высокий 4%</span><span>Средний 16%</span><span>Низкий 22%</span><span>Инфо 58%</span></div></div></section>
+    <section class="panel"><div class="panel-head"><h2>ТЕХОБСЛУЖИВАНИЕ Activity</h2><span>Last 24 часа</span></div><div class="big-stat">11</div><div class="stat-lines"><span>8 завершено</span><span>2 запланировано</span><span>1 активно</span></div></section>
+    <section class="panel wide"><div class="panel-head"><h2>ОБЪЕКТЫ С НАИБОЛЬШИМ ЧИСЛОМ СОБЫТИЙ</h2><span>Операционные записи</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>ОБЪЕКТ</th><th>КЛАСС</th><th>Events</th><th>ПРЕДУПР.</th><th>ГОТОВНОСТЬ</th></tr></thead><tbody><tr><td>RTU-GW-07</td><td>Gateway</td><td>21</td><td>3</td><td>99.4%</td></tr><tr><td>HIST-01</td><td>Historian</td><td>17</td><td>1</td><td>100%</td></tr><tr><td>PLC-SL-02</td><td>PLC</td><td>14</td><td>2</td><td>100%</td></tr><tr><td>RTU-SL-02</td><td>RTU</td><td>12</td><td>4</td><td>96.8%</td></tr><tr><td>BRS-01</td><td>Recovery</td><td>9</td><td>0</td><td>100%</td></tr></tbody></table></div></section>
+    <section class="panel wide"><div class="panel-head"><h2>ПРОФИЛЬ МУНИЦИПАЛЬНОЙ РАБОТЫ</h2><span>Текущий период</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>МУНИЦИПАЛИТЕТ</th><th>Supply</th><th>Demand</th><th>Reserve</th><th>Pressure</th><th>Alarms</th><th>ГОТОВНОСТЬ</th></tr></thead><tbody><tr><td>Cerro de San Pablo</td><td>2,380 L/s</td><td>2,248 L/s</td><td>78%</td><td>4.1 bar</td><td>4</td><td>99.91%</td></tr><tr><td>Saint Louis</td><td>3,420 L/s</td><td>3,239 L/s</td><td>80%</td><td>4.3 bar</td><td>7</td><td>99.72%</td></tr><tr><td>Soledade</td><td>2,580 L/s</td><td>2,349 L/s</td><td>80%</td><td>4.2 bar</td><td>4</td><td>99.83%</td></tr></tbody></table></div></section>
 
-    <section class="panel wide"><div class="panel-head"><h2>ВЫРАБОТКА ВОДЫ · 24 Ч</h2><span>Hourly metropolitan output</span></div><div class="area-chart"><svg viewBox="0 0 900 220" preserveAspectRatio="none"><path class="chart-grid" d="M0 55H900M0 110H900M0 165H900"/><path class="area-fill" d="M0 170 C70 155 100 150 150 142 S250 118 310 126 S400 97 470 105 S560 76 640 88 S750 64 820 78 S870 70 900 72 L900 220 L0 220Z"/><path class="area-line" d="M0 170 C70 155 100 150 150 142 S250 118 310 126 S400 97 470 105 S560 76 640 88 S750 64 820 78 S870 70 900 72"/></svg><div class="chart-caption"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div></div></section>
+    <section class="panel wide"><div class="panel-head"><h2>ВЫРАБОТКА ВОДЫ · 24 Ч</h2><span>Почасовой выпуск метросистемы</span></div><div class="area-chart"><svg viewBox="0 0 900 220" preserveAspectRatio="none"><path class="chart-grid" d="M0 55H900M0 110H900M0 165H900"/><path class="area-fill" d="M0 170 C70 155 100 150 150 142 S250 118 310 126 S400 97 470 105 S560 76 640 88 S750 64 820 78 S870 70 900 72 L900 220 L0 220Z"/><path class="area-line" d="M0 170 C70 155 100 150 150 142 S250 118 310 126 S400 97 470 105 S560 76 640 88 S750 64 820 78 S870 70 900 72"/></svg><div class="chart-caption"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div></div></section>
 
     <section class="panel"><div class="panel-head"><h2>Controller Fleet</h2><span>Operational state</span></div><div class="stacked-stat"><div><i style="width:82%"></i><em style="width:12%"></em><b style="width:6%"></b></div><span>Online 82%</span><span>ТЕХОБСЛУЖИВАНИЕ 12%</span><span>Degraded 6%</span></div></section>
 
@@ -777,7 +777,7 @@ $pressureZones=18;
 
     <section class="panel"><div class="panel-head"><h2>ТЕХОБСЛУЖИВАНИЕ by Category</h2><span>7 days</span></div><div class="horizontal-bars compact"><div><span>КОНФИГУРАЦИЯ / Configuration</span><i style="width:82%"></i><b>18</b></div><div><span>ПРОШИВКА / Firmware</span><i style="width:36%"></i><b>8</b></div><div><span>Recovery</span><i style="width:50%"></i><b>11</b></div><div><span>Comms</span><i style="width:64%"></i><b>14</b></div></div></section>
 
-    <section class="panel"><div class="panel-head"><h2>Alarm Heatmap</h2><span>24 hours</span></div><div class="heatmap"><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i></div><div class="heatmap-labels"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div></section>
+    <section class="panel"><div class="panel-head"><h2>Alarm Heatmap</h2><span>24 часа</span></div><div class="heatmap"><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i></div><div class="heatmap-labels"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div></section>
 
     <section class="panel wide"><div class="panel-head"><h2>Demand Share by Service Area</h2><span>Current load</span></div><div class="service-share"><div class="share-donut"></div><div><p><b>Cerro de San Pablo</b><span>29%</span></p><p><b>Saint Louis</b><span>41%</span></p><p><b>Soledade</b><span>30%</span></p></div></div></section>
 
@@ -835,7 +835,7 @@ document.querySelectorAll('.eq-click').forEach(el=>el.addEventListener('click',(
   const name=el.dataset.equipment||'Process asset';
   if(window.INTERAFAS_HMI?.openDrawer){
     window.INTERAFAS_HMI.openDrawer(name,'ТЕХСХЕМА ASSET',
-      '<div class="drawer-kpi">'+name+'</div><p>Live asset context from the selected station process cell.</p><div class="drawer-meta"><span>Station</span><b>'+((document.querySelector('[data-current-station]')||{}).textContent||'—')+'</b><span>КОНТРОЛЛЕР</span><b>'+((document.querySelector('[data-current-controller]')||{}).textContent||'—')+'</b><span>State</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
+      '<div class="drawer-kpi">'+name+'</div><p>Live asset context from the selected station process cell.</p><div class="drawer-meta"><span>Station</span><b>'+((document.querySelector('[data-current-station]')||{}).textContent||'—')+'</b><span>КОНТРОЛЛЕР</span><b>'+((document.querySelector('[data-current-controller]')||{}).textContent||'—')+'</b><span>СОСТОЯНИЕ</span><b class="ok-text">ONLINE</b><span>Telemetry</span><b>LIVE</b></div>');
   }
 }));
 
