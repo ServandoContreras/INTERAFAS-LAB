@@ -154,8 +154,10 @@ function processTemplates(){
       '<div class="cp-section sl-lift"><span>HIGH-LIFT PUMPING</span></div>'+
       '<div class="cp-section sl-treatment"><span>TREATMENT / REGULATION</span></div>'+
       '<div class="cp-section sl-distribution"><span>METROPOLITAN DISTRIBUTION</span></div>'+
+      '<div class="sl-raw-intake eq-click" data-equipment="INT-SL-01"><b>RAW WATER INTAKE</b><span>INT-SL-01</span><strong data-live-tag="FLOW">—</strong><small data-live-tag="TURBIDITY">—</small></div>'+
       '<div class="cp-tank sl-tank-a eq-click" data-equipment="TQ-SL-01"><b>TQ-SL-01</b><span>Primary reservoir</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
       '<div class="cp-tank sl-tank-b eq-click" data-equipment="TQ-SL-02"><b>TQ-SL-02</b><span>Secondary reservoir</span><div class="cp-level"><i data-level-fill="LEVEL"></i></div><strong data-live-tag="LEVEL">—</strong></div>'+
+      '<div class="sl-level-tag sl-lt1"><small>LT-SL-101</small><b data-live-tag="LEVEL">—</b></div><div class="sl-level-tag sl-lt2"><small>LT-SL-102</small><b>51 %</b></div>'+
       '<div class="cp-pump sl-p1 running eq-click" data-pump-state="P101" data-equipment="P-SL-101"><i></i><b>P-SL-101</b><span>HIGH-LIFT A</span><strong data-live-tag="P101" data-live-format="state" data-on="RUN" data-off="STOP">RUN</strong></div>'+
       '<div class="cp-pump sl-p2 running eq-click" data-pump-state="P101" data-equipment="P-SL-102"><i></i><b>P-SL-102</b><span>HIGH-LIFT B</span><strong>RUN</strong></div>'+
       '<div class="cp-pump sl-p3 running eq-click" data-pump-state="P101" data-equipment="P-SL-103"><i></i><b>P-SL-103</b><span>HIGH-LIFT C</span><strong>RUN</strong></div>'+
@@ -170,9 +172,13 @@ function processTemplates(){
       '<div class="cp-zone sl-zone-a"><b>ZONE A</b><span>Central / commercial</span><small>FT-SL-501 · 1.28 m³/s</small><em>PT-SL-501 · 4.8 bar</em></div>'+
       '<div class="cp-zone sl-zone-b"><b>ZONE B</b><span>Residential / university</span><small>FT-SL-502 · 1.15 m³/s</small><em>PT-SL-502 · 4.6 bar</em></div>'+
       '<div class="cp-zone sl-zone-c"><b>ZONE C</b><span>Industrial / airport</span><small>FT-SL-503 · 0.93 m³/s</small><em>PT-SL-503 · 4.4 bar</em></div>'+
-      '<div class="scada-tag sl-tag-flow"><small>FIT-SL-101 · RAW WATER</small><b data-live-tag="FLOW">—</b><em>VALID · AUTO</em></div>'+
-      '<div class="scada-tag sl-tag-p1"><small>PT-SL-201 · SUCTION</small><b>2.18 bar</b><em>NORMAL</em></div>'+
-      '<div class="scada-tag sl-tag-q"><small>AIT-SL-301 · FINAL QUALITY</small><b data-live-tag="TURBIDITY">—</b><em>QUALITY OK</em></div>'+
+      '<div class="sl-inst sl-fit101"><i>F</i><small>FIT-SL-101</small><b data-live-tag="FLOW">—</b></div>'+
+      '<div class="sl-inst sl-pt201"><i>P</i><small>PT-SL-201</small><b>2.18 bar</b></div>'+
+      '<div class="sl-inst sl-pt401"><i>P</i><small>PT-SL-401</small><b data-live-tag="PRESS">—</b></div>'+
+      '<div class="sl-inst sl-ait301"><i>A</i><small>AIT-SL-301</small><b data-live-tag="TURBIDITY">—</b></div>'+
+      '<div class="sl-inst sl-fit501"><i>F</i><small>FIT-SL-501</small><b>1.28</b></div>'+
+      '<div class="sl-inst sl-fit502"><i>F</i><small>FIT-SL-502</small><b>1.15</b></div>'+
+      '<div class="sl-inst sl-fit503"><i>F</i><small>FIT-SL-503</small><b>0.93</b></div>'+
       '<div class="scada-status-bank sl-status"><div><i></i><span>PLC-SL-01</span><b>RUN</b></div><div><i></i><span>RTU-SL-01</span><b>ONLINE</b></div><div><i></i><span>QCS-SL-01</span><b>VALID</b></div><div><i class="warn"></i><span>P-SL-104</span><b>STBY</b></div></div>'+
       '<div class="scada-valve sl-v-a open"><i></i><span>XV-SL-501</span></div><div class="scada-valve sl-v-b open"><i></i><span>XV-SL-502</span></div><div class="scada-valve sl-v-c open"><i></i><span>XV-SL-503</span></div>'+
       '<div class="scada-valve sl-v-suc-a open"><i></i><span>XV-SL-101</span></div><div class="scada-valve sl-v-suc-b open"><i></i><span>XV-SL-102</span></div>'+
@@ -181,7 +187,7 @@ function processTemplates(){
       '<div class="sl-bypass"><b>MAINTENANCE BYPASS</b><span>XV-SL-420 · CLOSED</span></div>'+
       '<div class="sl-main-header-label"><small>METROPOLITAN HEADER</small><b>HDR-SL-01</b><strong data-live-tag="PRESS">—</strong></div>'+
       '<div class="scada-motor-state sl-mcc">MCC-SL-01 · BUS HEALTHY · AUTO · 3 RUN / 1 STBY</div>'+
-      '<div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
+      '<div class="cp-route sl-intake-r active"></div><div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
       '</div>',
 
     'Soledade':
