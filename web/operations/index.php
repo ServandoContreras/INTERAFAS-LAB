@@ -233,11 +233,11 @@ $pressureZones=18;
     </article>
     <article class="municipal-card">
       <img src="/operations/assets/img/station-sl.svg" alt="Complejo de regulación de Saint Louis">
-      <div class="municipal-overlay"><span>SAINT LOUIS</span><strong>Metropolitan primary works</strong><small>Dual storage · 4-pump high-lift bank · quality regulation · 3 distribution trunks</small><button class="btn station-open" data-station-open="4">OPEN METROPOLITAN OPERATIONS</button></div>
+      <div class="municipal-overlay"><span>SAINT LOUIS · LARGE SCADA</span><strong>Metropolitan primary works</strong><small>Raw-water intake · dual storage · filtration/chlorination · 4-pump high-lift bank · 3 distribution trunks</small><button class="btn station-open" data-station-open="4">OPEN METROPOLITAN OPERATIONS</button></div>
     </article>
     <article class="municipal-card">
       <img src="/operations/assets/img/station-so.svg" alt="Complejo de distribución de Soledade">
-      <div class="municipal-overlay"><span>SOLEDADE</span><strong>Eastern booster & pressure control</strong><small>3-pump booster hall · PRV regulation · break-pressure storage · 2 service sectors</small><button class="btn station-open" data-station-open="8">OPEN EASTERN OPERATIONS</button></div>
+      <div class="municipal-overlay"><span>SOLEDADE · MEDIUM SCADA</span><strong>Eastern booster & pressure control</strong><small>Eastern intake · 3-pump booster hall · PRV regulation · chlorination · break-pressure tank · 2 service sectors</small><button class="btn station-open" data-station-open="8">OPEN EASTERN OPERATIONS</button></div>
     </article>
   </div>
 </section>
