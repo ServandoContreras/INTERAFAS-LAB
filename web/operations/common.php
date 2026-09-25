@@ -19,9 +19,17 @@ function operational_source(): array {
     ];
 }
 
+function ipv4_in_cidr(string $ip, string $network, int $prefix): bool {
+    $ipLong=ip2long($ip);
+    $networkLong=ip2long($network);
+    if($ipLong===false || $networkLong===false || $prefix<0 || $prefix>32) return false;
+    $mask=$prefix===0 ? 0 : (-1 << (32-$prefix));
+    return (($ipLong & $mask) === ($networkLong & $mask));
+}
+
 function operational_source_is_internal(): bool {
     $src=operational_source();
-    return in_array($src['claimed'],['127.0.0.1','::1'],true);
+    return ipv4_in_cidr($src['claimed'],'10.40.20.0',24);
 }
 
 function require_operational_network(bool $hide=false): void {
