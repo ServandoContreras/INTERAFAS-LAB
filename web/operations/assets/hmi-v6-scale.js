@@ -160,18 +160,23 @@ function processTemplates(){
       '<div class="cp-pump sl-p2 running eq-click" data-pump-state="P101" data-equipment="P-SL-102"><i></i><b>P-SL-102</b><span>HIGH-LIFT B</span><strong>RUN</strong></div>'+
       '<div class="cp-pump sl-p3 running eq-click" data-pump-state="P101" data-equipment="P-SL-103"><i></i><b>P-SL-103</b><span>HIGH-LIFT C</span><strong>RUN</strong></div>'+
       '<div class="cp-pump sl-p4 eq-click" data-pump-state="P102" data-equipment="P-SL-104"><i></i><b>P-SL-104</b><span>STANDBY D</span><strong data-live-tag="P102" data-live-format="state" data-on="RUN" data-off="STBY">STBY</strong></div>'+
-      '<div class="cp-skid sl-qcs eq-click" data-equipment="QCS-SL-01"><b>QCS-SL-01</b><span>Quality / dosing</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
+      '<div class="sl-suction-header eq-click" data-equipment="HDR-SL-SUC"><b>SUCTION MANIFOLD</b><span>2.18 bar</span></div>'+
+      '<div class="sl-discharge-header eq-click" data-equipment="HDR-SL-DIS"><b>DISCHARGE MANIFOLD</b><span data-live-tag="PRESS">—</span></div>'+
+      '<div class="sl-filter-bank eq-click" data-equipment="FLT-SL-01"><b>FILTER BANK</b><div><span>F-101</span><i class="ok"></i><small>ΔP 0.18</small></div><div><span>F-102</span><i class="ok"></i><small>ΔP 0.20</small></div><div><span>F-103</span><i class="warn"></i><small>ΔP 0.65</small></div></div>'+
+      '<div class="cp-skid sl-qcs eq-click" data-equipment="QCS-SL-01"><b>QCS-SL-01</b><span>Final water quality</span><div><small>CL₂</small><strong data-live-tag="CHLORINE">—</strong></div><div><small>NTU</small><strong data-live-tag="TURBIDITY">—</strong></div></div>'+
+      '<div class="sl-chem eq-click" data-equipment="CHEM-SL-01"><b>NaOCl</b><span>DOSING</span><strong>AUTO</strong></div>'+
       '<div class="cp-header sl-header eq-click" data-equipment="HDR-SL-01"><b>HDR-SL-01</b><span>Main metropolitan header</span><strong data-live-tag="PRESS">—</strong></div>'+
       '<div class="cp-meter sl-flow"><b>FT-SL-101</b><strong data-live-tag="FLOW">—</strong></div>'+
-      '<div class="cp-zone sl-zone-a"><b>ZONE A</b><span>Central / commercial</span></div>'+
-      '<div class="cp-zone sl-zone-b"><b>ZONE B</b><span>Residential / university</span></div>'+
-      '<div class="cp-zone sl-zone-c"><b>ZONE C</b><span>Industrial / airport</span></div>'+
+      '<div class="cp-zone sl-zone-a"><b>ZONE A</b><span>Central / commercial</span><small>FT-SL-501 · 1.28 m³/s</small><em>PT-SL-501 · 4.8 bar</em></div>'+
+      '<div class="cp-zone sl-zone-b"><b>ZONE B</b><span>Residential / university</span><small>FT-SL-502 · 1.15 m³/s</small><em>PT-SL-502 · 4.6 bar</em></div>'+
+      '<div class="cp-zone sl-zone-c"><b>ZONE C</b><span>Industrial / airport</span><small>FT-SL-503 · 0.93 m³/s</small><em>PT-SL-503 · 4.4 bar</em></div>'+
       '<div class="scada-tag sl-tag-flow"><small>FIT-SL-101 · RAW WATER</small><b data-live-tag="FLOW">—</b><em>VALID · AUTO</em></div>'+
       '<div class="scada-tag sl-tag-p1"><small>PT-SL-201 · SUCTION</small><b>2.18 bar</b><em>NORMAL</em></div>'+
       '<div class="scada-tag sl-tag-q"><small>AIT-SL-301 · FINAL QUALITY</small><b data-live-tag="TURBIDITY">—</b><em>QUALITY OK</em></div>'+
       '<div class="scada-status-bank sl-status"><div><i></i><span>PLC-SL-01</span><b>RUN</b></div><div><i></i><span>RTU-SL-01</span><b>ONLINE</b></div><div><i></i><span>QCS-SL-01</span><b>VALID</b></div><div><i class="warn"></i><span>P-SL-104</span><b>STBY</b></div></div>'+
-      '<div class="scada-valve sl-v-a open"><i></i><span>XV-SL-201</span></div><div class="scada-valve sl-v-b open"><i></i><span>XV-SL-202</span></div><div class="scada-valve sl-v-c open"><i></i><span>XV-SL-203</span></div>'+
-      '<div class="scada-motor-state sl-mcc">MCC-SL-01 · BUS HEALTHY · AUTO</div>'+
+      '<div class="scada-valve sl-v-a open"><i></i><span>XV-SL-501</span></div><div class="scada-valve sl-v-b open"><i></i><span>XV-SL-502</span></div><div class="scada-valve sl-v-c open"><i></i><span>XV-SL-503</span></div>'+
+      '<div class="scada-valve sl-v-suc-a open"><i></i><span>XV-SL-101</span></div><div class="scada-valve sl-v-suc-b open"><i></i><span>XV-SL-102</span></div>'+
+      '<div class="scada-motor-state sl-mcc">MCC-SL-01 · BUS HEALTHY · AUTO · 3 RUN / 1 STBY</div>'+
       '<div class="cp-route sl-r1 active"></div><div class="cp-route sl-r2 active"></div><div class="cp-route sl-r3 active"></div><div class="cp-route sl-r4 active"></div><div class="cp-route sl-r5 active"></div><div class="cp-route sl-r6 active"></div><div class="cp-route sl-branch-a active"></div><div class="cp-route sl-branch-b active"></div><div class="cp-route sl-branch-c active"></div>'+
       '</div>',
 
