@@ -43,9 +43,9 @@ if(!$internal){
     exit;
 }
 
-$state=ot_call('/state');
+$health=ot_call('/health');
 
-if(empty($state) || isset($state['error'])){
+if(empty($health) || isset($health['error'])){
     http_response_code(502);
     echo json_encode(['ok'=>false,'error'=>'operational-upstream-unavailable'],JSON_UNESCAPED_UNICODE|JSON_PRETTY_PRINT);
     exit;
@@ -80,14 +80,7 @@ echo json_encode([
         'observed_remote'=>$remote,
         'trusted_client'=>$claimed
     ],
-    'snapshot'=>[
-        'plant'=>$state['plant']??null,
-        'tank'=>$state['tank']??null,
-        'flow'=>$state['flow']??null,
-        'pressure'=>$state['pressure']??null,
-        'quality'=>$state['quality']??null,
-        'alarms'=>$state['alarms']??[]
-    ],
+    'upstream_status'=>'reachable',
     'links'=>[
         'operator_login'=>'/operations/login.php',
         'monitoring'=>'/operations/monitor.php'
