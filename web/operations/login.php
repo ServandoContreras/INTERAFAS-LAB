@@ -62,4 +62,4 @@ button{width:100%;margin-top:20px;border:0;border-radius:10px;padding:12px;backg
 <button type="submit">Ingresar</button>
 </form>
 <div class="scope">El acceso requiere procedencia de la red operacional y una identidad activa del Centro de Operaciones.</div>
-</div></body></html>
+</div><script src="/operations/assets/ops-client.js" defer></script></body></html>
