@@ -157,12 +157,12 @@ $pressureZones=18;
   </div>
 
   <div class="metrics metro-metrics dense">
-    <div class="metric"><label>Total Supply</label><strong><?=$totalSupply?></strong><small>L/s</small><span class="sub">Metropolitan production</span></div>
-    <div class="metric"><label>Total Demand</label><strong><?=$totalDemand?></strong><small>L/s</small><span class="sub">Current demand</span></div>
+    <div class="metric"><label>Total Supply</label><strong data-live-pulse="<?=$totalSupply?>" data-live-amp="26"><?=$totalSupply?></strong><small>L/s</small><span class="sub">Metropolitan production</span></div>
+    <div class="metric"><label>Total Demand</label><strong data-live-pulse="<?=$totalDemand?>" data-live-amp="22"><?=$totalDemand?></strong><small>L/s</small><span class="sub">Current demand</span></div>
     <div class="metric"><label>Supply Balance</label><strong>+<?=$balance?></strong><small>L/s</small><span class="sub">Available operating margin</span></div>
     <div class="metric"><label>System Reserve</label><strong><?=$avgReserve?></strong><small>%</small><span class="sub">Average reserve</span></div>
     <div class="metric"><label>Minimum Reserve</label><strong>79</strong><small>%</small><span class="sub">Cerro de San Pablo</span></div>
-    <div class="metric"><label>Average Pressure</label><strong><?=$avgPressure?></strong><small>bar</small><span class="sub">Distribution headers</span></div>
+    <div class="metric"><label>Average Pressure</label><strong data-live-pulse="<?=$avgPressure?>" data-live-amp=".08" data-live-decimals="2"><?=$avgPressure?></strong><small>bar</small><span class="sub">Distribution headers</span></div>
     <div class="metric"><label>Pressure Range</label><strong>4.1–4.5</strong><small>bar</small><span class="sub">Observed municipal range</span></div>
     <div class="metric"><label>Water Quality</label><strong>NORMAL</strong><span class="sub">3 municipalities within limits</span></div>
     <div class="metric"><label>Energy Load</label><strong>2.74</strong><small>MW</small><span class="sub">Pumping systems</span></div>
@@ -243,7 +243,7 @@ $pressureZones=18;
   <div class="page-head"><div><div class="breadcrumb">Operations / Stations</div><h1>Metropolitan Stations</h1><p>Estado operacional de estaciones principales y controladores asociados.</p></div><div class="page-tools"><span class="tool-chip">12 STATIONS</span><span class="tool-chip">3 MUNICIPALITIES</span><span class="tool-chip">10.12M SERVED</span><span class="tool-chip">18 PRESSURE ZONES</span></div></div>
   <div class="station-list">
     <?php foreach($stations as $i=>$station): ?>
-    <article class="station-large-card station-image-card">
+    <article class="station-large-card station-image-card" data-station-card>
       <div class="station-image"><img src="/operations/assets/img/<?=htmlspecialchars($station['img'])?>" alt="<?=htmlspecialchars($station['name'])?>"><div><span><?=htmlspecialchars($station['city'])?></span><strong><?=htmlspecialchars($station['id'])?> · <?=htmlspecialchars($station['name'])?></strong><small><?=number_format($station['population'])?> people served</small></div><b class="ok-text"><?=htmlspecialchars($station['status'])?></b></div>
       <div class="station-large-grid">
         <div><span>Function</span><strong><?=htmlspecialchars($station['function'])?></strong></div>
@@ -324,22 +324,79 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="trends">
-  <div class="page-head"><div><div class="breadcrumb">Process / Trends</div><h1>Metropolitan Trends & Operating Statistics</h1><p>Series operativas consolidadas, rangos y variación por municipio.</p></div><div class="page-tools"><span class="tool-chip">15 MIN</span><span class="tool-chip">1 H</span><span class="tool-chip">8 H</span><span class="tool-chip">24 H</span><span class="tool-chip">7 D</span></div></div>
-  <div class="trend-stat-grid">
-    <div class="trend-stat"><span>Supply</span><strong><?=$totalSupply?> L/s</strong><small>AVG 2817 · MIN 2721 · MAX 2898 · Δ +2.1%</small></div>
-    <div class="trend-stat"><span>Demand</span><strong><?=$totalDemand?> L/s</strong><small>AVG 2587 · MIN 2492 · MAX 2641 · Δ +1.4%</small></div>
-    <div class="trend-stat"><span>Pressure</span><strong><?=$avgPressure?> bar</strong><small>CP 4.1 · SL 4.5 · SO 4.3 · σ 0.17</small></div>
-    <div class="trend-stat"><span>Reservoirs</span><strong>81.3%</strong><small>CP 79 · SL 84 · SO 81 · STABLE</small></div>
-    <div class="trend-stat"><span>Energy</span><strong>2.74 MW</strong><small>AVG 2.61 · PEAK 2.88 · PF 0.94</small></div>
-    <div class="trend-stat"><span>Availability</span><strong><?=$availability?>%</strong><small>1 degraded link · 0 critical outages</small></div>
+  <div class="page-head">
+    <div><div class="breadcrumb">Process / Trends</div><h1>Metropolitan Process Analytics</h1><p>Series temporales, correlación operativa y comportamiento de la red por subsistema.</p></div>
+    <div class="page-tools trend-range">
+      <button class="tool-chip" data-trend-range="15m">15 MIN</button>
+      <button class="tool-chip active" data-trend-range="1h">1 H</button>
+      <button class="tool-chip" data-trend-range="8h">8 H</button>
+      <button class="tool-chip" data-trend-range="24h">24 H</button>
+      <button class="tool-chip" data-trend-range="7d">7 D</button>
+    </div>
   </div>
-  <div class="trend-grid rich">
-    <div class="trend"><div class="trend-head"><strong>SUPPLY vs DEMAND</strong><span><?=$totalSupply?> / <?=$totalDemand?> L/s</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 108 C55 95 90 100 130 82 S220 66 275 72 S360 50 420 56 S510 41 600 46"/><path class="line2" d="M0 125 C70 117 115 111 165 102 S260 88 320 91 S450 76 600 80"/></svg><div class="trend-legend"><span>Supply</span><span>Demand</span></div></div>
-    <div class="trend"><div class="trend-head"><strong>PRESSURE BY MUNICIPALITY</strong><span>4.1 / 4.5 / 4.3 bar</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 94 C90 90 140 96 210 87 S320 84 390 86 S500 78 600 82"/><path class="line2" d="M0 72 C90 70 160 74 230 65 S360 61 430 64 S525 58 600 60"/><path class="line3" d="M0 84 C100 82 155 85 225 78 S350 73 430 77 S530 69 600 71"/></svg><div class="trend-legend"><span>CP</span><span>SL</span><span>SO</span></div></div>
-    <div class="trend"><div class="trend-head"><strong>RESERVOIR LEVELS</strong><span>79 / 84 / 81 %</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 68 C100 72 180 66 260 70 S390 77 480 69 S560 67 600 68"/><path class="line2" d="M0 52 C100 56 180 50 260 54 S390 60 480 53 S560 51 600 52"/><path class="line3" d="M0 61 C100 64 180 59 260 63 S390 68 480 61 S560 60 600 61"/></svg></div>
-    <div class="trend"><div class="trend-head"><strong>PUMP LOAD / CURRENT</strong><span>Metropolitan pumping</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line2" d="M0 112 L50 110 L54 61 L145 64 L150 70 L245 67 L250 56 L340 59 L345 68 L455 65 L460 53 L600 55"/></svg></div>
-    <div class="trend"><div class="trend-head"><strong>COMMUNICATION LATENCY</strong><span>1 degraded path</span></div><svg class="spark tall" viewBox="0 0 600 160" preserveAspectRatio="none"><path class="grid" d="M0 32H600M0 64H600M0 96H600M0 128H600"/><path class="line" d="M0 118 C110 116 175 114 250 112 S350 108 400 105 L430 48 L455 96 C500 106 550 108 600 106"/></svg></div>
-    <div class="trend"><div class="trend-head"><strong>ALARMS / HOUR</strong><span><?=$totalAlarms?> active</span></div><div class="bar-chart"><i style="height:22%"></i><i style="height:35%"></i><i style="height:18%"></i><i style="height:52%"></i><i style="height:73%"></i><i style="height:46%"></i><i style="height:62%"></i><i style="height:38%"></i><i style="height:81%"></i><i style="height:58%"></i><i style="height:43%"></i><i style="height:66%"></i></div></div>
+
+  <div class="trend-stat-grid">
+    <div class="trend-stat"><span>Network Supply</span><strong>8,380 L/s</strong><small>AVG 8,214 · P95 8,612 · +2.0% vs baseline</small></div>
+    <div class="trend-stat"><span>Demand</span><strong>7,836 L/s</strong><small>AVG 7,691 · PEAK 8,042 · reserve margin 6.5%</small></div>
+    <div class="trend-stat"><span>Pressure</span><strong>4.21 bar</strong><small>MIN 3.86 · MAX 4.58 · σ 0.17</small></div>
+    <div class="trend-stat"><span>Storage</span><strong>79.4%</strong><small>1,180 ML installed · 937 ML available</small></div>
+    <div class="trend-stat"><span>Pumping Energy</span><strong>16.7 MW</strong><small>PF 0.94 · 46 units · 31 running</small></div>
+    <div class="trend-stat"><span>RTU Latency</span><strong>31 ms</strong><small>P95 58 ms · 2 degraded links</small></div>
+  </div>
+
+  <div class="analytics-grid">
+    <section class="analytics-card wide">
+      <header><div><span>HYDRAULIC BALANCE</span><h3>Supply vs metropolitan demand</h3></div><div class="live-badge"><i></i> LIVE</div></header>
+      <canvas id="chart-supply" class="ops-chart"></canvas>
+      <footer><span>Source: HIST-01 / FLOW aggregation</span><span>Sampling: 5 s</span></footer>
+    </section>
+
+    <section class="analytics-card wide">
+      <header><div><span>PRESSURE NETWORK</span><h3>Municipal distribution pressure</h3></div><div class="legend-inline"><i></i> CP <i></i> SL <i></i> SO</div></header>
+      <canvas id="chart-pressure" class="ops-chart"></canvas>
+      <footer><span>18 pressure zones</span><span>Target envelope 3.8–4.6 bar</span></footer>
+    </section>
+
+    <section class="analytics-card">
+      <header><div><span>STORAGE</span><h3>Reservoir utilization</h3></div></header>
+      <canvas id="chart-reservoir" class="ops-chart compact"></canvas>
+      <footer><span>12 major storage assets</span><span>Trend stable</span></footer>
+    </section>
+
+    <section class="analytics-card">
+      <header><div><span>ENERGY</span><h3>Pumping electrical load</h3></div></header>
+      <canvas id="chart-energy" class="ops-chart compact"></canvas>
+      <footer><span>46 pumping units</span><span>Peak 17.9 MW</span></footer>
+    </section>
+
+    <section class="analytics-card">
+      <header><div><span>OT COMMUNICATIONS</span><h3>RTU communication latency</h3></div><b class="warn-text">2 DEGRADED</b></header>
+      <canvas id="chart-latency" class="ops-chart compact"></canvas>
+      <footer><span>15 RTU / gateway paths</span><span>P95 58 ms</span></footer>
+    </section>
+
+    <section class="analytics-card">
+      <header><div><span>WATER QUALITY</span><h3>Turbidity / residual chlorine</h3></div></header>
+      <canvas id="chart-quality" class="ops-chart compact"></canvas>
+      <footer><span>6 QCS controllers</span><span>All within operating envelope</span></footer>
+    </section>
+  </div>
+
+  <div class="trend-bottom-grid">
+    <section class="panel"><div class="panel-head"><h2>Operational Correlation</h2><span>Current period</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Signal</th><th>Current</th><th>Avg</th><th>Min</th><th>Max</th><th>Δ</th></tr></thead><tbody>
+      <tr><td>FLOW.METRO</td><td>8,380 L/s</td><td>8,214</td><td>7,802</td><td>8,612</td><td class="ok-text">+2.0%</td></tr>
+      <tr><td>DEMAND.METRO</td><td>7,836 L/s</td><td>7,691</td><td>7,318</td><td>8,042</td><td class="warn-text">+1.9%</td></tr>
+      <tr><td>PRESSURE.AVG</td><td>4.21 bar</td><td>4.18</td><td>3.86</td><td>4.58</td><td>+0.03</td></tr>
+      <tr><td>ENERGY.PUMP</td><td>16.7 MW</td><td>16.1</td><td>13.8</td><td>17.9</td><td class="warn-text">+3.7%</td></tr>
+      <tr><td>RTU.LATENCY</td><td>31 ms</td><td>28</td><td>18</td><td>91</td><td class="warn-text">+10.7%</td></tr>
+    </tbody></table></div></section>
+
+    <section class="panel"><div class="panel-head"><h2>Trend Diagnostics</h2><span>Automated observation</span></div><div class="panel-body">
+      <div class="diagnostic-item"><i class="ok"></i><div><b>Hydraulic balance stable</b><span>Supply margin remains above operating threshold.</span></div></div>
+      <div class="diagnostic-item"><i class="warn"></i><div><b>Saint Louis communication variance</b><span>RTU-SL-02 latency shows intermittent peaks.</span></div></div>
+      <div class="diagnostic-item"><i class="ok"></i><div><b>Storage trajectory normal</b><span>Reservoir depletion rate remains within scheduled profile.</span></div></div>
+      <div class="diagnostic-item"><i class="ok"></i><div><b>Quality envelope maintained</b><span>No cross-zone water quality deviation detected.</span></div></div>
+    </div></section>
   </div>
 </section>
 
@@ -543,6 +600,7 @@ $pressureZones=18;
 </div>
 
 <script src="/operations/assets/ops-client.php"></script>
+<script src="/operations/assets/hmi-v4.js"></script>
 <script>
 const stations=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;
 
@@ -582,6 +640,7 @@ function openStation(index){
 }
 
 document.querySelectorAll('[data-station-open]').forEach(btn=>btn.addEventListener('click',()=>openStation(Number(btn.dataset.stationOpen))));
+document.querySelectorAll('[data-station-card]').forEach((card,i)=>{card.style.cursor='pointer';card.addEventListener('click',e=>{if(e.target.closest('button'))return;openStation(i);});});
 
 document.querySelectorAll('[data-asset-row]').forEach(row=>row.addEventListener('click',()=>{
   const a=JSON.parse(row.dataset.assetRow);
