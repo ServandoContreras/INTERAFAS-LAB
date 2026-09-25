@@ -260,14 +260,19 @@ function animateTelemetry(){
   scene.style.setProperty('--v6-pulse-offset',String((state.tick*17)%100)+'%');
 }
 
-function tick(){
+function scheduleLoop(fn,min,max){
+  const run=()=>{
+    fn();
+    window.setTimeout(run,Math.round(min+Math.random()*(max-min)));
+  };
+  window.setTimeout(run,Math.round(min+Math.random()*(max-min)));
+}
+function animationPulse(){
   state.tick++;
-  if(state.tick%2===0)pushEvent();
-  if(state.tick%5===0)pushAlarm();
-  updateVolumeCounters();
-  dynamicStatistics();
   animateTelemetry();
 }
+function volumePulse(){ updateVolumeCounters(); }
+function statisticsPulse(){ dynamicStatistics(); }
 
 document.addEventListener('DOMContentLoaded',()=>{
   ensureLiveBadges();
@@ -278,7 +283,12 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateVolumeCounters();
   dynamicStatistics();
   state.ready=true;
-  setInterval(tick,1000);
+
+  scheduleLoop(animationPulse,650,1050);
+  scheduleLoop(pushEvent,1350,2600);
+  scheduleLoop(pushAlarm,3600,6800);
+  scheduleLoop(volumePulse,1900,3300);
+  scheduleLoop(statisticsPulse,2400,4700);
 });
 
 window.INTERAFAS_V6={
