@@ -1,0 +1,31 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1600 900">
+<defs>
+<linearGradient id="bg" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#07131d"/><stop offset="1" stop-color="#0f2635"/></linearGradient>
+<linearGradient id="water" x1="0" y1="0" x2="1" y2="0"><stop stop-color="#285d78"/><stop offset="1" stop-color="#4aa8c8"/></linearGradient>
+<filter id="glow"><feGaussianBlur stdDeviation="5" result="b"/><feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge></filter>
+</defs>
+<rect width="1600" height="900" fill="url(#bg)"/>
+<g opacity=".18" stroke="#3f7389" stroke-width="1">
+<path d="M0 100H1600M0 200H1600M0 300H1600M0 400H1600M0 500H1600M0 600H1600M0 700H1600M0 800H1600"/>
+<path d="M100 0V900M200 0V900M300 0V900M400 0V900M500 0V900M600 0V900M700 0V900M800 0V900M900 0V900M1000 0V900M1100 0V900M1200 0V900M1300 0V900M1400 0V900M1500 0V900"/>
+</g>
+<path d="M120 520 C310 340 510 380 690 430 S1070 520 1480 320" fill="none" stroke="url(#water)" stroke-width="34" opacity=".75"/>
+<path d="M240 180 C420 280 510 300 690 430M690 430 C820 620 1030 700 1280 730M690 430 C880 260 1080 210 1370 200" fill="none" stroke="#376c82" stroke-width="18" opacity=".75"/>
+<g fill="#102b3a" stroke="#57a7c4" stroke-width="5">
+<rect x="630" y="365" width="170" height="115" rx="16"/>
+<circle cx="290" cy="485" r="58"/><circle cx="1090" cy="490" r="58"/><circle cx="1340" cy="270" r="58"/>
+<rect x="190" y="135" width="150" height="90" rx="14"/><rect x="1180" y="690" width="150" height="90" rx="14"/>
+</g>
+<g fill="#d8edf5" font-family="Segoe UI,Arial" text-anchor="middle">
+<text x="715" y="410" font-size="28" font-weight="700">PMN-CENTRAL</text><text x="715" y="442" font-size="18" fill="#7fc8df">Metropolitan Regulation</text>
+<text x="290" y="480" font-size="22" font-weight="700">CERRO</text><text x="290" y="506" font-size="16">SAN PABLO</text>
+<text x="1090" y="485" font-size="22" font-weight="700">SAINT LOUIS</text>
+<text x="1340" y="265" font-size="22" font-weight="700">SOLEDADE</text>
+<text x="265" y="180" font-size="20" font-weight="700">TQ-METRO-01</text><text x="1255" y="740" font-size="20" font-weight="700">RTU-GW-07</text>
+</g>
+<g fill="#72d4aa" filter="url(#glow)"><circle cx="290" cy="485" r="8"/><circle cx="1090" cy="490" r="8"/><circle cx="1340" cy="270" r="8"/><circle cx="715" cy="423" r="8"/></g>
+<g fill="#6f93a4" font-family="Segoe UI,Arial" font-size="15">
+<text x="88" y="850">METROPOLITAN PRIMARY DISTRIBUTION · SIMULATED OT OPERATIONAL VIEW</text>
+<text x="1180" y="850">OPS-NET-20</text>
+</g>
+</svg>
