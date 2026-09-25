@@ -22,9 +22,20 @@ $fw=$state['firmware']??[];
 $canControl=(string)($ops['role']??'')==='operator';
 
 $stations=[
-    ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE'],
-    ['id'=>'EST-SL-01','city'=>'Saint Louis','name'=>'Estación Central Saint Louis','function'=>'Regulation / distribution','supply'=>1130,'demand'=>1070,'reserve'=>84,'pressure'=>4.5,'quality'=>'NORMAL','alarms'=>3,'controller'=>'PLC-SL-01','gateway'=>'RTU-SL-01','status'=>'ONLINE'],
-    ['id'=>'EST-SO-01','city'=>'Soledade','name'=>'Estación Oriente Soledade','function'=>'Pumping / distribution','supply'=>800,'demand'=>680,'reserve'=>81,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SO-01','gateway'=>'RTU-SO-01','status'=>'ONLINE']
+    ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Primary pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE','img'=>'station-cp.svg','population'=>920000],
+    ['id'=>'EST-CP-02','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Sur','function'=>'Southern pressure regulation','supply'=>610,'demand'=>575,'reserve'=>76,'pressure'=>4.0,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-CP-04','gateway'=>'RTU-CP-03','status'=>'ONLINE','img'=>'station-cp.svg','population'=>640000],
+    ['id'=>'EST-CP-03','city'=>'Cerro de San Pablo','name'=>'Estación Poniente','function'=>'Booster / distribution','supply'=>470,'demand'=>452,'reserve'=>74,'pressure'=>3.9,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-CP-05','gateway'=>'RTU-CP-04','status'=>'ONLINE','img'=>'station-cp.svg','population'=>510000],
+    ['id'=>'EST-CP-04','city'=>'Cerro de San Pablo','name'=>'Estación Valle Alto','function'=>'Reservoir / high zone','supply'=>390,'demand'=>361,'reserve'=>82,'pressure'=>4.4,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-CP-06','gateway'=>'RTU-CP-05','status'=>'ONLINE','img'=>'station-cp.svg','population'=>430000],
+
+    ['id'=>'EST-SL-01','city'=>'Saint Louis','name'=>'Estación Central Saint Louis','function'=>'Metropolitan regulation / distribution','supply'=>1130,'demand'=>1070,'reserve'=>84,'pressure'=>4.5,'quality'=>'NORMAL','alarms'=>3,'controller'=>'PLC-SL-01','gateway'=>'RTU-SL-01','status'=>'ONLINE','img'=>'station-sl.svg','population'=>1180000],
+    ['id'=>'EST-SL-02','city'=>'Saint Louis','name'=>'Estación Industrial','function'=>'Industrial corridor pumping','supply'=>930,'demand'=>890,'reserve'=>78,'pressure'=>4.2,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SL-04','gateway'=>'RTU-SL-03','status'=>'ONLINE','img'=>'station-sl.svg','population'=>910000],
+    ['id'=>'EST-SL-03','city'=>'Saint Louis','name'=>'Estación Oriente','function'=>'Eastern distribution','supply'=>820,'demand'=>765,'reserve'=>80,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-05','gateway'=>'RTU-SL-04','status'=>'ONLINE','img'=>'station-sl.svg','population'=>830000],
+    ['id'=>'EST-SL-04','city'=>'Saint Louis','name'=>'Estación Aeropuerto','function'=>'Booster / strategic corridor','supply'=>540,'demand'=>514,'reserve'=>77,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SL-06','gateway'=>'RTU-SL-05','status'=>'ONLINE','img'=>'station-sl.svg','population'=>560000],
+
+    ['id'=>'EST-SO-01','city'=>'Soledade','name'=>'Estación Oriente Soledade','function'=>'Primary pumping / distribution','supply'=>800,'demand'=>680,'reserve'=>81,'pressure'=>4.3,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-SO-01','gateway'=>'RTU-SO-01','status'=>'ONLINE','img'=>'station-so.svg','population'=>860000],
+    ['id'=>'EST-SO-02','city'=>'Soledade','name'=>'Estación Norte','function'=>'Northern pressure regulation','supply'=>690,'demand'=>651,'reserve'=>75,'pressure'=>4.0,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-04','gateway'=>'RTU-SO-03','status'=>'ONLINE','img'=>'station-so.svg','population'=>710000],
+    ['id'=>'EST-SO-03','city'=>'Soledade','name'=>'Estación Valle','function'=>'Reservoir / booster','supply'=>580,'demand'=>541,'reserve'=>83,'pressure'=>4.4,'quality'=>'NORMAL','alarms'=>1,'controller'=>'PLC-SO-05','gateway'=>'RTU-SO-04','status'=>'ONLINE','img'=>'station-so.svg','population'=>620000],
+    ['id'=>'EST-SO-04','city'=>'Soledade','name'=>'Estación Sur','function'=>'Southern distribution','supply'=>510,'demand'=>477,'reserve'=>80,'pressure'=>4.2,'quality'=>'NORMAL','alarms'=>0,'controller'=>'PLC-SO-06','gateway'=>'RTU-SO-05','status'=>'ONLINE','img'=>'station-so.svg','population'=>550000]
 ];
 
 $assets=[
@@ -74,11 +85,17 @@ $avgPressure=round(array_sum(array_column($stations,'pressure'))/count($stations
 $totalAlarms=array_sum(array_column($stations,'alarms'));
 $balance=$totalSupply-$totalDemand;
 $availability=99.82;
-$plcOnline=9;
-$rtuOnline=6;
-$unackAlarms=4;
-$maintenanceActive=2;
-$degradedLinks=1;
+$plcOnline=18;
+$rtuOnline=15;
+$unackAlarms=7;
+$maintenanceActive=4;
+$degradedLinks=2;
+$populationServed=10120000;
+$serviceConnections=2840000;
+$dailyVolume=round($totalSupply*86.4);
+$storageCapacity=1180;
+$pumpingUnits=46;
+$pressureZones=18;
 ?><!doctype html>
 <html lang="es">
 <head>
@@ -96,7 +113,7 @@ $degradedLinks=1;
   </div>
   <div class="hmi-top-status">
     <div class="status-cluster"><span class="status-dot"></span> OPS-NET-20</div>
-    <div class="status-cluster"><span class="status-dot"></span> 3 / 3 STATIONS ONLINE</div>
+    <div class="status-cluster"><span class="status-dot"></span> 12 / 12 STATIONS ONLINE</div>
     <div class="status-cluster"><span class="status-dot <?=strtoupper((string)($fw['diagnostic']??''))==='SERVICE'?'warn':''?>"></span> <?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></div>
   </div>
   <div class="hmi-operator">
@@ -150,11 +167,16 @@ $degradedLinks=1;
     <div class="metric"><label>Water Quality</label><strong>NORMAL</strong><span class="sub">3 municipalities within limits</span></div>
     <div class="metric"><label>Energy Load</label><strong>2.74</strong><small>MW</small><span class="sub">Pumping systems</span></div>
     <div class="metric"><label>Active Alarms</label><strong><?=$totalAlarms?></strong><span class="sub"><?=$unackAlarms?> unacknowledged</span></div>
+    <div class="metric"><label>Population Served</label><strong><?=number_format($populationServed/1000000,2)?></strong><small>M</small><span class="sub">Simulated metropolitan population</span></div>
+    <div class="metric"><label>Service Connections</label><strong><?=number_format($serviceConnections/1000000,2)?></strong><small>M</small><span class="sub">Domestic / commercial / industrial</span></div>
+    <div class="metric"><label>Daily Volume</label><strong><?=number_format($dailyVolume)?></strong><small>ML/d</small><span class="sub">Current hydraulic throughput</span></div>
+    <div class="metric"><label>Storage Capacity</label><strong><?=$storageCapacity?></strong><small>ML</small><span class="sub">Strategic + municipal storage</span></div>
+    <div class="metric"><label>Pumping Units</label><strong><?=$pumpingUnits?></strong><span class="sub">Primary / standby / booster</span></div>
   </div>
   <div class="tech-strip">
-    <div><span>Stations</span><strong>3 / 3</strong></div>
-    <div><span>PLC Online</span><strong><?=$plcOnline?> / 9</strong></div>
-    <div><span>RTU Online</span><strong><?=$rtuOnline?> / 6</strong></div>
+    <div><span>Stations</span><strong>12 / 12</strong></div>
+    <div><span>PLC Online</span><strong><?=$plcOnline?> / 18</strong></div>
+    <div><span>RTU Online</span><strong><?=$rtuOnline?> / 15</strong></div>
     <div><span>OT Services</span><strong>5 / 5</strong></div>
     <div><span>Degraded Links</span><strong class="warn-text"><?=$degradedLinks?></strong></div>
     <div><span>Maintenance</span><strong class="warn-text"><?=$maintenanceActive?></strong></div>
@@ -165,30 +187,14 @@ $degradedLinks=1;
   <div class="metro-overview-grid">
     <section class="panel">
       <div class="panel-head"><h2>Metropolitan Process Network</h2><span>Primary distribution topology</span></div>
-      <div class="metro-canvas">
-        <div class="metro-line trunk-v"></div>
-        <div class="metro-line trunk-h"></div>
-        <div class="metro-line branch cp"></div>
-        <div class="metro-line branch sl"></div>
-        <div class="metro-line branch so"></div>
-
-        <button class="metro-node reservoir-node" data-view-jump="metropolitan"><strong>TQ-METRO-01</strong><span>Strategic reserve</span><b>81%</b></button>
-        <button class="metro-node central-node" data-view-jump="metropolitan"><strong>PMN-CENTRAL</strong><span>Metropolitan regulation</span><b>1,420 L/s</b></button>
-        <button class="metro-node gateway-node"><strong>RTU-GW-07</strong><span>OT Edge</span><b class="<?=strtoupper((string)($fw['diagnostic']??''))==='SERVICE'?'warn-text':'ok-text'?>"><?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></b></button>
-
-        <?php foreach($stations as $i=>$station): ?>
-        <button class="metro-node station-node station-<?=$i?>" data-station-open="<?=$i?>">
-          <span class="city"><?=htmlspecialchars($station['city'])?></span>
-          <strong><?=htmlspecialchars($station['id'])?></strong>
-          <span><?=htmlspecialchars($station['name'])?></span>
-          <b><?=htmlspecialchars((string)$station['supply'])?> L/s · <?=htmlspecialchars((string)$station['reserve'])?>%</b>
-        </button>
-        <?php endforeach; ?>
-
-        <div class="metro-label trunk-label">TRUNK-MAIN-01</div>
-        <div class="metro-label ops-label">METROPOLITAN OPERATIONS CORE</div>
-      </div>
-    </section>
+      <div class="metro-image-stage">
+        <img src="/operations/assets/img/metro-overview.svg" alt="Vista metropolitana de la red de abastecimiento INTERAFAS">
+        <button class="image-hotspot hs-cp" data-station-open="0"><strong>Cerro de San Pablo</strong><span>4 stations · 2.50M served</span><b>2,380 L/s</b></button>
+        <button class="image-hotspot hs-sl" data-station-open="4"><strong>Saint Louis</strong><span>4 stations · 3.48M served</span><b>3,420 L/s</b></button>
+        <button class="image-hotspot hs-so" data-station-open="8"><strong>Soledade</strong><span>4 stations · 2.74M served</span><b>2,580 L/s</b></button>
+        <button class="image-hotspot hs-core" data-view-jump="metropolitan"><strong>PMN-CENTRAL</strong><span>Metropolitan regulation core</span><b>ONLINE</b></button>
+        <button class="image-hotspot hs-gw"><strong>RTU-GW-07</strong><span>OT Edge</span><b class="<?=strtoupper((string)($fw['diagnostic']??''))==='SERVICE'?'warn-text':'ok-text'?>"><?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></b></button>
+      </div>    </section>
 
     <aside class="situation-stack">
       <section class="panel">
@@ -217,28 +223,28 @@ $degradedLinks=1;
     </aside>
   </div>
 
-  <div class="station-summary-grid">
-    <?php foreach($stations as $i=>$station): ?>
-    <article class="station-summary">
-      <div class="station-card-head"><div><span><?=htmlspecialchars($station['city'])?></span><strong><?=htmlspecialchars($station['id'])?></strong></div><b class="ok-text"><?=htmlspecialchars($station['status'])?></b></div>
-      <div class="station-values">
-        <div><span>Supply</span><strong><?=htmlspecialchars((string)$station['supply'])?> L/s</strong></div>
-        <div><span>Demand</span><strong><?=htmlspecialchars((string)$station['demand'])?> L/s</strong></div>
-        <div><span>Reserve</span><strong><?=htmlspecialchars((string)$station['reserve'])?> %</strong></div>
-        <div><span>Pressure</span><strong><?=htmlspecialchars((string)$station['pressure'])?> bar</strong></div>
-      </div>
-      <div class="station-footer"><span><?=htmlspecialchars($station['controller'])?> · <?=htmlspecialchars($station['gateway'])?></span><button class="btn station-open" data-station-open="<?=$i?>">OPEN STATION</button></div>
+  <div class="municipal-image-grid">
+    <article class="municipal-card">
+      <img src="/operations/assets/img/station-cp.svg" alt="Complejo de bombeo de Cerro de San Pablo">
+      <div class="municipal-overlay"><span>CERRO DE SAN PABLO</span><strong>4 operational stations</strong><small>2.50M population · 2,380 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="0">OPEN OPERATIONS</button></div>
     </article>
-    <?php endforeach; ?>
+    <article class="municipal-card">
+      <img src="/operations/assets/img/station-sl.svg" alt="Complejo de regulación de Saint Louis">
+      <div class="municipal-overlay"><span>SAINT LOUIS</span><strong>4 operational stations</strong><small>3.48M population · 3,420 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="4">OPEN OPERATIONS</button></div>
+    </article>
+    <article class="municipal-card">
+      <img src="/operations/assets/img/station-so.svg" alt="Complejo de distribución de Soledade">
+      <div class="municipal-overlay"><span>SOLEDADE</span><strong>4 operational stations</strong><small>2.74M population · 2,580 L/s · 10 PLC/RTU controllers</small><button class="btn station-open" data-station-open="8">OPEN OPERATIONS</button></div>
+    </article>
   </div>
 </section>
 
 <section class="view" data-view="stations">
-  <div class="page-head"><div><div class="breadcrumb">Operations / Stations</div><h1>Metropolitan Stations</h1><p>Estado operacional de estaciones principales y controladores asociados.</p></div><div class="page-tools"><span class="tool-chip">3 STATIONS</span><span class="tool-chip">3 MUNICIPALITIES</span></div></div>
+  <div class="page-head"><div><div class="breadcrumb">Operations / Stations</div><h1>Metropolitan Stations</h1><p>Estado operacional de estaciones principales y controladores asociados.</p></div><div class="page-tools"><span class="tool-chip">12 STATIONS</span><span class="tool-chip">3 MUNICIPALITIES</span><span class="tool-chip">10.12M SERVED</span><span class="tool-chip">18 PRESSURE ZONES</span></div></div>
   <div class="station-list">
     <?php foreach($stations as $i=>$station): ?>
-    <article class="station-large-card">
-      <div class="station-card-head"><div><span><?=htmlspecialchars($station['city'])?></span><strong><?=htmlspecialchars($station['id'])?> · <?=htmlspecialchars($station['name'])?></strong></div><b class="ok-text"><?=htmlspecialchars($station['status'])?></b></div>
+    <article class="station-large-card station-image-card">
+      <div class="station-image"><img src="/operations/assets/img/<?=htmlspecialchars($station['img'])?>" alt="<?=htmlspecialchars($station['name'])?>"><div><span><?=htmlspecialchars($station['city'])?></span><strong><?=htmlspecialchars($station['id'])?> · <?=htmlspecialchars($station['name'])?></strong><small><?=number_format($station['population'])?> people served</small></div><b class="ok-text"><?=htmlspecialchars($station['status'])?></b></div>
       <div class="station-large-grid">
         <div><span>Function</span><strong><?=htmlspecialchars($station['function'])?></strong></div>
         <div><span>Controller</span><strong><?=htmlspecialchars($station['controller'])?></strong></div>
@@ -248,6 +254,8 @@ $degradedLinks=1;
         <div><span>Reserve</span><strong><?=htmlspecialchars((string)$station['reserve'])?> %</strong></div>
         <div><span>Pressure</span><strong><?=htmlspecialchars((string)$station['pressure'])?> bar</strong></div>
         <div><span>Alarms</span><strong class="<?=$station['alarms']?'warn-text':'ok-text'?>"><?=htmlspecialchars((string)$station['alarms'])?></strong></div>
+        <div><span>Population</span><strong><?=number_format($station['population'])?></strong></div>
+        <div><span>Service zones</span><strong>3</strong></div>
       </div>
       <div class="station-actions"><button class="btn station-open" data-station-open="<?=$i?>">OPEN PROCESS VIEW</button></div>
     </article>
@@ -512,7 +520,21 @@ $degradedLinks=1;
     <section class="panel"><div class="panel-head"><h2>Event Severity</h2><span>Last 24 hours</span></div><div class="donut-stat"><div class="donut"></div><div><span>High 4%</span><span>Medium 16%</span><span>Low 22%</span><span>Info 58%</span></div></div></section>
     <section class="panel"><div class="panel-head"><h2>Maintenance Activity</h2><span>Last 24 hours</span></div><div class="big-stat">11</div><div class="stat-lines"><span>8 completed</span><span>2 scheduled</span><span>1 active</span></div></section>
     <section class="panel wide"><div class="panel-head"><h2>Top Event-Producing Assets</h2><span>Operational records</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Asset</th><th>Class</th><th>Events</th><th>Warnings</th><th>Availability</th></tr></thead><tbody><tr><td>RTU-GW-07</td><td>Gateway</td><td>21</td><td>3</td><td>99.4%</td></tr><tr><td>HIST-01</td><td>Historian</td><td>17</td><td>1</td><td>100%</td></tr><tr><td>PLC-SL-02</td><td>PLC</td><td>14</td><td>2</td><td>100%</td></tr><tr><td>RTU-SL-02</td><td>RTU</td><td>12</td><td>4</td><td>96.8%</td></tr><tr><td>BRS-01</td><td>Recovery</td><td>9</td><td>0</td><td>100%</td></tr></tbody></table></div></section>
-    <section class="panel wide"><div class="panel-head"><h2>Municipal Operating Profile</h2><span>Current period</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Municipality</th><th>Supply</th><th>Demand</th><th>Reserve</th><th>Pressure</th><th>Alarms</th><th>Availability</th></tr></thead><tbody><tr><td>Cerro de San Pablo</td><td>910 L/s</td><td>860 L/s</td><td>79%</td><td>4.1 bar</td><td>2</td><td>99.91%</td></tr><tr><td>Saint Louis</td><td>1130 L/s</td><td>1070 L/s</td><td>84%</td><td>4.5 bar</td><td>3</td><td>99.72%</td></tr><tr><td>Soledade</td><td>800 L/s</td><td>680 L/s</td><td>81%</td><td>4.3 bar</td><td>2</td><td>99.83%</td></tr></tbody></table></div></section>
+    <section class="panel wide"><div class="panel-head"><h2>Municipal Operating Profile</h2><span>Current period</span></div><div class="table-wrap"><table class="data-table"><thead><tr><th>Municipality</th><th>Supply</th><th>Demand</th><th>Reserve</th><th>Pressure</th><th>Alarms</th><th>Availability</th></tr></thead><tbody><tr><td>Cerro de San Pablo</td><td>2,380 L/s</td><td>2,248 L/s</td><td>78%</td><td>4.1 bar</td><td>4</td><td>99.91%</td></tr><tr><td>Saint Louis</td><td>3,420 L/s</td><td>3,239 L/s</td><td>80%</td><td>4.3 bar</td><td>7</td><td>99.72%</td></tr><tr><td>Soledade</td><td>2,580 L/s</td><td>2,349 L/s</td><td>80%</td><td>4.2 bar</td><td>4</td><td>99.83%</td></tr></tbody></table></div></section>
+
+    <section class="panel wide"><div class="panel-head"><h2>24h Water Production</h2><span>Hourly metropolitan output</span></div><div class="area-chart"><svg viewBox="0 0 900 220" preserveAspectRatio="none"><path class="chart-grid" d="M0 55H900M0 110H900M0 165H900"/><path class="area-fill" d="M0 170 C70 155 100 150 150 142 S250 118 310 126 S400 97 470 105 S560 76 640 88 S750 64 820 78 S870 70 900 72 L900 220 L0 220Z"/><path class="area-line" d="M0 170 C70 155 100 150 150 142 S250 118 310 126 S400 97 470 105 S560 76 640 88 S750 64 820 78 S870 70 900 72"/></svg><div class="chart-caption"><span>00:00</span><span>06:00</span><span>12:00</span><span>18:00</span><span>24:00</span></div></div></section>
+
+    <section class="panel"><div class="panel-head"><h2>Controller Fleet</h2><span>Operational state</span></div><div class="stacked-stat"><div><i style="width:82%"></i><em style="width:12%"></em><b style="width:6%"></b></div><span>Online 82%</span><span>Maintenance 12%</span><span>Degraded 6%</span></div></section>
+
+    <section class="panel"><div class="panel-head"><h2>Energy by Municipality</h2><span>Current MW</span></div><div class="vertical-bars"><div><i style="height:68%"></i><span>CP</span><b>4.8</b></div><div><i style="height:92%"></i><span>SL</span><b>6.5</b></div><div><i style="height:76%"></i><span>SO</span><b>5.4</b></div></div></section>
+
+    <section class="panel"><div class="panel-head"><h2>Maintenance by Category</h2><span>7 days</span></div><div class="horizontal-bars compact"><div><span>Configuration</span><i style="width:82%"></i><b>18</b></div><div><span>Firmware</span><i style="width:36%"></i><b>8</b></div><div><span>Recovery</span><i style="width:50%"></i><b>11</b></div><div><span>Comms</span><i style="width:64%"></i><b>14</b></div></div></section>
+
+    <section class="panel"><div class="panel-head"><h2>Alarm Heatmap</h2><span>24 hours</span></div><div class="heatmap"><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i><i class="h1"></i><i class="h3"></i><i class="h0"></i><i class="h2"></i><i class="h4"></i></div><div class="heatmap-labels"><span>00h</span><span>06h</span><span>12h</span><span>18h</span><span>24h</span></div></section>
+
+    <section class="panel wide"><div class="panel-head"><h2>Demand Share by Service Area</h2><span>Current load</span></div><div class="service-share"><div class="share-donut"></div><div><p><b>Cerro de San Pablo</b><span>29%</span></p><p><b>Saint Louis</b><span>41%</span></p><p><b>Soledade</b><span>30%</span></p></div></div></section>
+
+    <section class="panel wide"><div class="panel-head"><h2>Network Capacity Utilization</h2><span>Major systems</span></div><div class="capacity-list"><div><span>Primary trunk</span><i><b style="width:72%"></b></i><em>72%</em></div><div><span>Storage</span><i><b style="width:79%"></b></i><em>79%</em></div><div><span>Pumping</span><i><b style="width:68%"></b></i><em>68%</em></div><div><span>Historian ingestion</span><i><b style="width:57%"></b></i><em>57%</em></div><div><span>RTU communications</span><i><b style="width:63%"></b></i><em>63%</em></div></div></section>
   </div>
 </section>
 
