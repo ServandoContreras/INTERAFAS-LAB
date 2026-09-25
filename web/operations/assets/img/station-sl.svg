@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620">
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0d1d2b"/><stop offset="1" stop-color="#24414d"/></linearGradient></defs>
+<rect width="1200" height="620" fill="url(#a)"/><rect y="430" width="1200" height="190" fill="#091720"/>
+<g stroke="#5b899b" stroke-width="5" fill="#16313f"><rect x="85" y="230" width="250" height="195" rx="14"/><rect x="385" y="185" width="220" height="240" rx="14"/><rect x="665" y="245" width="180" height="180" rx="14"/><rect x="905" y="215" width="205" height="210" rx="14"/></g>
+<g stroke="#52a6c5" stroke-width="16" fill="none"><path d="M335 330H385M605 330H665M845 330H905"/></g>
+<g fill="#dbeaf0" font-family="Segoe UI,Arial"><text x="80" y="82" font-size="36" font-weight="700">SAINT LOUIS</text><text x="80" y="122" font-size="22" fill="#78a8ba">CENTRAL REGULATION STATION</text><text x="130" y="335" font-size="20">BOOSTER</text><text x="450" y="305" font-size="20">RESERVOIR</text><text x="700" y="330" font-size="20">PLC CELL</text><text x="960" y="320" font-size="20">QUALITY</text></g>
+</svg>
