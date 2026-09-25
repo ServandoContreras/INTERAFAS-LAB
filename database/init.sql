@@ -2032,7 +2032,7 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (14,1,'En Contrataciones abre Validar vínculo para cualquier contrato. Observa que la verificación recibe por separado contract_id y provider_id, ambos visibles en la propia solicitud.'),
 (14,2,'Conserva contract_id y cambia sólo provider_id por otro proveedor que figure como Vigente en el padrón público. Si el sistema sigue mostrando Vínculo vigente, revisa los encabezados y piensa qué comprobación entre ambas entidades faltó.'),
 (15,1,'En Infraestructura estratégica hay un indicador que actualiza automáticamente el estado de integración del Centro de Operaciones. Revisa en Red qué solicitud HTTP genera esa actualización y no te limites al texto resumido que aparece en pantalla.'),
-(15,2,'Inspecciona la respuesta JSON completa de esa solicitud. Si aparecen campos de diagnóstico con nombres de componentes, fronteras de confianza o rutas internas, distingue entre un nombre sólo resoluble dentro de la red del laboratorio y una ruta de aplicación que sí pueda abrirse desde localhost.'),
+(15,2,'Inspecciona la respuesta JSON completa de esa solicitud. El nombre marcado como internal-only describe un servicio de la red interna y no se abre desde el navegador; en cambio, application_route sí corresponde a una ruta del portal. Ábrela y documenta la respuesta restringida que confirma la frontera operacional.'),
 (16,1,'Identifica dónde termina la aplicación pública y comienza la infraestructura operacional.'),
 (16,2,'Busca una puerta de enlace o ruta que conecte el entorno IT con servicios internos.'),
 (17,1,'Una interfaz de monitoreo debería exigir autorización propia.'),
