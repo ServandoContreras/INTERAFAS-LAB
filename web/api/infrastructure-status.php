@@ -19,7 +19,7 @@ lab_event(
     [
         'challenge'=>15,
         'component'=>'operations-bridge',
-        'application_route'=>'/operations/',
+        'application_route'=>'/operations/gateway.php',
         'upstream_service'=>'ot-sim'
     ],
     'interafas-web',
@@ -37,8 +37,9 @@ echo json_encode([
     'diagnostics'=>[
         'component'=>'operations-bridge',
         'trust_boundary'=>'web-to-operations',
-        'application_route'=>'/operations/',
+        'application_route'=>'/operations/gateway.php',
         'upstream_service'=>'ot-sim',
+        'upstream_scope'=>'internal-only',
         'transport'=>'internal-http',
         'target'=>'RTU-GW-07'
     ]
