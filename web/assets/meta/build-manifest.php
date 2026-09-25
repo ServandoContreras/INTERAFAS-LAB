@@ -33,5 +33,9 @@ echo json_encode([
     'quality_assurance' => [
         'smoke_test' => 'passed',
         'release_validation_token' => 'UPSLP_CNOIV-LOOK-CLOSER-02'
+    ],
+    'support' => [
+        'deployment_profile' => '/assets/meta/deployment-profile.php',
+        'purpose' => 'diagnostico de despliegue'
     ]
 ], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES | JSON_PRETTY_PRINT);
