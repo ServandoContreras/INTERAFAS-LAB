@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 620">
+<defs><linearGradient id="a" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#0f2230"/><stop offset="1" stop-color="#1d3847"/></linearGradient></defs>
+<rect width="1200" height="620" fill="url(#a)"/><rect y="430" width="1200" height="190" fill="#091720"/>
+<g stroke="#59899c" stroke-width="5" fill="#173341"><rect x="95" y="245" width="185" height="175" rx="12"/><rect x="335" y="205" width="260" height="215" rx="12"/><ellipse cx="770" cy="310" rx="135" ry="90"/><rect x="935" y="250" width="170" height="170" rx="12"/></g>
+<g stroke="#4aa8c7" stroke-width="18" fill="none"><path d="M280 330H335M595 330H635M905 330H935"/></g>
+<g fill="#dbeaf0" font-family="Segoe UI,Arial"><text x="90" y="85" font-size="36" font-weight="700">SOLEDADE</text><text x="90" y="125" font-size="22" fill="#78a8ba">EAST DISTRIBUTION COMPLEX</text><text x="130" y="335" font-size="20">RTU</text><text x="415" y="320" font-size="20">PUMPING</text><text x="710" y="320" font-size="20">TANK</text><text x="970" y="330" font-size="20">PLC</text></g>
+</svg>
