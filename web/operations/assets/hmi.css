@@ -2107,3 +2107,49 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 /* Overview uses exactly the same P&ID elements, only scaled */
 .overview-process-scene.city-sl .sl-inst{transform:scale(.92);transform-origin:center}
 .overview-process-scene.city-sl .sl-level-tag{font-size:5px}
+
+
+/* V17 — Russian engineering layer */
+.scada-ru-mark{
+  position:absolute;
+  top:8px;
+  right:10px;
+  z-index:12;
+  display:flex;
+  align-items:center;
+  gap:7px;
+  padding:4px 7px;
+  background:#071219;
+  border:1px solid #31515f;
+  font-family:ui-monospace,SFMono-Regular,Consolas,"Courier New",monospace;
+  letter-spacing:.06em;
+  box-shadow:0 2px 7px rgba(0,0,0,.22)
+}
+.scada-ru-mark b{
+  display:block;
+  padding:2px 5px;
+  background:#143545;
+  border:1px solid #3b6779;
+  color:#9be7ff;
+  font-size:7px
+}
+.scada-ru-mark span{
+  color:#7795a4;
+  font-size:6px;
+  white-space:nowrap
+}
+.overview-process-scene .scada-ru-mark{
+  top:6px;
+  right:7px;
+  transform:scale(.94);
+  transform-origin:top right
+}
+
+/* Cyrillic status words remain readable in compact pump/status fields */
+.city-process-sl .cp-pump strong,
+.city-process-so .cp-pump strong,
+.city-process-cp .cp-pump strong,
+.scada-status-bank b{
+  letter-spacing:0!important;
+  white-space:nowrap
+}
