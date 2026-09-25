@@ -196,11 +196,7 @@ function applyCityProfile(city){
   const distA=scene.querySelector('.dist-a span'), distB=scene.querySelector('.dist-b span');
   if(state.city==='Saint Louis'){if(distA)distA.textContent='Central / commercial grid';if(distB)distB.textContent='Residential / university grid';}
   if(state.city==='Soledade'){if(distA)distA.textContent='North / industrial distribution';if(distB)distB.textContent='South / residential distribution';}
-  if(state.city==='Cerro de San Pablo'){if(distA)distA.textContent='High-zone municipal feed';if(distB)distB.textContent='Reserve bypass';}
-
-  // Existing V5 render updates all duplicate live tags after the city switch.
-  requestAnimationFrame(()=>window.INTERAFAS_LIVE?.setStation?.([...document.querySelectorAll('[data-station-card]')].findIndex(x=>x.querySelector('strong')?.textContent===currentStation())));
-}
+  if(state.city==='Cerro de San Pablo'){if(distA)distA.textContent='High-zone municipal feed';if(distB)distB.textContent='Reserve bypass';}}
 
 function observeStationChanges(){
   const city=document.querySelector('[data-current-city]');
@@ -276,6 +272,8 @@ function tick(){
 document.addEventListener('DOMContentLoaded',()=>{
   ensureLiveBadges();
   ensureProcessExtras();
+  const initialIndex=(window.INTERAFAS_STATIONS||[]).findIndex(s=>s.id===currentStation());
+  if(initialIndex>=0) window.INTERAFAS_LIVE?.setStation?.(initialIndex);
   observeStationChanges();
   updateVolumeCounters();
   dynamicStatistics();
