@@ -191,24 +191,44 @@ function renderLogs(){
   }
 }
 
-function liveTick(){
+function hydraulicTick(){
   live.tick++;
   driftTag(live.tags.FLOW, Math.sin(live.tick/13)*.45);
   driftTag(live.tags.PRESS, Math.sin(live.tick/17)*.003);
   driftTag(live.tags.LEVEL, -.015 + Math.sin(live.tick/60)*.01);
   driftTag(live.tags.MOTOR_A, Math.sin(live.tick/9)*.15);
   driftTag(live.tags.CURRENT_A, Math.sin(live.tick/8)*.2);
-  driftTag(live.tags.CHLORINE);
-  driftTag(live.tags.TURBIDITY);
-  driftTag(live.tags.TEMP);
-  driftTag(live.tags.LATENCY, Math.sin(live.tick/11)*.4);
-  if(live.tick%53===0 && Math.random()<.35) live.tags.P102.value=live.tags.P102.value?0:1;
+  if(live.tick%47===0 && Math.random()<.28) live.tags.P102.value=live.tags.P102.value?0:1;
   pushHistory();
   detectAlarms();
   renderTags();
+}
+function qualityTick(){
+  driftTag(live.tags.CHLORINE);
+  driftTag(live.tags.TURBIDITY);
+  driftTag(live.tags.TEMP);
+  pushHistory();
+  detectAlarms();
+  renderTags();
+}
+function commsTick(){
+  driftTag(live.tags.LATENCY, Math.sin(live.tick/11)*.4);
+  detectAlarms();
+  renderTags();
+}
+function statsTick(){
   recalcStats();
-  maybeEvent();
-  if(live.tick%5===0 && document.querySelector('[data-view="trends"].active') && window.INTERAFAS_HMI?.renderTrends){window.INTERAFAS_HMI.renderTrends();}
+  if(document.querySelector('[data-view="trends"].active') && window.INTERAFAS_HMI?.renderTrends){
+    window.INTERAFAS_HMI.renderTrends();
+  }
+}
+function eventTick(){ maybeEvent(); }
+function jitterLoop(fn,min,max){
+  const run=()=>{
+    fn();
+    window.setTimeout(run,Math.round(min+Math.random()*(max-min)));
+  };
+  window.setTimeout(run,Math.round(min+Math.random()*(max-min)));
 }
 
 function setStation(index){
@@ -242,6 +262,10 @@ document.addEventListener('DOMContentLoaded',()=>{
   buildTags();
   seedLogs();
   renderTags();recalcStats();
-  setInterval(liveTick,1200);
+  jitterLoop(hydraulicTick,720,1180);
+  jitterLoop(qualityTick,1450,2450);
+  jitterLoop(commsTick,2100,3900);
+  jitterLoop(statsTick,1100,1850);
+  jitterLoop(eventTick,2600,5200);
 });
 })();
