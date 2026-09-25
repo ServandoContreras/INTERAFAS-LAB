@@ -34,7 +34,7 @@ if(!$internal){
     echo json_encode([
         'ok'=>false,
         'error'=>'restricted-gateway',
-        'message'=>'El gateway operacional sólo acepta solicitudes procedentes de la red interna.',
+        'message'=>'El gateway operacional requiere autorización adicional.',
         'policy'=>[
             'required_zone'=>'internal',
             'source_validation'=>'proxy-client-address'
