@@ -32,7 +32,7 @@ function seededSeries(n,base,amp,phase=0,noise=.12){
   for(let i=0;i<n;i++){
     const wave=Math.sin((i/n)*Math.PI*2+phase)*amp;
     const wave2=Math.sin((i/n)*Math.PI*5+phase*.7)*amp*.23;
-    const jitter=Math.sin(i*12.9898+phase*78.233)*amp*noise;
+    const jitter=Math.sin(i*12.9898+phase*78.233+(Date.now()/45000))*amp*noise;
     out.push(base+wave+wave2+jitter);
   }
   return out;
@@ -132,27 +132,28 @@ function formatValue(v,unit=''){return (Math.abs(v)>=100?v.toFixed(0):v.toFixed(
 function renderTrends(range=state.range){
   state.range=range;
   const n=ranges[range].points, labs=labels(n,range);
+  const liveStats=window.INTERAFAS_LIVE?.stats||{};
   const configs=[
     ['chart-supply',[
-      {name:'Supply',unit:'L/s',values:seededSeries(n,8380,310,.2),color:palette.line1,fill:palette.fill1},
-      {name:'Demand',unit:'L/s',values:seededSeries(n,7836,280,.8),color:palette.line2}
+      {name:'Supply',unit:'L/s',values:seededSeries(n,liveStats.supply||8380,310,.2),color:palette.line1,fill:palette.fill1},
+      {name:'Demand',unit:'L/s',values:seededSeries(n,liveStats.demand||7836,280,.8),color:palette.line2}
     ],{labels:labs,formatY:v=>Math.round(v/100)*100+'',decimals:0}],
     ['chart-pressure',[
-      {name:'Cerro',unit:'bar',values:seededSeries(n,4.10,.14,.1),color:palette.line1},
-      {name:'Saint Louis',unit:'bar',values:seededSeries(n,4.32,.16,.8),color:palette.line2},
-      {name:'Soledade',unit:'bar',values:seededSeries(n,4.21,.13,1.5),color:palette.line3}
+      {name:'Cerro',unit:'bar',values:seededSeries(n,(liveStats.pressure||4.21)-.11,.14,.1),color:palette.line1},
+      {name:'Saint Louis',unit:'bar',values:seededSeries(n,(liveStats.pressure||4.21)+.11,.16,.8),color:palette.line2},
+      {name:'Soledade',unit:'bar',values:seededSeries(n,(liveStats.pressure||4.21),.13,1.5),color:palette.line3}
     ],{labels:labs,decimals:1,formatY:v=>v.toFixed(1)}],
     ['chart-reservoir',[
-      {name:'Cerro',unit:'%',values:seededSeries(n,78,.9,.5),color:palette.line1},
-      {name:'Saint Louis',unit:'%',values:seededSeries(n,80,.8,1.1),color:palette.line2},
-      {name:'Soledade',unit:'%',values:seededSeries(n,80,.7,1.9),color:palette.line3}
+      {name:'Cerro',unit:'%',values:seededSeries(n,(liveStats.reserve||79.4)-1.2,.9,.5),color:palette.line1},
+      {name:'Saint Louis',unit:'%',values:seededSeries(n,(liveStats.reserve||79.4)+.8,.8,1.1),color:palette.line2},
+      {name:'Soledade',unit:'%',values:seededSeries(n,(liveStats.reserve||79.4)+.1,.7,1.9),color:palette.line3}
     ],{labels:labs,formatY:v=>Math.round(v)+'%'}],
     ['chart-energy',[
-      {name:'Energy',unit:'MW',values:seededSeries(n,16.7,1.15,.4),color:palette.line1,fill:palette.fill1}
+      {name:'Energy',unit:'MW',values:seededSeries(n,liveStats.energy||16.7,1.15,.4),color:palette.line1,fill:palette.fill1}
     ],{labels:labs,decimals:1,formatY:v=>v.toFixed(1)}],
     ['chart-latency',[
-      {name:'Median',unit:'ms',values:seededSeries(n,28,4,.3),color:palette.line2},
-      {name:'RTU-SL-02',unit:'ms',values:seededSeries(n,43,11,1.2).map((v,i)=>i>n*.62&&i<n*.72?v+35:v),color:palette.line3}
+      {name:'Median',unit:'ms',values:seededSeries(n,Math.max(18,(liveStats.latency||31)-8),4,.3),color:palette.line2},
+      {name:'RTU-SL-02',unit:'ms',values:seededSeries(n,(liveStats.latency||31)+12,11,1.2).map((v,i)=>i>n*.62&&i<n*.72?v+35:v),color:palette.line3}
     ],{labels:labs,formatY:v=>Math.round(v)}],
     ['chart-quality',[
       {name:'Turbidity',unit:'NTU',values:seededSeries(n,.34,.055,.6),color:palette.line1},
