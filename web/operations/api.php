@@ -1,5 +1,5 @@
 <?php
-require __DIR__.'/common.php'; $ctx=require_lab_attempt(); header('Content-Type: application/json; charset=utf-8');
+require __DIR__.'/common.php'; require_ops_bridge_context(); $ctx=require_lab_attempt(); header('Content-Type: application/json; charset=utf-8');
 $payload=json_decode(file_get_contents('php://input'),true) ?: [];
 if(($payload['action']??'')==='p101'){
     $state=strtoupper((string)($payload['state']??''));
