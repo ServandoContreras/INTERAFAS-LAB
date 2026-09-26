@@ -4,15 +4,29 @@
 const AudioCtx=window.AudioContext||window.webkitAudioContext;
 if(!AudioCtx)return;
 
+const ALERT_CHANNEL='interafas-v20-alarm';
+const bc=('BroadcastChannel' in window)?new BroadcastChannel(ALERT_CHANNEL):null;
+
+const SPOKEN_ALERTS=[
+  {lang:'es-MX',text:'Alerta. Falla crítica en el sistema de control. Estado de emergencia.'},
+  {lang:'ru-RU',text:'Тревога. Критический сбой системы управления. Аварийное состояние.'},
+  {lang:'en-US',text:'Warning. Critical control system failure. Emergency condition.'},
+  {lang:'fr-FR',text:'Alerte. Défaillance critique du système de contrôle. État d’urgence.'},
+  {lang:'de-DE',text:'Warnung. Kritischer Ausfall des Steuerungssystems. Notfallzustand.'},
+  {lang:'ar-SA',text:'تحذير. عطل حرج في نظام التحكم. حالة طوارئ.'},
+  {lang:'zh-CN',text:'警报。控制系统发生严重故障。进入紧急状态。'},
+  {lang:'ja-JP',text:'警報。制御システムに重大な障害が発生しました。緊急状態です。'}
+];
+
 let ctx=null;
 let master=null;
 let compressor=null;
 let armed=false;
 let active=false;
 let stage=-1;
-let timer=null;
-let token=0;
-let lastSpeechAt=0;
+let pulseTimer=null;
+let speechTimer=null;
+let voiceIndex=0;
 
 function ensureContext(){
   if(ctx)return ctx;
@@ -20,18 +34,119 @@ function ensureContext(){
   ctx=new AudioCtx();
 
   master=ctx.createGain();
-  master.gain.value=.52;
+  master.gain.value=.46;
 
   compressor=ctx.createDynamicsCompressor();
-  compressor.threshold.value=-14;
-  compressor.knee.value=10;
-  compressor.ratio.value=4;
-  compressor.attack.value=.004;
-  compressor.release.value=.18;
+  compressor.threshold.value=-13;
+  compressor.knee.value=8;
+  compressor.ratio.value=5;
+  compressor.attack.value=.003;
+  compressor.release.value=.14;
 
   master.connect(compressor);
   compressor.connect(ctx.destination);
   return ctx;
+}
+
+function envelope(at,duration,peak){
+  const g=ctx.createGain();
+  g.gain.setValueAtTime(.0001,at);
+  g.gain.linearRampToValueAtTime(peak,at+.008);
+  g.gain.setValueAtTime(peak,Math.max(at+.008,at+duration-.045));
+  g.gain.exponentialRampToValueAtTime(.0001,at+duration);
+  g.connect(master);
+  return g;
+}
+
+function tone(freq,at,duration=.14,peak=.13){
+  if(!armed||!active)return;
+
+  const osc=ctx.createOscillator();
+  const filter=ctx.createBiquadFilter();
+  const gain=envelope(at,duration,peak);
+
+  osc.type='square';
+  osc.frequency.setValueAtTime(freq,at);
+  filter.type='bandpass';
+  filter.frequency.value=freq;
+  filter.Q.value=.65;
+
+  osc.connect(filter);
+  filter.connect(gain);
+  osc.start(at);
+  osc.stop(at+duration+.02);
+}
+
+function attentionBurst(){
+  if(!armed||!active)return;
+
+  const t=ctx.currentTime+.003;
+  const lift=Math.max(0,Math.min(5,stage))*8;
+
+  // Dry public-warning attention burst, deliberately short so speech remains intelligible.
+  tone(880+lift,t,.14,.12);
+  tone(660+lift,t+.19,.16,.13);
+  tone(880+lift,t+.40,.18,.12);
+}
+
+function availableVoice(lang){
+  if(!('speechSynthesis' in window))return null;
+  const voices=window.speechSynthesis.getVoices();
+  const exact=voices.find(v=>String(v.lang||'').toLowerCase()===lang.toLowerCase());
+  if(exact)return exact;
+
+  const base=lang.split('-')[0].toLowerCase();
+  return voices.find(v=>String(v.lang||'').toLowerCase().startsWith(base))||null;
+}
+
+function speakNext(){
+  if(!active||!('speechSynthesis' in window))return;
+
+  const item=SPOKEN_ALERTS[voiceIndex%SPOKEN_ALERTS.length];
+  voiceIndex++;
+
+  try{
+    const u=new SpeechSynthesisUtterance(item.text);
+    u.lang=item.lang;
+    u.rate=.88;
+    u.pitch=.92;
+    u.volume=1;
+
+    const voice=availableVoice(item.lang);
+    if(voice)u.voice=voice;
+
+    window.speechSynthesis.speak(u);
+  }catch(e){}
+}
+
+function clearTimers(){
+  if(pulseTimer){
+    clearInterval(pulseTimer);
+    pulseTimer=null;
+  }
+  if(speechTimer){
+    clearInterval(speechTimer);
+    speechTimer=null;
+  }
+}
+
+function beginAlarm(){
+  if(!armed||!active)return;
+
+  clearTimers();
+
+  attentionBurst();
+  setTimeout(()=>{ if(active) speakNext(); },240);
+
+  pulseTimer=setInterval(()=>{
+    if(active)attentionBurst();
+  },1550);
+
+  speechTimer=setInterval(()=>{
+    if(!active)return;
+    attentionBurst();
+    setTimeout(()=>{ if(active) speakNext(); },240);
+  },4700);
 }
 
 async function arm(){
@@ -39,7 +154,7 @@ async function arm(){
     ensureContext();
     await ctx.resume();
     armed=ctx.state==='running';
-    if(armed&&active)start(true);
+    if(armed&&active)beginAlarm();
     return armed;
   }catch(e){
     armed=false;
@@ -47,145 +162,49 @@ async function arm(){
   }
 }
 
-function envelope(at,duration,peak){
-  const g=ctx.createGain();
-  g.gain.setValueAtTime(.0001,at);
-  g.gain.linearRampToValueAtTime(peak,at+.012);
-  g.gain.setValueAtTime(peak,Math.max(at+.012,at+duration-.06));
-  g.gain.exponentialRampToValueAtTime(.0001,at+duration);
-  g.connect(master);
-  return g;
-}
-
-function tone(freq,at,duration=.18,peak=.13,type='triangle'){
-  if(!armed||!active)return;
-  const osc=ctx.createOscillator();
-  const filter=ctx.createBiquadFilter();
-  const gain=envelope(at,duration,peak);
-
-  osc.type=type;
-  osc.frequency.setValueAtTime(freq,at);
-  filter.type='bandpass';
-  filter.frequency.value=freq;
-  filter.Q.value=.82;
-
-  osc.connect(filter);
-  filter.connect(gain);
-  osc.start(at);
-  osc.stop(at+duration+.025);
-}
-
-function attentionSignal(level){
-  if(!armed||!active)return;
-
-  const t=ctx.currentTime+.004;
-  const shift=Math.max(0,Math.min(5,level))*10;
-
-  // Public-address attention sequence: clear, dry and intelligible.
-  tone(780+shift,t,.22,.14,'triangle');
-  tone(980+shift,t+.24,.22,.15,'triangle');
-  tone(780+shift,t+.48,.22,.14,'triangle');
-  tone(980+shift,t+.72,.30,.16,'triangle');
-
-  tone(620+shift,t+1.10,.36,.14,'sine');
-  tone(930+shift,t+1.48,.36,.15,'triangle');
-}
-
-function speakEmergency(force=false){
-  if(!('speechSynthesis' in window)||!active)return;
-
-  const now=Date.now();
-  if(!force && now-lastSpeechAt<6200)return;
-  lastSpeechAt=now;
-
-  try{
-    window.speechSynthesis.cancel();
-
-    const u=new SpeechSynthesisUtterance(
-      stage>=4
-        ? 'Alerta. Alerta. Falla crítica de control. Estado de emergencia.'
-        : 'Alerta. Alerta. Anomalía crítica en sistema de control.'
-    );
-
-    u.lang='es-MX';
-    u.rate=.9;
-    u.pitch=.88;
-    u.volume=1;
-
-    const voices=window.speechSynthesis.getVoices();
-    const preferred=voices.find(v=>/^es-MX$/i.test(v.lang))
-      || voices.find(v=>/^es/i.test(v.lang));
-    if(preferred)u.voice=preferred;
-
-    window.speechSynthesis.speak(u);
-  }catch(e){}
-}
-
-function intervalFor(level){
-  return [2700,2550,2400,2250,2100,1950][Math.max(0,Math.min(5,level))];
-}
-
-function stopLoop(){
-  token++;
-  if(timer){
-    clearTimeout(timer);
-    timer=null;
-  }
-}
-
-function start(immediate=true){
-  stopLoop();
-  if(!active||!armed)return;
-
-  const current=token;
-  const run=()=>{
-    if(current!==token||!active||!armed)return;
-    attentionSignal(stage);
-    speakEmergency(false);
-    timer=setTimeout(run,intervalFor(stage));
-  };
-
-  if(immediate){
-    attentionSignal(stage);
-    speakEmergency(true);
-    timer=setTimeout(run,intervalFor(stage));
-  }else{
-    timer=setTimeout(run,50);
-  }
-}
-
 function setStage(nextStage,isActive=true){
-  const next=Math.max(0,Math.min(5,Number(nextStage)||0));
-  const changed=next!==stage||!!isActive!==active;
-
-  stage=next;
+  const wasActive=active;
+  stage=Math.max(0,Math.min(5,Number(nextStage)||0));
   active=!!isActive;
 
   if(!active){
-    stopLoop();
-    try{window.speechSynthesis?.cancel()}catch(e){}
+    stop();
     return;
   }
 
-  if(changed&&armed)start(true);
+  if(!wasActive&&armed)beginAlarm();
 }
 
 function stop(){
   active=false;
   stage=-1;
-  stopLoop();
+  clearTimers();
   try{window.speechSynthesis?.cancel()}catch(e){}
+}
+
+function broadcastStage(nextStage,isActive=true){
+  try{
+    bc?.postMessage({type:'stage',stage:Number(nextStage)||0,active:!!isActive});
+  }catch(e){}
+}
+
+if(bc){
+  bc.addEventListener('message',event=>{
+    const msg=event.data||{};
+    if(msg.type==='stage'){
+      setStage(Number(msg.stage)||0,!!msg.active);
+    }else if(msg.type==='stop'){
+      stop();
+    }
+  });
 }
 
 window.INTERAFAS_AUDIO={
   arm,
   setStage,
   stop,
+  broadcastStage,
   get armed(){return armed},
   get state(){return ctx?ctx.state:'not-created'}
 };
-
-if(sessionStorage.getItem('INTERAFAS_V20_AUDIO_PENDING')==='1'){
-  arm();
-}
 })();
