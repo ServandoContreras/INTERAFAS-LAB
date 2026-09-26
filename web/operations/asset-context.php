@@ -93,6 +93,8 @@ if($asset==='' || !isset($map[$asset])){
  */
 $sequence=['RTU-GW-07','PLC-SL-01','P-SL-101','HDR-SL-01','V-SL-201','ZONE-SL-A'];
 $progress=is_array($_SESSION['vuln19_dependency_path']??null) ? $_SESSION['vuln19_dependency_path'] : [];
+$pathError=false;
+$errorAsset=null;
 
 if($role==='maintenance'){
   if($asset===$sequence[0]){
@@ -101,14 +103,16 @@ if($role==='maintenance'){
     $expected=$sequence[count($progress)]??null;
     if($expected!==null && $asset===$expected){
       $progress[]=$asset;
-    }elseif(!in_array($asset,$progress,true)){
+    }else{
+      $pathError=true;
+      $errorAsset=$asset;
       $progress=[];
     }
   }
   $_SESSION['vuln19_dependency_path']=$progress;
 }
 
-$complete=($role==='maintenance' && $progress===$sequence);
+$complete=($role==='maintenance' && !$pathError && $progress===$sequence);
 
 if($complete){
   header('X-INTERAFAS-Dependency-Chain: complete');
@@ -150,8 +154,12 @@ echo json_encode([
     'server_enforced_dependency_boundary'=>false
   ],
   'path'=>[
+    'sequence_length'=>count($sequence),
     'visited'=>$progress,
     'depth'=>count($progress),
-    'complete'=>$complete
+    'complete'=>$complete,
+    'error'=>$pathError,
+    'error_asset'=>$errorAsset,
+    'expected_next'=>$complete ? null : ($sequence[count($progress)]??$sequence[0])
   ]
 ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
