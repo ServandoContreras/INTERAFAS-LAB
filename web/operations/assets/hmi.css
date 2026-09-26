@@ -2107,3 +2107,72 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 /* Overview uses exactly the same P&ID elements, only scaled */
 .overview-process-scene.city-sl .sl-inst{transform:scale(.92);transform-origin:center}
 .overview-process-scene.city-sl .sl-level-tag{font-size:5px}
+
+
+/* VULN-19 — traversable OT dependency context */
+.asset-related-block{
+  margin-top:14px;
+  padding-top:12px;
+  border-top:1px solid rgba(75,112,128,.28)
+}
+.asset-related-label{
+  display:block;
+  margin-bottom:7px;
+  color:#7895a3;
+  font-size:10px;
+  letter-spacing:.06em;
+  text-transform:uppercase
+}
+.asset-related-list{
+  display:flex;
+  flex-wrap:wrap;
+  gap:6px;
+  min-height:24px;
+  color:#b7cbd5;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.asset-related-link{
+  appearance:none;
+  border:1px solid #315665;
+  background:#091a23;
+  color:#9cd7e8;
+  padding:5px 8px;
+  border-radius:3px;
+  cursor:pointer;
+  font:700 10px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.02em
+}
+.asset-related-link:hover,
+.asset-related-link:focus-visible{
+  border-color:#58a8c3;
+  background:#0d2632;
+  color:#d8f4ff;
+  outline:none
+}
+.asset-chain-state{
+  margin-top:12px;
+  padding:8px 10px;
+  border:1px solid #375463;
+  background:#07161e;
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.asset-chain-state[hidden]{display:none!important}
+.asset-chain-state span{
+  color:#7e99a6;
+  font-size:8px;
+  text-transform:uppercase;
+  letter-spacing:.06em
+}
+.asset-chain-state strong{
+  color:#c8dae2;
+  font-size:9px
+}
+.asset-chain-state.complete{
+  border-color:#3d745d;
+  background:#0a2019
+}
+.asset-chain-state.complete strong{color:#72dca4}
