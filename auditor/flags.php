@@ -43,7 +43,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
   }
  }
 }
-$q=db()->prepare("SELECT c.*,s.created_at AS obtained_at,s.note FROM flag_submissions s JOIN flag_catalog c ON c.flag_number=s.flag_number WHERE s.attempt_id=? AND s.status='accepted' ORDER BY s.created_at,c.flag_number");$q->execute([current_attempt_id()]);$obtained=$q->fetchAll();
+$q=db()->prepare("SELECT c.*,s.created_at AS obtained_at,s.note FROM flag_submissions s JOIN flag_catalog c ON c.flag_number=s.flag_number WHERE s.attempt_id=? AND s.status='accepted' ORDER BY c.flag_number ASC,s.created_at ASC");$q->execute([current_attempt_id()]);$obtained=$q->fetchAll();
 $q=db()->prepare("SELECT u.flag_number,u.hint_order,h.hint_text,u.created_at FROM lab_hint_usage u JOIN flag_hints h ON h.flag_number=u.flag_number AND h.hint_order=u.hint_order WHERE u.attempt_id=? ORDER BY u.created_at DESC,u.id DESC");$q->execute([current_attempt_id()]);$usedHints=$q->fetchAll(); $usedHintsByFlag=[]; foreach($usedHints as $uh){$usedHintsByFlag[(int)$uh['flag_number']][]=$uh;}
 $q=db()->prepare("SELECT flag_number,item_index,is_checked FROM lab_checklist_state WHERE attempt_id=?");$q->execute([current_attempt_id()]);$checkRows=$q->fetchAll(); $checkState=[]; foreach($checkRows as $cr){$checkState[(int)$cr['flag_number']][(int)$cr['item_index']]=(int)$cr['is_checked']===1;}
 
