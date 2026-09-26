@@ -426,6 +426,222 @@ function renderIncidentStats(data){
   }
 }
 
+let vuln20SnapshotInFlight=false;
+
+function replaceCanvasCopies(sourceRoot,cloneRoot){
+  const sourceCanvases=[...sourceRoot.querySelectorAll('canvas')];
+  const cloneCanvases=[...cloneRoot.querySelectorAll('canvas')];
+
+  cloneCanvases.forEach((copy,index)=>{
+    const original=sourceCanvases[index];
+    if(!original)return;
+
+    try{
+      const img=document.createElement('img');
+      img.src=original.toDataURL('image/png');
+      img.width=original.clientWidth||original.width;
+      img.height=original.clientHeight||original.height;
+      img.style.width=(original.clientWidth||original.width)+'px';
+      img.style.height=(original.clientHeight||original.height)+'px';
+      img.style.display='block';
+      copy.replaceWith(img);
+    }catch(e){
+      copy.remove();
+    }
+  });
+}
+
+function sanitizeSnapshotClone(clone){
+  clone.querySelectorAll('script,iframe,video,audio').forEach(node=>node.remove());
+
+  // Never publish the challenge flag inside the news snapshot.
+  const flag=clone.querySelector('#vuln20-title-flag');
+  if(flag){
+    flag.textContent='· CRITICAL INCIDENT';
+    flag.removeAttribute('hidden');
+  }
+
+  // External images are not required for the SCADA evidence and can taint canvas export.
+  clone.querySelectorAll('img').forEach(img=>{
+    if(!String(img.src||'').startsWith('data:')){
+      const ph=document.createElement('div');
+      ph.style.width=(img.clientWidth||160)+'px';
+      ph.style.height=(img.clientHeight||90)+'px';
+      ph.style.background='#101c24';
+      ph.style.border='1px solid #39434a';
+      img.replaceWith(ph);
+    }
+  });
+}
+
+async function renderViewportSnapshot(data){
+  const width=Math.max(1024,window.innerWidth||1280);
+  const height=Math.max(620,Math.min(window.innerHeight||720,900));
+
+  const bodyClone=document.body.cloneNode(true);
+  replaceCanvasCopies(document.body,bodyClone);
+  sanitizeSnapshotClone(bodyClone);
+
+  const cssResponse=await fetch('/operations/assets/hmi.css?v=snapshot',{cache:'no-store'});
+  const cssText=await cssResponse.text();
+
+  const wrapper=document.createElement('div');
+  wrapper.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
+  wrapper.style.width=width+'px';
+  wrapper.style.height=height+'px';
+  wrapper.style.overflow='hidden';
+  wrapper.style.margin='0';
+  wrapper.style.background='#260606';
+
+  const style=document.createElement('style');
+  style.textContent=cssText+
+    '\nhtml,body{width:'+width+'px!important;height:'+height+'px!important;overflow:hidden!important;margin:0!important;}'+
+    '\n.cascade-notify-stack{top:88px!important;}';
+  wrapper.appendChild(style);
+  wrapper.appendChild(bodyClone);
+
+  const serialized=new XMLSerializer().serializeToString(wrapper);
+  const svg=
+    '<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'">'+
+      '<foreignObject x="0" y="0" width="100%" height="100%">'+serialized+'</foreignObject>'+
+    '</svg>';
+
+  const blob=new Blob([svg],{type:'image/svg+xml;charset=utf-8'});
+  const url=URL.createObjectURL(blob);
+
+  try{
+    const image=await new Promise((resolve,reject)=>{
+      const img=new Image();
+      img.onload=()=>resolve(img);
+      img.onerror=()=>reject(new Error('snapshot-render-failed'));
+      img.src=url;
+    });
+
+    const maxWidth=1440;
+    const scale=Math.min(1,maxWidth/width);
+    const outWidth=Math.round(width*scale);
+    const outHeight=Math.round(height*scale);
+
+    const canvas=document.createElement('canvas');
+    canvas.width=outWidth;
+    canvas.height=outHeight;
+
+    const ctx=canvas.getContext('2d');
+    ctx.fillStyle='#260606';
+    ctx.fillRect(0,0,outWidth,outHeight);
+    ctx.drawImage(image,0,0,outWidth,outHeight);
+
+    return {
+      image:canvas.toDataURL('image/jpeg',.88),
+      width:outWidth,
+      height:outHeight,
+      captured_at:new Date().toISOString(),
+      stage:Number(data?.incident?.stage||5),
+      stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE')
+    };
+  }finally{
+    URL.revokeObjectURL(url);
+  }
+}
+
+function fallbackOperationalSnapshot(data){
+  const canvas=document.createElement('canvas');
+  canvas.width=1280;
+  canvas.height=720;
+  const ctx=canvas.getContext('2d');
+
+  ctx.fillStyle='#200406';
+  ctx.fillRect(0,0,1280,720);
+  ctx.fillStyle='#3f090d';
+  ctx.fillRect(0,0,1280,88);
+
+  ctx.fillStyle='#fff';
+  ctx.font='700 31px Arial';
+  ctx.fillText('INTERAFAS · CRITICAL INCIDENT',42,54);
+
+  ctx.fillStyle='#ff676f';
+  ctx.font='800 52px Arial';
+  ctx.fillText(String(data?.incident?.stage_label||'CATASTROPHIC STATE'),42,160);
+
+  const lines=[
+    ['ACTIVE ALARMS',Number(data?.alarm_count||0).toLocaleString()],
+    ['AVAILABILITY',String(data?.availability??'—')+'%'],
+    ['PRESSURE',String(data?.pressure??'—')+' bar'],
+    ['FLOW',String(data?.flow??'—')+' L/s'],
+    ['CRITICAL STATIONS',String(data?.stations_critical??'—')],
+    ['QUALITY',String(data?.quality??'—')]
+  ];
+
+  lines.forEach((item,index)=>{
+    const y=238+index*66;
+    ctx.fillStyle='#ff9ba0';
+    ctx.font='700 18px Arial';
+    ctx.fillText(item[0],48,y);
+    ctx.fillStyle='#fff';
+    ctx.font='800 30px Arial';
+    ctx.fillText(item[1],390,y);
+  });
+
+  ctx.fillStyle='#ff3742';
+  ctx.fillRect(0,674,1280,46);
+  ctx.fillStyle='#fff';
+  ctx.font='800 17px Arial';
+  ctx.fillText('OPERATIONAL SNAPSHOT · RTU-GW-07 · AUTOMATED EVIDENCE CAPTURE',42,704);
+
+  return {
+    image:canvas.toDataURL('image/jpeg',.9),
+    width:1280,
+    height:720,
+    captured_at:new Date().toISOString(),
+    stage:Number(data?.incident?.stage||5),
+    stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE')
+  };
+}
+
+async function publishFinalHmiSnapshot(data){
+  if(vuln20SnapshotInFlight)return;
+  if(sessionStorage.getItem('INTERAFAS_V20_SNAPSHOT_SENT')==='1')return;
+
+  vuln20SnapshotInFlight=true;
+
+  try{
+    // Give the stage-5 visual state and at least one floating notification time to paint.
+    await new Promise(resolve=>setTimeout(resolve,520));
+
+    let payload;
+    try{
+      payload=await renderViewportSnapshot(data);
+    }catch(e){
+      payload=fallbackOperationalSnapshot(data);
+    }
+
+    const response=await fetch('/operations/snapshot.php',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      credentials:'same-origin',
+      cache:'no-store',
+      body:JSON.stringify(payload)
+    });
+
+    const result=await response.json();
+
+    if(response.ok&&result.ok){
+      sessionStorage.setItem('INTERAFAS_V20_SNAPSHOT_SENT','1');
+      pushLog(
+        'INFO',
+        'EVIDENCE-01',
+        'Operational HMI snapshot preserved and released to Pulso Metropolitano.'
+      );
+    }else{
+      throw new Error(result.error||'snapshot-publication-failed');
+    }
+  }catch(e){
+    pushLog('WARN','EVIDENCE-01','Automatic operational snapshot could not be published.');
+  }finally{
+    vuln20SnapshotInFlight=false;
+  }
+}
+
 function applyTelemetry(data){
   const incident=data?.incident||{};
   const active=!!incident.active && String(incident.profile||'').toUpperCase()==='CASCADE';
@@ -440,6 +656,7 @@ function applyTelemetry(data){
       if(banner)banner.hidden=true;
       stopDangerNotifications();
       sessionStorage.removeItem('INTERAFAS_V20_AUDIO_PENDING');
+      sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
       if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(0,false);
     }
     return;
@@ -504,6 +721,11 @@ function applyTelemetry(data){
   }
 
   renderIncidentStats(data);
+
+  if(stage>=5 && data.final_flag){
+    publishFinalHmiSnapshot(data);
+  }
+
   pushHistory();
 }
 
