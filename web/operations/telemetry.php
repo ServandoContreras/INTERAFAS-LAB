@@ -91,8 +91,19 @@ if(!$sessionPresent){
     );
 }
 
+$labCtx=lab_context()??[];
+$auditorName=trim(implode(' ',array_filter([
+    (string)($labCtx['nombre']??''),
+    (string)($labCtx['apellido_paterno']??''),
+    (string)($labCtx['apellido_materno']??'')
+])));
+
 echo json_encode([
     'ok'=>true,
+    'auditor'=>[
+        'name'=>$auditorName!==''?$auditorName:'Auditor',
+        'matricula'=>(string)($labCtx['matricula']??'')
+    ],
     'plant'=>$state['plant']??null,
     'tank'=>$state['tank']??null,
     'flow'=>$state['flow']??null,
