@@ -485,22 +485,20 @@ async function renderViewportSnapshot(data){
   const cssResponse=await fetch('/operations/assets/hmi.css?v=snapshot',{cache:'no-store'});
   const cssText=await cssResponse.text();
 
-  const wrapper=document.createElement('div');
-  wrapper.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
-  wrapper.style.width=width+'px';
-  wrapper.style.height=height+'px';
-  wrapper.style.overflow='hidden';
-  wrapper.style.margin='0';
-  wrapper.style.background='#260606';
+  bodyClone.setAttribute('xmlns','http://www.w3.org/1999/xhtml');
+  bodyClone.style.width=width+'px';
+  bodyClone.style.height=height+'px';
+  bodyClone.style.overflow='hidden';
+  bodyClone.style.margin='0';
+  bodyClone.style.background='#260606';
 
   const style=document.createElement('style');
   style.textContent=cssText+
     '\nhtml,body{width:'+width+'px!important;height:'+height+'px!important;overflow:hidden!important;margin:0!important;}'+
     '\n.cascade-notify-stack{top:88px!important;}';
-  wrapper.appendChild(style);
-  wrapper.appendChild(bodyClone);
+  bodyClone.prepend(style);
 
-  const serialized=new XMLSerializer().serializeToString(wrapper);
+  const serialized=new XMLSerializer().serializeToString(bodyClone);
   const svg=
     '<svg xmlns="http://www.w3.org/2000/svg" width="'+width+'" height="'+height+'">'+
       '<foreignObject x="0" y="0" width="100%" height="100%">'+serialized+'</foreignObject>'+
