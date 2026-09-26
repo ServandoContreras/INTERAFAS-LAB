@@ -95,12 +95,22 @@ function media_catalog(): array {
   ];
 }
 function media_info(string $asset): array {
+  if($asset==='snapshot-vuln20'){
+    return [
+      'src'=>'/snapshot.php?key=vuln20-final',
+      'fallback'=>'/assets/img/operations-room.svg',
+      'caption'=>'Captura técnica del HMI metropolitano durante el estado crítico de la contingencia.',
+      'credit'=>'Captura operacional / Pulso Metropolitano',
+      'source'=>''
+    ];
+  }
+
   $m=media_catalog();
   if(isset($m[$asset])) return $m[$asset];
   return ['src'=>'/assets/img/'.$asset,'fallback'=>'/assets/img/hero-water.svg','caption'=>'Imagen de archivo de Pulso Metropolitano.','credit'=>'Archivo / Pulso Metropolitano','source'=>''];
 }
 function article_time(array $a): string {
-  $eventTimes=['FLAG_16'=>'09:12','FLAG_17'=>'10:44','FLAG_18'=>'12:31','FLAG_19'=>'14:18','FLAG_20'=>'16:47','ALL_FLAGS'=>'17:06','RECOVERY_STARTED'=>'18:10'];
+  $eventTimes=['FLAG_16'=>'09:12','FLAG_17'=>'10:44','FLAG_18'=>'12:31','FLAG_19'=>'14:18','FLAG_20'=>'16:47','VULN20_SNAPSHOT'=>'16:49','ALL_FLAGS'=>'17:06','RECOVERY_STARTED'=>'18:10'];
   if(!empty($a['event_required']) && isset($eventTimes[$a['event_required']])) return $eventTimes[$a['event_required']];
   $base=['0'=>'08:15','1'=>'09:08','2'=>'10:42','3'=>'12:18','4'=>'14:36','5'=>'18:10'];
   $ph=(string)($a['phase_required']??0); $delay=(int)($a['delay_seconds']??0);
