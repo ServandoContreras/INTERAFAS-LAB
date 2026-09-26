@@ -164,11 +164,11 @@ echo json_encode([
     'error_asset'=>$errorAsset,
     'expected_next'=>$complete ? null : ($sequence[count($progress)]??$sequence[0])
   ],
-  'maintenance_action'=>$complete ? [
-    'available'=>true,
-    'profile'=>'commissioning-loop-test',
-    'target'=>'P-SL-101',
-    'mode'=>'SIMULATION',
-    'endpoint'=>'/operations/maintenance/loop-test.php'
+  'firmware_context'=>$complete ? [
+    'device'=>'RTU-GW-07',
+    'legacy_profile'=>'CASCADE',
+    'classification'=>'retired-metropolitan-stress-test',
+    'channel'=>'/operations/updates/install.php',
+    'warning'=>'Legacy profile must never be deployed to an operational gateway.'
   ] : null
 ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
