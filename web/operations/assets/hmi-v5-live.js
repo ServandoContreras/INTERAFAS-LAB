@@ -357,6 +357,7 @@ function applyTelemetry(data){
       const banner=document.getElementById('cascade-banner');
       if(banner)banner.hidden=true;
       stopDangerNotifications();
+      sessionStorage.removeItem('INTERAFAS_V20_AUDIO_PENDING');
       if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(0,false);
     }
     return;
@@ -365,7 +366,15 @@ function applyTelemetry(data){
   const stage=clamp(Number(incident.stage||0),0,5);
   live.incidentActive=true;
   startDangerNotifications(stage);
-  if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(stage,true);
+  if(window.INTERAFAS_AUDIO){
+    if(window.INTERAFAS_AUDIO.armed){
+      window.INTERAFAS_AUDIO.setStage(stage,true);
+    }else{
+      window.INTERAFAS_AUDIO.arm().then(()=>{
+        window.INTERAFAS_AUDIO?.setStage(stage,true);
+      });
+    }
+  }
   live.incidentData=data;
   setCascadeClass(stage);
 
