@@ -76,11 +76,11 @@ $challengeChecklist=[
 ],
 20=>[
 'Completa primero VULN-19 hasta 6/6 y confirma que el menú Firmware queda habilitado para la sesión de mantenimiento.',
-'Entra a Firmware y descarga BACKUP. Conserva el archivo original como evidencia y revisa su estructura antes de realizar cualquier modificación.',
-'Relaciona el campo mode del backup con el perfil legado CASCADE revelado por el contexto de dependencias. Mantén sin cambios device, version y diagnostic.',
-'Crea una copia del backup, cambia únicamente mode a CASCADE y carga ese JSON desde Firmware. Documenta el paquete original y el modificado.',
-'Regresa al HMI y observa la propagación completa: etapas de cascada, aumento de caudal y presión, caída de disponibilidad, crecimiento del número de alarmas y extensión progresiva del estado crítico.',
-'Cuando aparezca CATASTROPHIC STATE y el HMI esté completamente en rojo, conserva la telemetría final y revisa los Response Headers de telemetry.php para acreditar el reto.'
+'Entra a Firmware, descarga BACKUP y conserva el archivo original. Verifica que contiene device, version, mode, diagnostic y el parámetro operacional pressure_setpoint_bar.',
+'Identifica 4.2 bar como el baseline del setpoint de presión. Crea una copia del backup y modifica únicamente pressure_setpoint_bar, dejando intactos los demás campos.',
+'Carga el JSON modificado desde Firmware y vuelve al HMI. Documenta el valor original y el valor alterado que provocó la condición crítica.',
+'Observa la cascada completa en intervalos aproximados de 3 segundos: aumento de presión y caudal, crecimiento del número de alarmas, caída de disponibilidad y propagación progresiva del estado rojo.',
+'Cuando aparezca CATASTROPHIC STATE, confirma que la bandera UPSLP_CNOIV-NOW-YOU-CONTROL-20 aparece automáticamente en negritas junto a INTERAFAS. No se requiere ninguna acción posterior.'
 ]
 ];
 
@@ -246,7 +246,7 @@ $challengeResources=[
 ],
 20=>[
  ['type'=>'MITRE ATT&CK ICS','title'=>'Modify Program · T0889','url'=>'https://attack.mitre.org/techniques/T0889/','desc'=>'Contexto sobre modificaciones de lógica o programas en activos ICS. Úsalo para comprender por qué una actualización no confiable puede alterar el comportamiento del proceso.'],
- ['type'=>'MITRE ATT&CK ICS','title'=>'Manipulation of Control · T0831','url'=>'https://attack.mitre.org/techniques/T0831/','desc'=>'Describe la manipulación del proceso mediante cambios de control. Relaciónalo con la transición entre firmware, lógica operacional y variables físicas simuladas.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Manipulation of Control · T0831','url'=>'https://attack.mitre.org/techniques/T0831/','desc'=>'Describe la manipulación del proceso mediante cambios de control. Relaciónalo con la alteración de un setpoint aceptado por firmware y su efecto sobre variables físicas simuladas.'],
  ['type'=>'MITRE ATT&CK ICS','title'=>'Impact · TA0105','url'=>'https://attack.mitre.org/tactics/TA0105/','desc'=>'Ayuda a distinguir compromiso técnico de impacto operacional. En este reto el resultado se refleja en disponibilidad, alarmas y comportamiento del proceso.'],
  ['type'=>'NIST','title'=>'SP 800-82 Rev. 3 · Guide to Operational Technology Security','url'=>'https://csrc.nist.gov/pubs/sp/800/82/r3/final','desc'=>'Referencia para arquitectura OT, gestión de cambios, acceso, monitoreo y protección de sistemas industriales.'],
  ['type'=>'NIST','title'=>'SP 800-193 · Platform Firmware Resiliency Guidelines','url'=>'https://csrc.nist.gov/pubs/sp/800/193/final','desc'=>'Explica principios de protección, detección y recuperación frente a modificaciones no autorizadas del firmware.'],
