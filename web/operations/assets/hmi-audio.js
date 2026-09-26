@@ -12,6 +12,7 @@ let active=false;
 let stage=-1;
 let timer=null;
 let token=0;
+let lastSpeechAt=0;
 
 function ensureContext(){
   if(ctx)return ctx;
@@ -19,14 +20,14 @@ function ensureContext(){
   ctx=new AudioCtx();
 
   master=ctx.createGain();
-  master.gain.value=.58;
+  master.gain.value=.52;
 
   compressor=ctx.createDynamicsCompressor();
-  compressor.threshold.value=-10;
-  compressor.knee.value=6;
-  compressor.ratio.value=6;
-  compressor.attack.value=.002;
-  compressor.release.value=.12;
+  compressor.threshold.value=-14;
+  compressor.knee.value=10;
+  compressor.ratio.value=4;
+  compressor.attack.value=.004;
+  compressor.release.value=.18;
 
   master.connect(compressor);
   compressor.connect(ctx.destination);
@@ -46,66 +47,82 @@ async function arm(){
   }
 }
 
-function gainEnvelope(at,duration,peak){
+function envelope(at,duration,peak){
   const g=ctx.createGain();
   g.gain.setValueAtTime(.0001,at);
-  g.gain.linearRampToValueAtTime(peak,at+.008);
-  g.gain.setValueAtTime(peak,Math.max(at+.008,at+duration-.045));
+  g.gain.linearRampToValueAtTime(peak,at+.012);
+  g.gain.setValueAtTime(peak,Math.max(at+.012,at+duration-.06));
   g.gain.exponentialRampToValueAtTime(.0001,at+duration);
   g.connect(master);
   return g;
 }
 
-function voice(freq,at,duration=.18,peak=.17,type='square'){
+function tone(freq,at,duration=.18,peak=.13,type='triangle'){
   if(!armed||!active)return;
-
-  const o=ctx.createOscillator();
+  const osc=ctx.createOscillator();
   const filter=ctx.createBiquadFilter();
-  const g=gainEnvelope(at,duration,peak);
+  const gain=envelope(at,duration,peak);
 
-  o.type=type;
-  o.frequency.setValueAtTime(freq,at);
-
+  osc.type=type;
+  osc.frequency.setValueAtTime(freq,at);
   filter.type='bandpass';
   filter.frequency.value=freq;
-  filter.Q.value=.72;
+  filter.Q.value=.82;
 
-  o.connect(filter);
-  filter.connect(g);
-  o.start(at);
-  o.stop(at+duration+.02);
+  osc.connect(filter);
+  filter.connect(gain);
+  osc.start(at);
+  osc.stop(at+duration+.025);
 }
 
-function emergencyPattern(level){
+function attentionSignal(level){
   if(!armed||!active)return;
 
   const t=ctx.currentTime+.004;
-  const s=Math.max(0,Math.min(5,level));
-  const shift=s*16;
+  const shift=Math.max(0,Math.min(5,level))*10;
 
-  /*
-   * Public-warning style cadence:
-   * 3 short high alerts -> 1 lower acknowledgement ->
-   * rapid alternating pair. Clean and intentionally piercing.
-   */
-  voice(920+shift,t,.17,.17,'square');
-  voice(920+shift,t+.23,.17,.17,'square');
-  voice(920+shift,t+.46,.17,.17,'square');
+  // Public-address attention sequence: clear, dry and intelligible.
+  tone(780+shift,t,.22,.14,'triangle');
+  tone(980+shift,t+.24,.22,.15,'triangle');
+  tone(780+shift,t+.48,.22,.14,'triangle');
+  tone(980+shift,t+.72,.30,.16,'triangle');
 
-  voice(690+shift,t+.72,.30,.19,'square');
+  tone(620+shift,t+1.10,.36,.14,'sine');
+  tone(930+shift,t+1.48,.36,.15,'triangle');
+}
 
-  voice(840+shift,t+1.08,.14,.16,'square');
-  voice(1110+shift,t+1.24,.14,.18,'square');
-  voice(840+shift,t+1.40,.14,.16,'square');
-  voice(1110+shift,t+1.56,.20,.18,'square');
+function speakEmergency(force=false){
+  if(!('speechSynthesis' in window)||!active)return;
 
-  // Light harmonic only for intelligibility over laptop speakers.
-  voice(1680+shift,t+1.24,.10,.035,'sine');
-  voice(1680+shift,t+1.56,.12,.038,'sine');
+  const now=Date.now();
+  if(!force && now-lastSpeechAt<6200)return;
+  lastSpeechAt=now;
+
+  try{
+    window.speechSynthesis.cancel();
+
+    const u=new SpeechSynthesisUtterance(
+      stage>=4
+        ? 'Alerta. Alerta. Falla crítica de control. Estado de emergencia.'
+        : 'Alerta. Alerta. Anomalía crítica en sistema de control.'
+    );
+
+    u.lang='es-MX';
+    u.rate=.9;
+    u.pitch=.88;
+    u.volume=1;
+
+    const voices=window.speechSynthesis.getVoices();
+    const preferred=voices.find(v=>/^es-MX$/i.test(v.lang))
+      || voices.find(v=>/^es/i.test(v.lang));
+    if(preferred)u.voice=preferred;
+
+    window.speechSynthesis.speak(u);
+  }catch(e){}
 }
 
 function intervalFor(level){
-  return [1940,1870,1800,1730,1660,1590][Math.max(0,Math.min(5,level))];
+  return [2700,2550,2400,2250,2100,1950][Math.max(0,Math.min(5,level))];
 }
 
 function stopLoop(){
@@ -123,12 +140,18 @@ function start(immediate=true){
   const current=token;
   const run=()=>{
     if(current!==token||!active||!armed)return;
-    emergencyPattern(stage);
+    attentionSignal(stage);
+    speakEmergency(false);
     timer=setTimeout(run,intervalFor(stage));
   };
 
-  if(immediate)run();
-  else timer=setTimeout(run,40);
+  if(immediate){
+    attentionSignal(stage);
+    speakEmergency(true);
+    timer=setTimeout(run,intervalFor(stage));
+  }else{
+    timer=setTimeout(run,50);
+  }
 }
 
 function setStage(nextStage,isActive=true){
@@ -140,6 +163,7 @@ function setStage(nextStage,isActive=true){
 
   if(!active){
     stopLoop();
+    try{window.speechSynthesis?.cancel()}catch(e){}
     return;
   }
 
@@ -150,6 +174,7 @@ function stop(){
   active=false;
   stage=-1;
   stopLoop();
+  try{window.speechSynthesis?.cancel()}catch(e){}
 }
 
 window.INTERAFAS_AUDIO={
