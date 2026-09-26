@@ -20,6 +20,7 @@ if($diagnostic!=='SERVICE' && !$flag18Accepted){
 }
 
 session_regenerate_id(true);
+unset($_SESSION['ops_restore_suppressed']);
 $_SESSION['ops_user']=[
     'id'=>1901,
     'username'=>'service.maintenance',
