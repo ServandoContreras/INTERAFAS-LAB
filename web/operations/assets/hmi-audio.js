@@ -8,14 +8,46 @@ const ALERT_CHANNEL='interafas-v20-alarm';
 const bc=('BroadcastChannel' in window)?new BroadcastChannel(ALERT_CHANNEL):null;
 
 const SPOKEN_ALERTS=[
-  {lang:'es-MX',text:'Alerta. Falla crítica en el sistema de control. Estado de emergencia.'},
-  {lang:'ru-RU',text:'Тревога. Критический сбой системы управления. Аварийное состояние.'},
-  {lang:'en-US',text:'Warning. Critical control system failure. Emergency condition.'},
-  {lang:'fr-FR',text:'Alerte. Défaillance critique du système de contrôle. État d’urgence.'},
-  {lang:'de-DE',text:'Warnung. Kritischer Ausfall des Steuerungssystems. Notfallzustand.'},
-  {lang:'ar-SA',text:'تحذير. عطل حرج في نظام التحكم. حالة طوارئ.'},
-  {lang:'zh-CN',text:'警报。控制系统发生严重故障。进入紧急状态。'},
-  {lang:'ja-JP',text:'警報。制御システムに重大な障害が発生しました。緊急状態です。'}
+  {
+    lang:'es-MX',
+    text:'Alerta. Falla crítica de control.',
+    fallback:'Alerta. Falla critica de control.'
+  },
+  {
+    lang:'ru-RU',
+    text:'Тревога. Критический сбой управления.',
+    fallback:'Trevoga. Kriticheskiy sboy upravleniya.'
+  },
+  {
+    lang:'en-US',
+    text:'Warning. Critical control failure.',
+    fallback:'Warning. Critical control failure.'
+  },
+  {
+    lang:'fr-FR',
+    text:'Alerte. Défaillance critique du contrôle.',
+    fallback:'Alerte. Defaillance critique du controle.'
+  },
+  {
+    lang:'de-DE',
+    text:'Warnung. Kritischer Steuerungsausfall.',
+    fallback:'Warnung. Kritischer Steuerungsausfall.'
+  },
+  {
+    lang:'ar-SA',
+    text:'تحذير. عطل حرج في نظام التحكم.',
+    fallback:'Tahdheer. Atal harij fi nizam al tahakkum.'
+  },
+  {
+    lang:'zh-CN',
+    text:'警报。控制系统严重故障。',
+    fallback:'Jing bao. Kong zhi xi tong yan zhong gu zhang.'
+  },
+  {
+    lang:'ja-JP',
+    text:'警報。制御システムに重大な障害。',
+    fallback:'Keihou. Seigyo shisutemu ni juudai na shougai.'
+  }
 ];
 
 let ctx=null;
@@ -25,8 +57,24 @@ let armed=false;
 let active=false;
 let stage=-1;
 let pulseTimer=null;
-let speechTimer=null;
+let speechAdvanceTimer=null;
+let speechWatchdog=null;
 let voiceIndex=0;
+let cachedVoices=[];
+
+function refreshVoices(){
+  if(!('speechSynthesis' in window))return [];
+  try{
+    const voices=window.speechSynthesis.getVoices()||[];
+    if(voices.length)cachedVoices=voices;
+  }catch(e){}
+  return cachedVoices;
+}
+
+if('speechSynthesis' in window){
+  refreshVoices();
+  window.speechSynthesis.addEventListener?.('voiceschanged',refreshVoices);
+}
 
 function ensureContext(){
   if(ctx)return ctx;
@@ -83,20 +131,46 @@ function attentionBurst(){
   const t=ctx.currentTime+.003;
   const lift=Math.max(0,Math.min(5,stage))*8;
 
-  // Dry public-warning attention burst, deliberately short so speech remains intelligible.
   tone(880+lift,t,.14,.12);
   tone(660+lift,t+.19,.16,.13);
   tone(880+lift,t+.40,.18,.12);
 }
 
-function availableVoice(lang){
-  if(!('speechSynthesis' in window))return null;
-  const voices=window.speechSynthesis.getVoices();
-  const exact=voices.find(v=>String(v.lang||'').toLowerCase()===lang.toLowerCase());
+function languageVoice(lang){
+  const voices=refreshVoices();
+  const normalized=lang.toLowerCase();
+
+  const exact=voices.find(v=>String(v.lang||'').toLowerCase()===normalized);
   if(exact)return exact;
 
-  const base=lang.split('-')[0].toLowerCase();
-  return voices.find(v=>String(v.lang||'').toLowerCase().startsWith(base))||null;
+  const base=normalized.split('-')[0];
+  return voices.find(v=>String(v.lang||'').toLowerCase().split('-')[0]===base)||null;
+}
+
+function defaultVoice(){
+  const voices=refreshVoices();
+  return voices.find(v=>v.default)||voices.find(v=>/^es/i.test(String(v.lang||'')))||voices.find(v=>/^en/i.test(String(v.lang||'')))||voices[0]||null;
+}
+
+function clearSpeechTimers(){
+  if(speechAdvanceTimer){
+    clearTimeout(speechAdvanceTimer);
+    speechAdvanceTimer=null;
+  }
+  if(speechWatchdog){
+    clearTimeout(speechWatchdog);
+    speechWatchdog=null;
+  }
+}
+
+function scheduleNextSpeech(delay=180){
+  clearSpeechTimers();
+  if(!active)return;
+
+  speechAdvanceTimer=setTimeout(()=>{
+    speechAdvanceTimer=null;
+    speakNext();
+  },delay);
 }
 
 function speakNext(){
@@ -106,17 +180,46 @@ function speakNext(){
   voiceIndex++;
 
   try{
-    const u=new SpeechSynthesisUtterance(item.text);
-    u.lang=item.lang;
-    u.rate=.88;
+    const nativeVoice=languageVoice(item.lang);
+    const fallbackVoice=defaultVoice();
+    const useNative=!!nativeVoice;
+
+    const u=new SpeechSynthesisUtterance(useNative?item.text:item.fallback);
+    u.rate=useNative?1.03:1.00;
     u.pitch=.92;
     u.volume=1;
 
-    const voice=availableVoice(item.lang);
-    if(voice)u.voice=voice;
+    if(useNative){
+      u.lang=item.lang;
+      u.voice=nativeVoice;
+    }else if(fallbackVoice){
+      u.lang=String(fallbackVoice.lang||'en-US');
+      u.voice=fallbackVoice;
+    }else{
+      u.lang='en-US';
+    }
+
+    let finished=false;
+    const advance=()=>{
+      if(finished)return;
+      finished=true;
+      clearSpeechTimers();
+      if(active)scheduleNextSpeech(180);
+    };
+
+    u.onend=advance;
+    u.onerror=advance;
+
+    // Some browser/voice combinations fail to emit onend/onerror.
+    speechWatchdog=setTimeout(()=>{
+      try{window.speechSynthesis.cancel()}catch(e){}
+      advance();
+    },3600);
 
     window.speechSynthesis.speak(u);
-  }catch(e){}
+  }catch(e){
+    scheduleNextSpeech(180);
+  }
 }
 
 function clearTimers(){
@@ -124,29 +227,29 @@ function clearTimers(){
     clearInterval(pulseTimer);
     pulseTimer=null;
   }
-  if(speechTimer){
-    clearInterval(speechTimer);
-    speechTimer=null;
-  }
+  clearSpeechTimers();
 }
 
 function beginAlarm(){
   if(!armed||!active)return;
 
   clearTimers();
+  voiceIndex=0;
+
+  try{
+    window.speechSynthesis?.cancel();
+    window.speechSynthesis?.resume();
+  }catch(e){}
 
   attentionBurst();
-  setTimeout(()=>{ if(active) speakNext(); },240);
 
   pulseTimer=setInterval(()=>{
     if(active)attentionBurst();
   },1550);
 
-  speechTimer=setInterval(()=>{
-    if(!active)return;
-    attentionBurst();
-    setTimeout(()=>{ if(active) speakNext(); },240);
-  },4700);
+  setTimeout(()=>{
+    if(active)speakNext();
+  },220);
 }
 
 async function arm(){
@@ -154,6 +257,8 @@ async function arm(){
     ensureContext();
     await ctx.resume();
     armed=ctx.state==='running';
+    refreshVoices();
+
     if(armed&&active)beginAlarm();
     return armed;
   }catch(e){
@@ -179,18 +284,26 @@ function stop(){
   active=false;
   stage=-1;
   clearTimers();
-  try{window.speechSynthesis?.cancel()}catch(e){}
+
+  try{
+    window.speechSynthesis?.cancel();
+  }catch(e){}
 }
 
 function broadcastStage(nextStage,isActive=true){
   try{
-    bc?.postMessage({type:'stage',stage:Number(nextStage)||0,active:!!isActive});
+    bc?.postMessage({
+      type:'stage',
+      stage:Number(nextStage)||0,
+      active:!!isActive
+    });
   }catch(e){}
 }
 
 if(bc){
   bc.addEventListener('message',event=>{
     const msg=event.data||{};
+
     if(msg.type==='stage'){
       setStage(Number(msg.stage)||0,!!msg.active);
     }else if(msg.type==='stop'){
@@ -205,6 +318,13 @@ window.INTERAFAS_AUDIO={
   stop,
   broadcastStage,
   get armed(){return armed},
-  get state(){return ctx?ctx.state:'not-created'}
+  get state(){return ctx?ctx.state:'not-created'},
+  get voices(){
+    return refreshVoices().map(v=>({
+      name:v.name,
+      lang:v.lang,
+      default:!!v.default
+    }));
+  }
 };
 })();
