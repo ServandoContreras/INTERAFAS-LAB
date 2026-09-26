@@ -223,10 +223,6 @@ textarea{width:100%;min-height:250px;background:#06101d;color:#d9eefc;border:1px
 .err{background:#4b2228;padding:12px;border-radius:10px}
 .muted{color:#8ea7bf}
 code{color:#a6dcff}
-.audio-console{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
-.audio-state{font:800 11px ui-monospace,monospace;padding:8px 10px;border:1px solid #6b4d22;background:#21170c;color:#f0cf76;border-radius:6px}
-.audio-state[data-audio-state="running"]{border-color:#2f7958;background:#0c291d;color:#8ee8b8}
-.audio-state[data-audio-state="muted"]{border-color:#4a5258;background:#12181c;color:#8b989e}
 .action-status{display:none;margin-top:12px;padding:12px;border-radius:8px;background:#151e26;border:1px solid #2d5267}
 .action-status.active{display:block}
 .action-status.critical{display:block;background:#4b151a;border-color:#a33a43;color:#ffe4e6}
@@ -250,11 +246,6 @@ code{color:#a6dcff}
       <button class="btn restore" type="submit">RESTABLECER OPERATIVIDAD</button>
     </form>
   <?php endif;?>
-
-  <div class="audio-console">
-    <span id="hmi-audio-state" class="audio-state" data-audio-state="blocked">BLOQUEADO</span>
-    <button type="button" class="btn" id="hmi-audio-toggle">ACTIVAR AUDIO</button>
-  </div>
 
   <div class="card">
     <small class="muted">RTU-GW-07 · mantenimiento</small>
@@ -285,7 +276,7 @@ code{color:#a6dcff}
   </div>
 </div>
 
-<script src="/operations/assets/hmi-audio.js?v=20260925-seismic-1"></script>
+<script src="/operations/assets/hmi-audio.js?v=20260925-public-alert-2"></script>
 <script>
 (()=>{
   const form=document.getElementById('firmware-install-form');
@@ -366,7 +357,7 @@ code{color:#a6dcff}
       }catch(_){}
 
       if(window.INTERAFAS_AUDIO){
-        await window.INTERAFAS_AUDIO.enable();
+        await window.INTERAFAS_AUDIO.arm();
         if(localUnsafe)window.INTERAFAS_AUDIO.setStage(0,true);
       }
       if(localUnsafe)startNotify();
@@ -394,9 +385,19 @@ code{color:#a6dcff}
       if(incident.active){
         if(status){
           status.className='action-status critical';
-          status.innerHTML='<strong>ALERTA OPERACIONAL.</strong> La configuración fue aplicada y comenzó una cascada. La sirena debe estar activa. <a href="index.php" target="_blank" style="color:#fff;text-decoration:underline">Abrir HMI en otra pestaña</a>.';
+          status.innerHTML='<strong>ALERTA OPERACIONAL.</strong> Configuración aplicada. Redirigiendo al HMI…';
         }
-        if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(Number(incident.stage||0),true);
+
+        sessionStorage.setItem('INTERAFAS_V20_AUDIO_PENDING','1');
+
+        if(window.INTERAFAS_AUDIO){
+          window.INTERAFAS_AUDIO.setStage(Number(incident.stage||0),true);
+        }
+
+        window.setTimeout(()=>{
+          window.location.replace('/operations/index.php');
+        },220);
+        return;
       }else{
         stopNotify();
         if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
