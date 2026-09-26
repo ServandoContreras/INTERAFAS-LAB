@@ -17,39 +17,59 @@ if(empty($state) || isset($state['error'])){
     exit;
 }
 
+$incident=is_array($state['incident']??null) ? $state['incident'] : [
+    'active'=>false,
+    'profile'=>null,
+    'stage'=>0,
+    'stage_label'=>'NORMAL',
+    'progress'=>0
+];
+
+if(!empty($incident['active'])){
+    header('X-INTERAFAS-Cascade-Stage: '.(string)($incident['stage']??0));
+    header('X-INTERAFAS-Cascade-State: '.rawurlencode((string)($incident['stage_label']??'ACTIVE')));
+}
+
 if($sessionPresent){
     $opsSession=is_array($_SESSION['ops_user']??null) ? $_SESSION['ops_user'] : [];
-    $v20=is_array($_SESSION['vuln20']??null) ? $_SESSION['vuln20'] : [];
     $maintenance=(string)($opsSession['role']??'')==='maintenance';
+    $cascadeOwned=!empty($_SESSION['vuln20_cascade_loaded']);
+    $v19Complete=!empty($_SESSION['vuln19_complete']);
+    $stage=(int)($incident['stage']??0);
 
     if(
         $maintenance
-        && !empty($v20['impact_committed'])
-        && empty($v20['impact_observed'])
-        && strtoupper((string)($state['p101']??''))==='OFF'
-        && in_array('FLOW_LOW',$state['alarms']??[],true)
-        && in_array('PRESSURE_LOW',$state['alarms']??[],true)
+        && $cascadeOwned
+        && $v19Complete
+        && !empty($incident['active'])
+        && strtoupper((string)($incident['profile']??''))==='CASCADE'
+        && $stage>=5
     ){
-        $_SESSION['vuln20']['impact_observed']=true;
-        $_SESSION['vuln20']['observed_at']=time();
-        header('X-INTERAFAS-Operational-Impact: observed');
+        header('X-INTERAFAS-Operational-Impact: catastrophic');
+        header('X-INTERAFAS-Validation: UPSLP_CNOIV-NOW-YOU-CONTROL-20');
 
-        lab_event(
-            'VULN20_PROCESS_IMPACT_OBSERVED',
-            'HMI observó degradación operacional provocada por la prueba de lazo',
-            'P-101 OFF · FLOW_LOW · PRESSURE_LOW',
-            [
-                'challenge'=>20,
-                'role'=>'maintenance',
-                'flow'=>$state['flow']??null,
-                'pressure'=>$state['pressure']??null,
-                'zone_a'=>$state['zone_a']??null,
-                'alarms'=>$state['alarms']??[]
-            ],
-            'ot-hmi',
-            'critical',
-            0
-        );
+        if(empty($_SESSION['vuln20_flag_emitted'])){
+            $_SESSION['vuln20_flag_emitted']=true;
+
+            lab_event(
+                'VULN20_CATASTROPHIC_STATE_REACHED',
+                'Cascada operacional simulada alcanzó estado catastrófico',
+                'RTU-GW-07 · CASCADE · stage 5',
+                [
+                    'challenge'=>20,
+                    'role'=>'maintenance',
+                    'alarm_count'=>$state['alarm_count']??null,
+                    'availability'=>$state['availability']??null,
+                    'stations_critical'=>$state['stations_critical']??null,
+                    'flow'=>$state['flow']??null,
+                    'pressure'=>$state['pressure']??null,
+                    'quality'=>$state['quality']??null
+                ],
+                'ot-hmi',
+                'critical',
+                0
+            );
+        }
     }
 }
 
@@ -79,7 +99,11 @@ echo json_encode([
     'p102'=>$state['p102']??null,
     'v201'=>$state['v201']??null,
     'alarms'=>$state['alarms']??[],
+    'alarm_count'=>(int)($state['alarm_count']??count($state['alarms']??[])),
     'process_state'=>$state['process_state']??'NORMAL',
     'zone_a'=>$state['zone_a']??'NORMAL',
+    'availability'=>$state['availability']??99.82,
+    'stations_critical'=>(int)($state['stations_critical']??0),
+    'incident'=>$incident,
     'firmware'=>$firmware
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
