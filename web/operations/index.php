@@ -116,7 +116,7 @@ $pressureZones=18;
 <header class="hmi-topbar">
   <div class="hmi-brand">
     <div class="hmi-mark">IA</div>
-    <div class="hmi-brand-text"><strong>INTERAFAS</strong><span>METROPOLITAN WATER OPERATIONS</span></div>
+    <div class="hmi-brand-text"><strong>INTERAFAS <b id="vuln20-title-flag" class="vuln20-title-flag" hidden></b></strong><span>METROPOLITAN WATER OPERATIONS</span></div>
   </div>
   <div class="hmi-top-status">
     <div class="status-cluster"><span class="status-dot"></span> OPS-NET-20</div>
@@ -907,7 +907,7 @@ async function loadAssetContext(assetId,fallback=null){
       const ctx=data.firmware_context;
       firmwareContext.hidden=!ctx;
       if(ctx){
-        firmwareProfile.textContent=ctx.legacy_profile+' · '+ctx.device;
+        firmwareProfile.textContent=ctx.classification+' · '+ctx.device;
         firmwareWarning.textContent=ctx.warning||'';
 
         const firmwareNav=document.getElementById('firmware-nav');
