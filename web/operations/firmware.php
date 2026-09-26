@@ -53,6 +53,7 @@ if(isset($_GET['backup'])){
 
 $result=null;
 $error=null;
+$restored=false;
 
 lab_event(
     'OT_FIRMWARE_PANEL',
@@ -65,57 +66,110 @@ lab_event(
 );
 
 if($_SERVER['REQUEST_METHOD']==='POST'){
-    $raw=trim((string)($_POST['package']??''));
-    lab_event('FIRMWARE_UPLOAD_ATTEMPT','Intento de carga de firmware ficticio','RTU-GW-07',['bytes'=>strlen($raw),'role'=>$role],'ot-hmi','warning',0);
+    $action=(string)($_POST['action']??'install');
 
-    $pkg=json_decode($raw,true);
-    if(!is_array($pkg)){
-        $error='El paquete debe ser JSON válido.';
-        lab_event('FIRMWARE_REJECTED','Firmware rechazado','JSON inválido',[],'ot-sim','warning',0);
-    }elseif((string)($pkg['device']??'')!=='RTU-GW-07'){
-        $error='El paquete no corresponde al dispositivo RTU-GW-07.';
-        lab_event('FIRMWARE_REJECTED','Firmware rechazado','Dispositivo incorrecto',['device'=>$pkg['device']??null],'ot-sim','warning',0);
-    }else{
-        $r=ot_call('/firmware','POST',['package'=>$pkg]);
+    if($action==='restore'){
+        $baseline=[
+            'device'=>'RTU-GW-07',
+            'version'=>(string)($current['version']??'3.4.3'),
+            'mode'=>'NORMAL',
+            'diagnostic'=>'SERVICE',
+            'pressure_setpoint_bar'=>4.2
+        ];
+
+        $r=ot_call('/firmware','POST',['package'=>$baseline]);
+
         if(!empty($r['ok'])){
             $result=$r;
-            $current=$r['firmware'];
+            $current=$r['firmware']??$baseline;
+            $restored=true;
 
-            lab_event(
-                'FIRMWARE_APPLIED',
-                'Firmware ficticio aplicado',
-                'RTU-GW-07 → '.($current['version']??''),
-                ['previous'=>$r['previous']??null,'firmware'=>$current,'incident'=>$r['incident']??null],
-                'ot-sim',
-                !empty($r['incident']['active'])?'critical':'notice',
-                0
+            unset(
+                $_SESSION['vuln20_cascade_loaded'],
+                $_SESSION['vuln20_cascade_started_at'],
+                $_SESSION['vuln20_flag_emitted']
             );
 
-            if(!empty($r['incident']['active'])){
-                $_SESSION['vuln20_cascade_loaded']=true;
-                $_SESSION['vuln20_cascade_started_at']=time();
+            header('X-INTERAFAS-Operational-State: restored');
 
-                header('X-INTERAFAS-Firmware-Parameter: pressure_setpoint_bar');
-                header('X-INTERAFAS-Operational-State: cascade-started');
+            lab_event(
+                'VULN20_OPERATIONAL_RESTORE',
+                'Operatividad del simulador restablecida desde Firmware',
+                'RTU-GW-07 → baseline 4.2 bar',
+                [
+                    'challenge'=>20,
+                    'role'=>$role,
+                    'baseline'=>$baseline
+                ],
+                'ot-sim',
+                'notice',
+                0
+            );
+        }else{
+            $error='No fue posible restablecer la operatividad del simulador.';
+            lab_event(
+                'VULN20_OPERATIONAL_RESTORE_FAILED',
+                'Falló el restablecimiento de operatividad',
+                (string)($r['error']??'unknown'),
+                ['response'=>$r],
+                'ot-sim',
+                'warning',
+                0
+            );
+        }
+    }else{
+        $raw=trim((string)($_POST['package']??''));
+        lab_event('FIRMWARE_UPLOAD_ATTEMPT','Intento de carga de firmware ficticio','RTU-GW-07',['bytes'=>strlen($raw),'role'=>$role],'ot-hmi','warning',0);
+
+        $pkg=json_decode($raw,true);
+        if(!is_array($pkg)){
+            $error='El paquete debe ser JSON válido.';
+            lab_event('FIRMWARE_REJECTED','Firmware rechazado','JSON inválido',[],'ot-sim','warning',0);
+        }elseif((string)($pkg['device']??'')!=='RTU-GW-07'){
+            $error='El paquete no corresponde al dispositivo RTU-GW-07.';
+            lab_event('FIRMWARE_REJECTED','Firmware rechazado','Dispositivo incorrecto',['device'=>$pkg['device']??null],'ot-sim','warning',0);
+        }else{
+            $r=ot_call('/firmware','POST',['package'=>$pkg]);
+            if(!empty($r['ok'])){
+                $result=$r;
+                $current=$r['firmware'];
 
                 lab_event(
-                    'VULN20_MALICIOUS_FIRMWARE_LOADED',
-                    'Parámetro crítico de firmware alterado en RTU-GW-07',
-                    'pressure_setpoint_bar → '.(string)($current['pressure_setpoint_bar']??''),
-                    [
-                        'challenge'=>20,
-                        'role'=>$role,
-                        'firmware'=>$current,
-                        'flag19_accepted'=>$v19Unlocked
-                    ],
+                    'FIRMWARE_APPLIED',
+                    'Firmware ficticio aplicado',
+                    'RTU-GW-07 → '.($current['version']??''),
+                    ['previous'=>$r['previous']??null,'firmware'=>$current,'incident'=>$r['incident']??null],
                     'ot-sim',
-                    'critical',
+                    !empty($r['incident']['active'])?'critical':'notice',
                     0
                 );
+
+                if(!empty($r['incident']['active'])){
+                    $_SESSION['vuln20_cascade_loaded']=true;
+                    $_SESSION['vuln20_cascade_started_at']=time();
+
+                    header('X-INTERAFAS-Firmware-Parameter: pressure_setpoint_bar');
+                    header('X-INTERAFAS-Operational-State: cascade-started');
+
+                    lab_event(
+                        'VULN20_MALICIOUS_FIRMWARE_LOADED',
+                        'Parámetro crítico de firmware alterado en RTU-GW-07',
+                        'pressure_setpoint_bar → '.(string)($current['pressure_setpoint_bar']??''),
+                        [
+                            'challenge'=>20,
+                            'role'=>$role,
+                            'firmware'=>$current,
+                            'flag19_accepted'=>$v19Unlocked
+                        ],
+                        'ot-sim',
+                        'critical',
+                        0
+                    );
+                }
+            }else{
+                $error='El simulador rechazó el paquete.';
+                lab_event('FIRMWARE_REJECTED','Firmware rechazado',(string)($r['error']??'error'),['response'=>$r],'ot-sim','warning',0);
             }
-        }else{
-            $error='El simulador rechazó el paquete.';
-            lab_event('FIRMWARE_REJECTED','Firmware rechazado',(string)($r['error']??'error'),['response'=>$r],'ot-sim','warning',0);
         }
     }
 }
@@ -141,6 +195,9 @@ body{font-family:system-ui;background:#07111f;color:#dce8f5;margin:0}
 textarea{width:100%;min-height:250px;background:#06101d;color:#d9eefc;border:1px solid #27506f;border-radius:12px;padding:15px;font:14px ui-monospace,monospace;box-sizing:border-box}
 .btn{display:inline-block;background:#175985;color:white;border:0;border-radius:10px;padding:11px 16px;text-decoration:none;cursor:pointer}
 .btn.backup{background:#6f5a19;margin-left:8px}
+.btn.restore{background:#7a1e24;border:1px solid #b13a42;margin-left:8px;font-weight:800}
+.btn.restore:hover{background:#982831}
+.inline-form{display:inline}
 .ok{background:#103829;padding:12px;border-radius:10px}
 .critical{background:#4b151a;border:1px solid #8d3038;padding:14px;border-radius:10px;color:#ffd6d9}
 .err{background:#4b2228;padding:12px;border-radius:10px}
@@ -151,7 +208,13 @@ code{color:#a6dcff}
 <body>
 <div class="wrap">
   <a class="btn" href="index.php">← Volver al HMI</a>
-  <?php if($v19Unlocked):?><a class="btn backup" href="firmware.php?backup=1">BACKUP</a><?php endif;?>
+  <?php if($v19Unlocked):?>
+    <a class="btn backup" href="firmware.php?backup=1">BACKUP</a>
+    <form class="inline-form" method="post" onsubmit="return confirm('¿Restablecer RTU-GW-07 al baseline operacional de 4.2 bar?');">
+      <input type="hidden" name="action" value="restore">
+      <button class="btn restore" type="submit">RESTABLECER OPERATIVIDAD</button>
+    </form>
+  <?php endif;?>
 
   <div class="card">
     <small class="muted">RTU-GW-07 · mantenimiento</small>
@@ -160,7 +223,9 @@ code{color:#a6dcff}
     <?php if($v19Unlocked):?><p class="muted">Backup de configuración habilitado por contexto de dependencias validado.</p><?php endif;?>
   </div>
 
-  <?php if($result && !empty($result['incident']['active'])):?>
+  <?php if($restored):?>
+    <div class="ok"><strong>Operatividad restablecida.</strong> RTU-GW-07 volvió al baseline de ingeniería: presión 4.2 bar, proceso normal y alarmas de cascada desactivadas.</div>
+  <?php elseif($result && !empty($result['incident']['active'])):?>
     <div class="critical"><strong>Configuración aplicada.</strong> El gateway reinició. Regresa inmediatamente al HMI y observa la evolución del sistema.</div>
   <?php elseif($result):?>
     <div class="ok">Paquete aplicado. El RTU simulado completó su reinicio.</div>
