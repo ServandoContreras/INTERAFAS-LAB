@@ -860,7 +860,7 @@ async function loadAssetContext(assetId,fallback=null){
     if(chainState && chainProgress){
       const depth=Number(data.path?.depth||0);
       chainState.hidden=depth===0;
-      chainProgress.textContent=data.path?.complete ? 'COMPLETE · '+depth+'/6' : depth+'/6';
+      chainProgress.textContent=data.path?.complete ? 'ЗАВЕРШЕНО · '+depth+'/6' : depth+'/6';
       chainState.classList.toggle('complete',!!data.path?.complete);
     }
   }catch(err){
