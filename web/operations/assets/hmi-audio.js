@@ -7,12 +7,11 @@ if(!AudioCtx)return;
 let ctx=null;
 let master=null;
 let compressor=null;
-let enabled=sessionStorage.getItem('INTERAFAS_AUDIO')!=='0';
 let armed=false;
 let active=false;
 let stage=-1;
-let pulseTimer=null;
-let sequenceToken=0;
+let timer=null;
+let token=0;
 
 function ensureContext(){
   if(ctx)return ctx;
@@ -20,47 +19,18 @@ function ensureContext(){
   ctx=new AudioCtx();
 
   master=ctx.createGain();
-  master.gain.value=.72;
+  master.gain.value=.58;
 
   compressor=ctx.createDynamicsCompressor();
-  compressor.threshold.value=-12;
-  compressor.knee.value=8;
-  compressor.ratio.value=5;
-  compressor.attack.value=.003;
-  compressor.release.value=.16;
+  compressor.threshold.value=-10;
+  compressor.knee.value=6;
+  compressor.ratio.value=6;
+  compressor.attack.value=.002;
+  compressor.release.value=.12;
 
   master.connect(compressor);
   compressor.connect(ctx.destination);
-
   return ctx;
-}
-
-function updateButton(){
-  const btn=document.getElementById('hmi-audio-toggle');
-  const state=document.getElementById('hmi-audio-state');
-
-  if(btn){
-    btn.classList.toggle('audio-muted',!enabled);
-    btn.classList.toggle('audio-armed',enabled&&armed);
-    btn.classList.toggle('audio-needs-gesture',enabled&&!armed);
-
-    if(!enabled){
-      btn.textContent='AUDIO · SILENCIADO';
-      btn.title='Alarma audible silenciada';
-    }else if(armed){
-      btn.textContent='AUDIO · ACTIVO';
-      btn.title='Alarma audible activa — clic para silenciar';
-    }else{
-      btn.textContent='ACTIVAR AUDIO';
-      btn.title='Clic para habilitar audio';
-    }
-  }
-
-  if(state){
-    const actual=ctx?ctx.state:'not-created';
-    state.textContent=!enabled?'SILENCIADO':armed?'ACTIVO':'BLOQUEADO · '+String(actual).toUpperCase();
-    state.dataset.audioState=!enabled?'muted':armed?'running':'blocked';
-  }
 }
 
 async function arm(){
@@ -68,92 +38,97 @@ async function arm(){
     ensureContext();
     await ctx.resume();
     armed=ctx.state==='running';
-    if(armed)sessionStorage.setItem('INTERAFAS_AUDIO','1');
-    updateButton();
-    if(armed&&enabled&&active)startSequence(true);
+    if(armed&&active)start(true);
     return armed;
   }catch(e){
     armed=false;
-    updateButton();
     return false;
   }
 }
 
-function envelope(at,duration,peak){
+function gainEnvelope(at,duration,peak){
   const g=ctx.createGain();
-  const attack=.012;
-  const release=.055;
-
   g.gain.setValueAtTime(.0001,at);
-  g.gain.exponentialRampToValueAtTime(peak,at+attack);
-  g.gain.setValueAtTime(peak,Math.max(at+attack,at+duration-release));
+  g.gain.linearRampToValueAtTime(peak,at+.008);
+  g.gain.setValueAtTime(peak,Math.max(at+.008,at+duration-.045));
   g.gain.exponentialRampToValueAtTime(.0001,at+duration);
   g.connect(master);
   return g;
 }
 
-function cleanTone(freq,at,duration=.34,peak=.19,type='square'){
-  if(!armed||!enabled)return;
+function voice(freq,at,duration=.18,peak=.17,type='square'){
+  if(!armed||!active)return;
 
-  const osc=ctx.createOscillator();
+  const o=ctx.createOscillator();
   const filter=ctx.createBiquadFilter();
-  const gain=envelope(at,duration,peak);
+  const g=gainEnvelope(at,duration,peak);
 
-  osc.type=type;
-  osc.frequency.setValueAtTime(freq,at);
+  o.type=type;
+  o.frequency.setValueAtTime(freq,at);
 
   filter.type='bandpass';
   filter.frequency.value=freq;
-  filter.Q.value=1.05;
+  filter.Q.value=.72;
 
-  osc.connect(filter);
-  filter.connect(gain);
-  osc.start(at);
-  osc.stop(at+duration+.03);
+  o.connect(filter);
+  filter.connect(g);
+  o.start(at);
+  o.stop(at+duration+.02);
 }
 
-function alertPulse(level){
-  if(!armed||!enabled||!active)return;
+function emergencyPattern(level){
+  if(!armed||!active)return;
 
-  const t=ctx.currentTime+.005;
-  const lift=Math.max(0,Math.min(5,level))*18;
+  const t=ctx.currentTime+.004;
+  const s=Math.max(0,Math.min(5,level));
+  const shift=s*16;
 
-  // Clean alternating attention tones; intentionally no sub-bass or distortion.
-  cleanTone(780+lift,t,.30,.18,'square');
-  cleanTone(1040+lift,t+.31,.30,.19,'square');
-  cleanTone(780+lift,t+.62,.30,.18,'square');
-  cleanTone(1040+lift,t+.93,.36,.20,'square');
+  /*
+   * Public-warning style cadence:
+   * 3 short high alerts -> 1 lower acknowledgement ->
+   * rapid alternating pair. Clean and intentionally piercing.
+   */
+  voice(920+shift,t,.17,.17,'square');
+  voice(920+shift,t+.23,.17,.17,'square');
+  voice(920+shift,t+.46,.17,.17,'square');
 
-  // Short upper harmonic gives the "public warning speaker" edge.
-  cleanTone(1560+lift,t+.31,.16,.045,'triangle');
-  cleanTone(1560+lift,t+.93,.18,.05,'triangle');
+  voice(690+shift,t+.72,.30,.19,'square');
+
+  voice(840+shift,t+1.08,.14,.16,'square');
+  voice(1110+shift,t+1.24,.14,.18,'square');
+  voice(840+shift,t+1.40,.14,.16,'square');
+  voice(1110+shift,t+1.56,.20,.18,'square');
+
+  // Light harmonic only for intelligibility over laptop speakers.
+  voice(1680+shift,t+1.24,.10,.035,'sine');
+  voice(1680+shift,t+1.56,.12,.038,'sine');
 }
 
 function intervalFor(level){
-  return [1560,1480,1400,1320,1240,1160][Math.max(0,Math.min(5,level))];
+  return [1940,1870,1800,1730,1660,1590][Math.max(0,Math.min(5,level))];
 }
 
-function stopSequence(){
-  sequenceToken++;
-  if(pulseTimer){
-    clearTimeout(pulseTimer);
-    pulseTimer=null;
+function stopLoop(){
+  token++;
+  if(timer){
+    clearTimeout(timer);
+    timer=null;
   }
 }
 
-function startSequence(immediate=true){
-  stopSequence();
-  if(!active||!enabled||!armed)return;
+function start(immediate=true){
+  stopLoop();
+  if(!active||!armed)return;
 
-  const token=sequenceToken;
+  const current=token;
   const run=()=>{
-    if(token!==sequenceToken||!active||!enabled||!armed)return;
-    alertPulse(stage);
-    pulseTimer=setTimeout(run,intervalFor(stage));
+    if(current!==token||!active||!armed)return;
+    emergencyPattern(stage);
+    timer=setTimeout(run,intervalFor(stage));
   };
 
   if(immediate)run();
-  else pulseTimer=setTimeout(run,80);
+  else timer=setTimeout(run,40);
 }
 
 function setStage(nextStage,isActive=true){
@@ -164,69 +139,24 @@ function setStage(nextStage,isActive=true){
   active=!!isActive;
 
   if(!active){
-    stopSequence();
+    stopLoop();
     return;
   }
 
-  if(changed&&armed&&enabled)startSequence(true);
-}
-
-function silence(){
-  enabled=false;
-  sessionStorage.setItem('INTERAFAS_AUDIO','0');
-  stopSequence();
-  updateButton();
-}
-
-async function enable(){
-  enabled=true;
-  sessionStorage.setItem('INTERAFAS_AUDIO','1');
-  await arm();
-  if(active&&armed)startSequence(true);
-  updateButton();
-}
-
-function toggle(){
-  if(enabled&&armed)silence();
-  else enable();
+  if(changed&&armed)start(true);
 }
 
 function stop(){
   active=false;
   stage=-1;
-  stopSequence();
+  stopLoop();
 }
 
 window.INTERAFAS_AUDIO={
-  setStage,
-  toggle,
-  enable,
-  silence,
   arm,
+  setStage,
   stop,
-  get state(){return ctx?ctx.state:'not-created'},
-  get enabled(){return enabled},
-  get armed(){return armed}
+  get armed(){return armed},
+  get state(){return ctx?ctx.state:'not-created'}
 };
-
-document.addEventListener('DOMContentLoaded',()=>{
-  updateButton();
-
-  const btn=document.getElementById('hmi-audio-toggle');
-  if(btn)btn.addEventListener('click',async e=>{
-    e.preventDefault();
-    e.stopPropagation();
-    if(enabled&&armed)silence();
-    else await enable();
-  });
-
-  const resume=()=>{
-    if(enabled&&!armed)arm();
-  };
-
-  document.addEventListener('pointerdown',resume,{passive:true});
-  document.addEventListener('keydown',resume,{passive:true});
-
-  if(enabled)arm();
-});
 })();
