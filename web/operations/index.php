@@ -20,7 +20,7 @@ lab_event(
 $state=ot_call('/state');
 $fw=$state['firmware']??[];
 $canControl=(string)($ops['role']??'')==='operator';
-$v19FirmwareUnlocked=((string)($ops['role']??'')==='maintenance' && !empty($_SESSION['vuln19_complete']));
+$v19FirmwareUnlocked=((string)($ops['role']??'')==='maintenance' && lab_flag_is_accepted(19));
 
 $stations=[
     ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Primary pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE','img'=>'station-cp.svg','population'=>1050000],
@@ -913,14 +913,7 @@ async function loadAssetContext(assetId,fallback=null){
         firmwareProfile.textContent=ctx.classification+' · '+ctx.device;
         firmwareWarning.textContent=ctx.warning||'';
 
-        const firmwareNav=document.getElementById('firmware-nav');
-        if(firmwareNav){
-          firmwareNav.href='firmware.php';
-          firmwareNav.dataset.unlocked='1';
-          firmwareNav.classList.remove('firmware-locked');
-          const label=firmwareNav.querySelector('span:last-child');
-          if(label)label.textContent='Firmware';
-        }
+        // Firmware navigation is unlocked only after Flag 19 is accepted in the Auditor.
       }
     }
   }catch(err){
