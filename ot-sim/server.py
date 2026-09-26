@@ -255,7 +255,7 @@ class H(BaseHTTPRequestHandler):
                 "updated_at":int(time.time())
             }
 
-            unsafe_setpoint=abs(pressure_setpoint-4.2)>=0.1
+            unsafe_setpoint=round(pressure_setpoint,2)!=4.2
 
             if unsafe_setpoint:
                 STATE["incident"]={
