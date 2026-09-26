@@ -22,7 +22,8 @@ $_SESSION['ops_user']=[
     'id'=>1901,
     'username'=>'service.maintenance',
     'display_name'=>'Sesión de Mantenimiento',
-    'role'=>'maintenance'
+    'role'=>'maintenance',
+    'entry_origin'=>'firmware-service'
 ];
 
 lab_event(
