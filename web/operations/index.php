@@ -107,6 +107,12 @@ $pressureZones=18;
 </head>
 <body>
 <div class="hmi-app">
+<div class="cascade-banner" id="cascade-banner" hidden>
+  <span>КАСКАД ПРОШИВКИ</span>
+  <strong id="cascade-stage-label">—</strong>
+  <span>АВАРИИ <b id="cascade-alarm-count">0</b></span>
+  <span>ГОТОВНОСТЬ <b id="cascade-availability">99.82%</b></span>
+</div>
 <header class="hmi-topbar">
   <div class="hmi-brand">
     <div class="hmi-mark">IA</div>
