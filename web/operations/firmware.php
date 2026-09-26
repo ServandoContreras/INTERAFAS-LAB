@@ -226,17 +226,9 @@ code{color:#a6dcff}
 .action-status{display:none;margin-top:12px;padding:12px;border-radius:8px;background:#151e26;border:1px solid #2d5267}
 .action-status.active{display:block}
 .action-status.critical{display:block;background:#4b151a;border-color:#a33a43;color:#ffe4e6}
-.fw-notify-stack{position:fixed;top:18px;right:18px;z-index:9999;width:min(390px,calc(100vw - 36px));display:flex;flex-direction:column;gap:8px;pointer-events:none}
-.fw-notify{display:grid;grid-template-columns:38px 1fr;gap:10px;align-items:center;padding:10px;border:1px solid #ff636b;border-left:4px solid #ff2c38;border-radius:6px;background:linear-gradient(90deg,rgba(176,10,20,.98),rgba(91,5,12,.98));color:#fff;box-shadow:0 12px 32px rgba(0,0,0,.5);transform:translateX(32px);opacity:0;transition:.2s ease}
-.fw-notify.show{transform:translateX(0);opacity:1}
-.fw-notify.leaving{transform:translateX(42px);opacity:0}
-.fw-notify-icon{width:32px;height:32px;border:2px solid #fff;border-radius:50%;display:grid;place-items:center;font:900 21px ui-monospace,monospace}
-.fw-notify strong{display:block;font-size:12px;letter-spacing:.08em}
-.fw-notify small{display:block;margin-top:3px;color:#ffd9db;font-size:10px;line-height:1.3}
 </style>
 </head>
 <body>
-<div id="fw-notify-stack" class="fw-notify-stack" aria-live="assertive"></div>
 <div class="wrap">
   <a class="btn" href="index.php">← Volver al HMI</a>
   <?php if($v19Unlocked):?>
@@ -281,58 +273,6 @@ code{color:#a6dcff}
 (()=>{
   const form=document.getElementById('firmware-install-form');
   const status=document.getElementById('firmware-action-status');
-  const notifyStack=document.getElementById('fw-notify-stack');
-  const notifyMessages=[
-    ['PELIGRO','FALLO CRÍTICO DEL SISTEMA DE CONTROL'],
-    ['DANGER','CRITICAL PROCESS FAILURE DETECTED'],
-    ['ОПАСНОСТЬ','КРИТИЧЕСКИЙ СБОЙ УПРАВЛЕНИЯ'],
-    ['危険','重大な制御異常を検出'],
-    ['GEFAHR','KRITISCHER STEUERUNGSFEHLER'],
-    ['DANGER','DÉFAILLANCE CRITIQUE DU CONTRÔLE'],
-    ['PERIGO','FALHA CRÍTICA DE CONTROLE'],
-    ['خطر','تم اكتشاف خلل حرج في التحكم'],
-    ['경고','중대한 제어 장애 감지'],
-    ['ALERTA','PROPAGACIÓN OPERACIONAL EN CURSO']
-  ];
-  let notifyTimer=null;
-  let notifyIndex=0;
-
-  function stopNotify(){
-    if(notifyTimer){
-      clearTimeout(notifyTimer);
-      notifyTimer=null;
-    }
-  }
-
-  function pushNotify(){
-    if(!notifyStack)return;
-    const item=notifyMessages[notifyIndex%notifyMessages.length];
-    notifyIndex++;
-
-    const node=document.createElement('div');
-    node.className='fw-notify';
-    node.innerHTML='<div class="fw-notify-icon">!</div><div><strong>'+item[0]+'</strong><small>'+item[1]+'</small></div>';
-    notifyStack.prepend(node);
-
-    while(notifyStack.children.length>5)notifyStack.lastElementChild?.remove();
-
-    requestAnimationFrame(()=>node.classList.add('show'));
-    setTimeout(()=>{
-      node.classList.remove('show');
-      node.classList.add('leaving');
-      setTimeout(()=>node.remove(),250);
-    },3000);
-  }
-
-  function startNotify(){
-    stopNotify();
-    const run=()=>{
-      pushNotify();
-      notifyTimer=setTimeout(run,720);
-    };
-    run();
-  }
-
   if(!form)return;
 
   form.addEventListener('submit',async e=>{
@@ -360,7 +300,6 @@ code{color:#a6dcff}
         await window.INTERAFAS_AUDIO.arm();
         if(localUnsafe)window.INTERAFAS_AUDIO.setStage(0,true);
       }
-      if(localUnsafe)startNotify();
 
       const response=await fetch('firmware.php',{
         method:'POST',
@@ -372,7 +311,6 @@ code{color:#a6dcff}
       const data=await response.json();
 
       if(!data.ok){
-        stopNotify();
         if(localUnsafe && window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
         if(status){
           status.className='action-status critical';
@@ -396,10 +334,9 @@ code{color:#a6dcff}
 
         window.setTimeout(()=>{
           window.location.replace('/operations/index.php');
-        },220);
+        },420);
         return;
       }else{
-        stopNotify();
         if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
         if(status){
           status.className='action-status active';
@@ -407,7 +344,6 @@ code{color:#a6dcff}
         }
       }
     }catch(err){
-      stopNotify();
       if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
       if(status){
         status.className='action-status critical';
