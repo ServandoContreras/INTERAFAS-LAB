@@ -2477,3 +2477,50 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   from{box-shadow:0 0 0 rgba(220,170,60,0)}
   to{box-shadow:0 0 10px rgba(220,170,60,.34)}
 }
+
+
+/* Audio diagnostics / explicit alarm test */
+.hmi-audio-console{
+  display:flex;
+  align-items:center;
+  gap:6px;
+  flex-wrap:wrap;
+  justify-content:center
+}
+.hmi-audio-state{
+  font:800 8px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.07em;
+  padding:5px 7px;
+  border:1px solid #755c29;
+  background:#211a0d;
+  color:#f1d57b;
+  border-radius:3px
+}
+.hmi-audio-state[data-audio-state="running"]{
+  border-color:#3d7b5e;
+  background:#0b2419;
+  color:#8fe4b5
+}
+.hmi-audio-state[data-audio-state="muted"]{
+  border-color:#49545b;
+  background:#11181c;
+  color:#839198
+}
+.hmi-audio-test{
+  appearance:none;
+  border:1px solid #b13f48;
+  background:#791b23;
+  color:#fff;
+  padding:5px 8px;
+  border-radius:3px;
+  cursor:pointer;
+  font:900 9px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.07em;
+  text-transform:uppercase
+}
+.hmi-audio-test:hover{background:#98232d}
+.cascade-active .hmi-audio-test{
+  border-color:#ff626a;
+  background:#9b101c;
+  box-shadow:0 0 12px rgba(255,45,58,.36)
+}
