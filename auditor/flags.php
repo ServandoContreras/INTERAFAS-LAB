@@ -75,12 +75,12 @@ $challengeChecklist=[
 'Cuando el indicador muestre ЗАВЕРШЕНО · 6/6, conserva el JSON final y revisa los Response Headers de la última petición. Documenta también por qué el rol maintenance excedió el principio de mínimo privilegio.'
 ],
 20=>[
-'Confirma que VULN-19 quedó completa y vuelve al activo terminal de la cadena. Identifica la nueva función de mantenimiento que aparece en el Asset Context.',
-'Abre la prueba de lazo y ejecútala primero sin modificar nada. Comprueba que la interfaz la presenta como SIMULATION y conserva la petición POST generada por el navegador.',
-'Compara la intención de la interfaz con el JSON enviado. Identifica qué campo controlado por el cliente separa una simulación de una ejecución y prueba únicamente esa transición manteniendo asset y state.',
-'Demuestra impacto temporal sobre el bombeo primario simulado. Registra P-101, caudal, presión, estado de Zona A y alarmas antes y después de la maniobra.',
-'Espera a que el HMI/telemetría observe el estado degradado. Confirma FLOW_LOW, PRESSURE_LOW y el riesgo de suministro de Zona A antes de iniciar la recuperación.',
-'Restaura P-101 a ON utilizando el mismo canal, confirma que caudal, presión y alarmas regresan a valores normales y conserva los Response Headers de la recuperación donde se acredita la bandera.'
+'Completa primero VULN-19 hasta 6/6 y confirma que el menú Firmware queda habilitado para la sesión de mantenimiento.',
+'Entra a Firmware y descarga BACKUP. Conserva el archivo original como evidencia y revisa su estructura antes de realizar cualquier modificación.',
+'Relaciona el campo mode del backup con el perfil legado CASCADE revelado por el contexto de dependencias. Mantén sin cambios device, version y diagnostic.',
+'Crea una copia del backup, cambia únicamente mode a CASCADE y carga ese JSON desde Firmware. Documenta el paquete original y el modificado.',
+'Regresa al HMI y observa la propagación completa: etapas de cascada, aumento de caudal y presión, caída de disponibilidad, crecimiento del número de alarmas y extensión progresiva del estado crítico.',
+'Cuando aparezca CATASTROPHIC STATE y el HMI esté completamente en rojo, conserva la telemetría final y revisa los Response Headers de telemetry.php para acreditar el reto.'
 ]
 ];
 
@@ -245,12 +245,13 @@ $challengeResources=[
  ['type'=>'NIST','title'=>'SP 800-82 Rev. 3 · Guide to Operational Technology Security','url'=>'https://csrc.nist.gov/pubs/sp/800/82/r3/final','desc'=>'Guía de referencia sobre arquitectura OT, niveles funcionales, segmentación y controles de acceso. Es especialmente útil para entender la transición gateway → control → proceso → distribución usada conceptualmente en el reto.']
 ],
 20=>[
- ['type'=>'MITRE ATT&CK ICS','title'=>'Manipulation of Control · T0831','url'=>'https://attack.mitre.org/techniques/T0831/','desc'=>'Describe la manipulación de controles de proceso mediante comandos o cambios de parámetros. Relaciónalo con el paso de una prueba aparentemente inocua a una orden que modifica el proceso.'],
- ['type'=>'MITRE ATT&CK ICS','title'=>'Impact · TA0105','url'=>'https://attack.mitre.org/tactics/TA0105/','desc'=>'Ayuda a distinguir acceso, ejecución e impacto. En este reto la evidencia importante es el cambio observable sobre disponibilidad y comportamiento del proceso simulado.'],
- ['type'=>'MITRE ATT&CK ICS','title'=>'Authorization Enforcement · M0800','url'=>'https://attack.mitre.org/mitigations/M0800/','desc'=>'Explica por qué APIs y funciones de control deben limitarse a los usuarios y roles estrictamente necesarios. Úsalo para justificar por qué maintenance no debe poder convertir una simulación en escritura real.'],
- ['type'=>'OWASP','title'=>'Testing for Bypassing Authorization Schema','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema/','desc'=>'Guía para comprobar si una función protegida por la interfaz también está protegida en el servidor. Aquí la UI limita la operación, pero la decisión crítica viaja en la petición.'],
- ['type'=>'OWASP Cheat Sheet','title'=>'Authorization Cheat Sheet','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html','desc'=>'Revisa mínimo privilegio, deny-by-default y validación de autorización en cada solicitud. Es la base conceptual para explicar la vulnerabilidad final.'],
- ['type'=>'NIST','title'=>'SP 800-82 Rev. 3 · Guide to Operational Technology Security','url'=>'https://csrc.nist.gov/pubs/sp/800/82/r3/final','desc'=>'Referencia para seguridad de sistemas OT, segmentación, control de acceso, monitoreo y respuesta. Úsala para documentar por qué una función de mantenimiento debe separar claramente prueba, escritura y recuperación.']
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Modify Program · T0889','url'=>'https://attack.mitre.org/techniques/T0889/','desc'=>'Contexto sobre modificaciones de lógica o programas en activos ICS. Úsalo para comprender por qué una actualización no confiable puede alterar el comportamiento del proceso.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Manipulation of Control · T0831','url'=>'https://attack.mitre.org/techniques/T0831/','desc'=>'Describe la manipulación del proceso mediante cambios de control. Relaciónalo con la transición entre firmware, lógica operacional y variables físicas simuladas.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Impact · TA0105','url'=>'https://attack.mitre.org/tactics/TA0105/','desc'=>'Ayuda a distinguir compromiso técnico de impacto operacional. En este reto el resultado se refleja en disponibilidad, alarmas y comportamiento del proceso.'],
+ ['type'=>'NIST','title'=>'SP 800-82 Rev. 3 · Guide to Operational Technology Security','url'=>'https://csrc.nist.gov/pubs/sp/800/82/r3/final','desc'=>'Referencia para arquitectura OT, gestión de cambios, acceso, monitoreo y protección de sistemas industriales.'],
+ ['type'=>'NIST','title'=>'SP 800-193 · Platform Firmware Resiliency Guidelines','url'=>'https://csrc.nist.gov/pubs/sp/800/193/final','desc'=>'Explica principios de protección, detección y recuperación frente a modificaciones no autorizadas del firmware.'],
+ ['type'=>'OWASP','title'=>'File Upload Cheat Sheet','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/File_Upload_Cheat_Sheet.html','desc'=>'Aunque el contexto aquí es OT, sirve para analizar por qué una función de carga debe validar origen, formato, autorización e integridad antes de aceptar contenido.'
+ ]
 ]
 ];
 $pageTitle='Banderas'; include __DIR__.'/includes/header.php';
