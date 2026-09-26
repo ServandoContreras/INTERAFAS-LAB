@@ -91,6 +91,9 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
             );
 
             if(strtoupper((string)($current['mode']??''))==='CASCADE'){
+                $_SESSION['vuln20_cascade_loaded']=true;
+                $_SESSION['vuln20_cascade_started_at']=time();
+
                 header('X-INTERAFAS-Firmware-Profile: CASCADE');
                 header('X-INTERAFAS-Operational-State: cascade-started');
 
