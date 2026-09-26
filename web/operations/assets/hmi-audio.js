@@ -15,6 +15,7 @@ let stage=-1;
 let active=false;
 let loopTimer=null;
 let bedNodes=[];
+let testTimer=null;
 
 function makeSoftClipCurve(amount=4){
   const n=65536;
@@ -386,21 +387,29 @@ function toggle(){
 
 function updateButton(){
   const btn=document.getElementById('hmi-audio-toggle');
-  if(!btn)return;
+  const state=document.getElementById('hmi-audio-state');
 
-  btn.classList.toggle('audio-muted',!enabled);
-  btn.classList.toggle('audio-armed',enabled&&armed);
-  btn.classList.toggle('audio-needs-gesture',enabled&&!armed);
+  if(btn){
+    btn.classList.toggle('audio-muted',!enabled);
+    btn.classList.toggle('audio-armed',enabled&&armed);
+    btn.classList.toggle('audio-needs-gesture',enabled&&!armed);
 
-  if(!enabled){
-    btn.textContent='ЗВУК · ТИШИНА';
-    btn.title='Emergency siren silenced';
-  }else if(armed){
-    btn.textContent='ЗВУК · ВКЛ';
-    btn.title='Air-raid master alarm armed — click to silence';
-  }else{
-    btn.textContent='ЗВУК · НАЖАТЬ';
-    btn.title='Click once to arm emergency siren';
+    if(!enabled){
+      btn.textContent='AUDIO · SILENCIADO';
+      btn.title='Emergency siren silenced';
+    }else if(armed){
+      btn.textContent='AUDIO · ACTIVO';
+      btn.title='Air-raid master alarm armed — click to silence';
+    }else{
+      btn.textContent='ACTIVAR AUDIO';
+      btn.title='Click once to arm emergency siren';
+    }
+  }
+
+  if(state){
+    const actual=ctx ? ctx.state : 'not-created';
+    state.textContent=!enabled ? 'SILENCIADO' : armed ? 'ACTIVO' : 'BLOQUEADO · '+actual.toUpperCase();
+    state.dataset.audioState=!enabled?'muted':armed?'running':'blocked';
   }
 }
 
@@ -409,12 +418,61 @@ function gestureArm(){
   arm();
 }
 
+async function test(){
+  const wasActive=active;
+  const wasStage=stage;
+
+  enabled=true;
+  sessionStorage.setItem('INTERAFAS_AUDIO','1');
+  await arm();
+
+  if(!armed){
+    updateButton();
+    return false;
+  }
+
+  if(testTimer){
+    clearTimeout(testTimer);
+    testTimer=null;
+  }
+
+  active=true;
+  stage=5;
+  transition(5);
+  syncEmergencyBed();
+  pattern(5);
+
+  if(!wasActive){
+    testTimer=setTimeout(()=>{
+      clearLoop();
+      stopBed();
+      active=false;
+      stage=-1;
+      testTimer=null;
+      updateButton();
+    },4200);
+  }else{
+    testTimer=setTimeout(()=>{
+      stage=wasStage;
+      active=true;
+      syncEmergencyBed();
+      scheduleStage(true);
+      testTimer=null;
+    },2500);
+  }
+
+  updateButton();
+  return true;
+}
+
 window.INTERAFAS_AUDIO={
   setStage,
   toggle,
   enable,
   silence,
   arm,
+  test,
+  get state(){return ctx?ctx.state:'not-created'},
   get enabled(){return enabled},
   get armed(){return armed}
 };
@@ -423,11 +481,21 @@ document.addEventListener('DOMContentLoaded',()=>{
   updateButton();
 
   const btn=document.getElementById('hmi-audio-toggle');
-  if(btn)btn.addEventListener('click',e=>{
+  if(btn)btn.addEventListener('click',async e=>{
     e.preventDefault();
     e.stopPropagation();
-    toggle();
+    if(enabled&&armed)silence();
+    else await enable();
   });
+
+  const testBtn=document.getElementById('hmi-audio-test');
+  if(testBtn)testBtn.addEventListener('click',async e=>{
+    e.preventDefault();
+    e.stopPropagation();
+    await test();
+  });
+
+  if(ctx)ctx.addEventListener?.('statechange',updateButton);
 
   document.addEventListener('pointerdown',gestureArm,{passive:true});
   document.addEventListener('keydown',gestureArm,{passive:true});
