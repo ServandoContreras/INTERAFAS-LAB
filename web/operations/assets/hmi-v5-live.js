@@ -107,6 +107,24 @@ function ensureDangerStack(){
   return stack;
 }
 
+function layoutDangerToasts(){
+  const stack=document.getElementById('cascade-notify-stack');
+  if(!stack)return;
+  [...stack.children].forEach((node,index)=>{
+    node.style.setProperty('--notify-slot',String(index));
+  });
+}
+
+function removeDangerToast(toast){
+  if(!toast?.isConnected)return;
+  toast.classList.remove('show');
+  toast.classList.add('leaving');
+  setTimeout(()=>{
+    toast.remove();
+    layoutDangerToasts();
+  },260);
+}
+
 function pushDangerToast(stage){
   const stack=ensureDangerStack();
   const item=DANGER_MESSAGES[dangerToastIndex%DANGER_MESSAGES.length];
@@ -114,6 +132,7 @@ function pushDangerToast(stage){
 
   const toast=document.createElement('div');
   toast.className='cascade-notify-toast';
+  toast.style.setProperty('--notify-slot','0');
   toast.innerHTML=
     '<div class="cascade-notify-icon">!</div>'+
     '<div class="cascade-notify-copy">'+
@@ -123,17 +142,16 @@ function pushDangerToast(stage){
 
   stack.prepend(toast);
 
-  while(stack.children.length>6){
+  while(stack.children.length>3){
     stack.lastElementChild?.remove();
   }
 
-  requestAnimationFrame(()=>toast.classList.add('show'));
+  layoutDangerToasts();
+  requestAnimationFrame(()=>{
+    requestAnimationFrame(()=>toast.classList.add('show'));
+  });
 
-  setTimeout(()=>{
-    toast.classList.remove('show');
-    toast.classList.add('leaving');
-    setTimeout(()=>toast.remove(),300);
-  },3400);
+  setTimeout(()=>removeDangerToast(toast),2350);
 }
 
 function toastIntervalFor(stage){
