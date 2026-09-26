@@ -74,7 +74,14 @@ $challengeChecklist=[
 'Continúa desde distribución hacia la válvula asociada a la Zona A y termina en la zona de servicio. Si el indicador cambia a rojo, reinicia desde RTU-GW-07 y documenta qué salto fue incorrecto.',
 'Cuando el indicador muestre ЗАВЕРШЕНО · 6/6, conserva el JSON final y revisa los Response Headers de la última petición. Documenta también por qué el rol maintenance excedió el principio de mínimo privilegio.'
 ],
-20=>['Define primero cuál es el impacto operacional simulado que debes demostrar.','Comprueba qué prerrequisitos de la cadena anterior habilitan la acción final.','Registra estado antes/después, alarmas y evidencia de recuperación del simulador.']
+20=>[
+'Confirma que VULN-19 quedó completa y vuelve al activo terminal de la cadena. Identifica la nueva función de mantenimiento que aparece en el Asset Context.',
+'Abre la prueba de lazo y ejecútala primero sin modificar nada. Comprueba que la interfaz la presenta como SIMULATION y conserva la petición POST generada por el navegador.',
+'Compara la intención de la interfaz con el JSON enviado. Identifica qué campo controlado por el cliente separa una simulación de una ejecución y prueba únicamente esa transición manteniendo asset y state.',
+'Demuestra impacto temporal sobre el bombeo primario simulado. Registra P-101, caudal, presión, estado de Zona A y alarmas antes y después de la maniobra.',
+'Espera a que el HMI/telemetría observe el estado degradado. Confirma FLOW_LOW, PRESSURE_LOW y el riesgo de suministro de Zona A antes de iniciar la recuperación.',
+'Restaura P-101 a ON utilizando el mismo canal, confirma que caudal, presión y alarmas regresan a valores normales y conserva los Response Headers de la recuperación donde se acredita la bandera.'
+]
 ];
 
 $challengeResources=[
@@ -238,8 +245,12 @@ $challengeResources=[
  ['type'=>'NIST','title'=>'SP 800-82 Rev. 3 · Guide to Operational Technology Security','url'=>'https://csrc.nist.gov/pubs/sp/800/82/r3/final','desc'=>'Guía de referencia sobre arquitectura OT, niveles funcionales, segmentación y controles de acceso. Es especialmente útil para entender la transición gateway → control → proceso → distribución usada conceptualmente en el reto.']
 ],
 20=>[
- ['type'=>'MITRE ATT&CK ICS','title'=>'Impact','url'=>'https://attack.mitre.org/tactics/TA0105/','desc'=>'Marco para comprender qué significa impacto sobre un proceso industrial sin confundirlo con simple acceso.'],
- ['type'=>'MITRE ATT&CK ICS','title'=>'Inhibit Response Function','url'=>'https://attack.mitre.org/tactics/TA0107/','desc'=>'Contexto sobre acciones que afectan supervisión, respuesta y funciones de protección en ICS.']
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Manipulation of Control · T0831','url'=>'https://attack.mitre.org/techniques/T0831/','desc'=>'Describe la manipulación de controles de proceso mediante comandos o cambios de parámetros. Relaciónalo con el paso de una prueba aparentemente inocua a una orden que modifica el proceso.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Impact · TA0105','url'=>'https://attack.mitre.org/tactics/TA0105/','desc'=>'Ayuda a distinguir acceso, ejecución e impacto. En este reto la evidencia importante es el cambio observable sobre disponibilidad y comportamiento del proceso simulado.'],
+ ['type'=>'MITRE ATT&CK ICS','title'=>'Authorization Enforcement · M0800','url'=>'https://attack.mitre.org/mitigations/M0800/','desc'=>'Explica por qué APIs y funciones de control deben limitarse a los usuarios y roles estrictamente necesarios. Úsalo para justificar por qué maintenance no debe poder convertir una simulación en escritura real.'],
+ ['type'=>'OWASP','title'=>'Testing for Bypassing Authorization Schema','url'=>'https://wstg.owasp.org/latest/4-Web_Application_Security_Testing/05-Authorization_Testing/02-Testing_for_Bypassing_Authorization_Schema/','desc'=>'Guía para comprobar si una función protegida por la interfaz también está protegida en el servidor. Aquí la UI limita la operación, pero la decisión crítica viaja en la petición.'],
+ ['type'=>'OWASP Cheat Sheet','title'=>'Authorization Cheat Sheet','url'=>'https://cheatsheetseries.owasp.org/cheatsheets/Authorization_Cheat_Sheet.html','desc'=>'Revisa mínimo privilegio, deny-by-default y validación de autorización en cada solicitud. Es la base conceptual para explicar la vulnerabilidad final.'],
+ ['type'=>'NIST','title'=>'SP 800-82 Rev. 3 · Guide to Operational Technology Security','url'=>'https://csrc.nist.gov/pubs/sp/800/82/r3/final','desc'=>'Referencia para seguridad de sistemas OT, segmentación, control de acceso, monitoreo y respuesta. Úsala para documentar por qué una función de mantenimiento debe separar claramente prueba, escritura y recuperación.']
 ]
 ];
 $pageTitle='Banderas'; include __DIR__.'/includes/header.php';
