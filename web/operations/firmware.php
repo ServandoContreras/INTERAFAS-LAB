@@ -28,7 +28,8 @@ if(isset($_GET['backup'])){
         'device'=>'RTU-GW-07',
         'version'=>(string)($current['version']??'3.4.3'),
         'mode'=>(string)($current['mode']??'NORMAL'),
-        'diagnostic'=>(string)($current['diagnostic']??'SERVICE')
+        'diagnostic'=>(string)($current['diagnostic']??'SERVICE'),
+        'pressure_setpoint_bar'=>(float)($current['pressure_setpoint_bar']??4.2)
     ];
 
     lab_event(
@@ -86,21 +87,21 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                 'RTU-GW-07 → '.($current['version']??''),
                 ['previous'=>$r['previous']??null,'firmware'=>$current,'incident'=>$r['incident']??null],
                 'ot-sim',
-                strtoupper((string)($current['mode']??''))==='CASCADE'?'critical':'notice',
+                !empty($r['incident']['active'])?'critical':'notice',
                 0
             );
 
-            if(strtoupper((string)($current['mode']??''))==='CASCADE'){
+            if(!empty($r['incident']['active'])){
                 $_SESSION['vuln20_cascade_loaded']=true;
                 $_SESSION['vuln20_cascade_started_at']=time();
 
-                header('X-INTERAFAS-Firmware-Profile: CASCADE');
+                header('X-INTERAFAS-Firmware-Parameter: pressure_setpoint_bar');
                 header('X-INTERAFAS-Operational-State: cascade-started');
 
                 lab_event(
                     'VULN20_MALICIOUS_FIRMWARE_LOADED',
-                    'Perfil de firmware CASCADE cargado en RTU-GW-07',
-                    'Inicio de cascada operacional simulada',
+                    'Parámetro crítico de firmware alterado en RTU-GW-07',
+                    'pressure_setpoint_bar → '.(string)($current['pressure_setpoint_bar']??''),
                     [
                         'challenge'=>20,
                         'role'=>$role,
@@ -123,7 +124,8 @@ $sample=json_encode([
     'device'=>'RTU-GW-07',
     'version'=>(string)($current['version']??'3.4.3'),
     'mode'=>(string)($current['mode']??'NORMAL'),
-    'diagnostic'=>(string)($current['diagnostic']??'SERVICE')
+    'diagnostic'=>(string)($current['diagnostic']??'SERVICE'),
+    'pressure_setpoint_bar'=>(float)($current['pressure_setpoint_bar']??4.2)
 ],JSON_PRETTY_PRINT|JSON_UNESCAPED_SLASHES);
 ?>
 <!doctype html>
@@ -158,7 +160,7 @@ code{color:#a6dcff}
     <?php if($v19Unlocked):?><p class="muted">Backup de configuración habilitado por contexto de dependencias validado.</p><?php endif;?>
   </div>
 
-  <?php if($result && strtoupper((string)($current['mode']??''))==='CASCADE'):?>
+  <?php if($result && !empty($result['incident']['active'])):?>
     <div class="critical"><strong>Perfil aplicado.</strong> El gateway reinició. Regresa inmediatamente al HMI y observa la evolución del sistema.</div>
   <?php elseif($result):?>
     <div class="ok">Paquete aplicado. El RTU simulado completó su reinicio.</div>
