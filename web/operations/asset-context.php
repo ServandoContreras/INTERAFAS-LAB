@@ -117,6 +117,9 @@ if($role==='maintenance'){
 $complete=($role==='maintenance' && !$pathError && $progress===$sequence);
 
 if($complete){
+  $_SESSION['vuln19_complete']=true;
+  $_SESSION['vuln19_completed_at']=$_SESSION['vuln19_completed_at']??time();
+
   header('X-INTERAFAS-Dependency-Chain: complete');
   header('X-INTERAFAS-Authorization-Scope: exceeded');
   header('X-INTERAFAS-Validation: UPSLP_CNOIV-CHAIN-REACTION-19');
@@ -168,7 +171,8 @@ echo json_encode([
     'device'=>'RTU-GW-07',
     'legacy_profile'=>'CASCADE',
     'classification'=>'retired-metropolitan-stress-test',
-    'channel'=>'/operations/updates/install.php',
+    'channel'=>'/operations/firmware.php',
+    'backup'=>'/operations/firmware-backup.php',
     'warning'=>'Legacy profile must never be deployed to an operational gateway.'
   ] : null
 ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
