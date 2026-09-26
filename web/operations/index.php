@@ -606,7 +606,12 @@ $pressureZones=18;
       <div class="kv"><span>Platform</span><strong id="asset-detail-vendor">Industrial historian</strong></div>
       <div class="kv"><span>Dependency class</span><strong id="asset-detail-class">—</strong></div>
       <div class="asset-related-block"><span class="asset-related-label">Related systems</span><div id="asset-detail-related" class="asset-related-list">PLC-CP-01 · PLC-SL-01 · PLC-SO-01</div></div>
-      <div class="asset-chain-state" id="asset-chain-state" hidden><span>Dependency path</span><strong id="asset-chain-progress">—</strong></div>
+      <div class="asset-chain-state" id="asset-chain-state">
+        <div class="asset-chain-head"><span>Dependency path</span><strong id="asset-chain-progress">0/6</strong></div>
+        <div class="asset-chain-track" id="asset-chain-track" aria-label="Dependency chain progress">
+          <i></i><i></i><i></i><i></i><i></i><i></i>
+        </div>
+      </div>
       <p class="muted asset-research-note">El inventario expone contexto operativo y relaciones observadas entre activos. Selecciona un sistema relacionado para consultar su dependencia.</p>
     </div></aside>
   </div>
@@ -828,6 +833,7 @@ async function loadAssetContext(assetId,fallback=null){
   const related=document.getElementById('asset-detail-related');
   const chainState=document.getElementById('asset-chain-state');
   const chainProgress=document.getElementById('asset-chain-progress');
+  const chainTrack=document.getElementById('asset-chain-track');
 
   try{
     const url=window.INTERAFAS_OPS.assetContextEndpoint+'?asset='+encodeURIComponent(assetId);
@@ -857,11 +863,22 @@ async function loadAssetContext(assetId,fallback=null){
       if(!(data.related||[]).length)related.textContent='—';
     }
 
-    if(chainState && chainProgress){
+    if(chainState && chainProgress && chainTrack){
+      const total=Number(data.path?.sequence_length||6);
       const depth=Number(data.path?.depth||0);
-      chainState.hidden=depth===0;
-      chainProgress.textContent=data.path?.complete ? 'ЗАВЕРШЕНО · '+depth+'/6' : depth+'/6';
-      chainState.classList.toggle('complete',!!data.path?.complete);
+      const failed=!!data.path?.error;
+      const complete=!!data.path?.complete;
+
+      chainState.classList.toggle('complete',complete);
+      chainState.classList.toggle('error',failed);
+      chainProgress.textContent=failed
+        ? 'ОШИБКА · 0/'+total
+        : (complete ? 'ЗАВЕРШЕНО · '+depth+'/'+total : depth+'/'+total);
+
+      [...chainTrack.children].forEach((segment,index)=>{
+        segment.classList.toggle('active',!failed && index<depth);
+        segment.classList.toggle('error',failed);
+      });
     }
   }catch(err){
     if(!fallback)return;
@@ -873,7 +890,15 @@ async function loadAssetContext(assetId,fallback=null){
     set('asset-detail-vendor',fallback.vendor);
     set('asset-detail-class','—');
     if(related)related.textContent=fallback.related||'—';
-    if(chainState){chainState.hidden=true;chainState.classList.remove('complete');}
+    if(chainState && chainProgress && chainTrack){
+      chainState.classList.remove('complete');
+      chainState.classList.add('error');
+      chainProgress.textContent='ОШИБКА';
+      [...chainTrack.children].forEach(segment=>{
+        segment.classList.remove('active');
+        segment.classList.add('error');
+      });
+    }
   }
 }
 
