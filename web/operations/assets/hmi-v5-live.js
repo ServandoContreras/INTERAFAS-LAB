@@ -527,6 +527,104 @@ function renderIncidentStats(data){
 }
 
 let vuln20SnapshotInFlight=false;
+let vuln20EvidenceRequestPending=false;
+let vuln20EvidenceFallbackTimer=null;
+let vuln20FlagRevealTimer=null;
+let vuln20EvidenceChannel=null;
+
+try{
+  if('BroadcastChannel' in window){
+    vuln20EvidenceChannel=new BroadcastChannel('interafas-v20-evidence');
+  }
+}catch(_){}
+
+function preparedFullScreenEvidence(){
+  try{
+    const raw=localStorage.getItem('INTERAFAS_V20_SCREEN_READY');
+    if(!raw)return false;
+    const info=JSON.parse(raw);
+    const age=Date.now()-Number(info?.ts||0);
+    return age>=0 && age<45*60*1000;
+  }catch(_){
+    return false;
+  }
+}
+
+function markSnapshotComplete(source='internal'){
+  sessionStorage.setItem('INTERAFAS_V20_SNAPSHOT_SENT','1');
+  vuln20EvidenceRequestPending=false;
+
+  if(vuln20EvidenceFallbackTimer){
+    clearTimeout(vuln20EvidenceFallbackTimer);
+    vuln20EvidenceFallbackTimer=null;
+  }
+
+  pushLog(
+    'INFO',
+    'EVIDENCE-01',
+    source==='full-screen'
+      ? 'Full-screen operational evidence preserved and released to Pulso Metropolitano.'
+      : 'Operational HMI snapshot preserved and released to Pulso Metropolitano.'
+  );
+}
+
+vuln20EvidenceChannel?.addEventListener('message',event=>{
+  const msg=event.data||{};
+
+  if(msg.type==='capture-complete'){
+    markSnapshotComplete(String(msg.source||'full-screen'));
+  }else if(msg.type==='capture-failed'){
+    vuln20EvidenceRequestPending=false;
+  }
+});
+
+function requestFullScreenEvidence(data){
+  if(!preparedFullScreenEvidence())return false;
+  if(vuln20EvidenceRequestPending)return true;
+  if(sessionStorage.getItem('INTERAFAS_V20_SNAPSHOT_SENT')==='1')return true;
+
+  vuln20EvidenceRequestPending=true;
+
+  try{
+    vuln20EvidenceChannel?.postMessage({
+      type:'capture-request',
+      stage:Number(data?.incident?.stage||5),
+      stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE'),
+      alarm_count:Number(data?.alarm_count||0),
+      availability:Number(data?.availability??0),
+      requested_at:new Date().toISOString()
+    });
+  }catch(_){}
+
+  // If the firmware tab was closed, permission expired or capture fails,
+  // preserve the existing internal HMI snapshot as a fallback.
+  vuln20EvidenceFallbackTimer=setTimeout(()=>{
+    if(sessionStorage.getItem('INTERAFAS_V20_SNAPSHOT_SENT')==='1')return;
+    vuln20EvidenceRequestPending=false;
+    publishFinalHmiSnapshot(data);
+  },2600);
+
+  return true;
+}
+
+function revealFinalFlag(flag,value,delayMs=0){
+  if(!flag||!value)return;
+
+  if(delayMs<=0){
+    flag.textContent='· '+String(value);
+    flag.hidden=false;
+    return;
+  }
+
+  if(vuln20FlagRevealTimer)return;
+
+  vuln20FlagRevealTimer=setTimeout(()=>{
+    flag.textContent='· '+String(value);
+    flag.hidden=false;
+    vuln20FlagRevealTimer=null;
+  },delayMs);
+}
+
 
 function replaceCanvasCopies(sourceRoot,cloneRoot){
   const sourceCanvases=[...sourceRoot.querySelectorAll('canvas')];
@@ -724,12 +822,7 @@ async function publishFinalHmiSnapshot(data){
     const result=await response.json();
 
     if(response.ok&&result.ok){
-      sessionStorage.setItem('INTERAFAS_V20_SNAPSHOT_SENT','1');
-      pushLog(
-        'INFO',
-        'EVIDENCE-01',
-        'Operational HMI snapshot preserved and released to Pulso Metropolitano.'
-      );
+      markSnapshotComplete('internal');
     }else{
       throw new Error(result.error||'snapshot-publication-failed');
     }
@@ -754,6 +847,15 @@ function applyTelemetry(data){
       if(banner)banner.hidden=true;
       stopDangerNotifications();
       sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
+      vuln20EvidenceRequestPending=false;
+      if(vuln20EvidenceFallbackTimer){
+        clearTimeout(vuln20EvidenceFallbackTimer);
+        vuln20EvidenceFallbackTimer=null;
+      }
+      if(vuln20FlagRevealTimer){
+        clearTimeout(vuln20FlagRevealTimer);
+        vuln20FlagRevealTimer=null;
+      }
       if(window.INTERAFAS_AUDIO){
         window.INTERAFAS_AUDIO.broadcastStage?.(0,false);
         if(window.name!=='INTERAFAS_HMI')window.INTERAFAS_AUDIO.setStage(0,false);
@@ -821,15 +923,18 @@ function applyTelemetry(data){
   }
 
   const flag=document.getElementById('vuln20-title-flag');
+  const preparedEvidence=(stage>=5 && !!data.final_flag && preparedFullScreenEvidence());
+
   if(flag && data.final_flag){
-    flag.textContent='· '+String(data.final_flag);
-    flag.hidden=false;
+    revealFinalFlag(flag,data.final_flag,preparedEvidence?1500:0);
   }
 
   renderIncidentStats(data);
 
   if(stage>=5 && data.final_flag){
-    publishFinalHmiSnapshot(data);
+    if(!requestFullScreenEvidence(data)){
+      publishFinalHmiSnapshot(data);
+    }
   }
 
   pushHistory();
