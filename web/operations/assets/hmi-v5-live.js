@@ -812,7 +812,7 @@ function applyTelemetry(data){
       sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
       if(window.INTERAFAS_AUDIO){
         window.INTERAFAS_AUDIO.broadcastStage?.(0,false);
-        if(window.name!=='INTERAFAS_HMI')window.INTERAFAS_AUDIO.setStage(0,false);
+        if(window.name!=='INTERAFAS_HMI_MONITOR')window.INTERAFAS_AUDIO.setStage(0,false);
       }
     }
     return;
@@ -833,7 +833,7 @@ function applyTelemetry(data){
 
     // The monitor window is visual-only. The firmware tab keeps the
     // user-gesture-authorized AudioContext alive in the background.
-    if(window.name!=='INTERAFAS_HMI'){
+    if(window.name!=='INTERAFAS_HMI_MONITOR'){
       if(window.INTERAFAS_AUDIO.armed){
         window.INTERAFAS_AUDIO.setStage(stage,true);
       }else{
