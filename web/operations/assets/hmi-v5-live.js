@@ -15,6 +15,97 @@ const live = {
   incidentStage: -1
 };
 
+const DANGER_MESSAGES=[
+  ['PELIGRO','ES','FALLO CRÍTICO DEL SISTEMA DE CONTROL'],
+  ['DANGER','EN','CRITICAL PROCESS FAILURE DETECTED'],
+  ['ОПАСНОСТЬ','RU','КРИТИЧЕСКИЙ СБОЙ УПРАВЛЕНИЯ'],
+  ['危険','JA','重大な制御異常を検出'],
+  ['GEFAHR','DE','KRITISCHER STEUERUNGSFEHLER'],
+  ['DANGER','FR','DÉFAILLANCE CRITIQUE DU CONTRÔLE'],
+  ['PERIGO','PT','FALHA CRÍTICA DE CONTROLE'],
+  ['خطر','AR','تم اكتشاف خلل حرج في التحكم'],
+  ['경고','KO','중대한 제어 장애 감지'],
+  ['ALERTA','ES','PROPAGACIÓN METROPOLITANA EN CURSO']
+];
+let dangerToastTimer=null;
+let dangerToastIndex=0;
+let dangerToastStage=-1;
+
+function ensureDangerStack(){
+  let stack=document.getElementById('cascade-notify-stack');
+  if(stack)return stack;
+  stack=document.createElement('div');
+  stack.id='cascade-notify-stack';
+  stack.className='cascade-notify-stack';
+  stack.setAttribute('aria-live','assertive');
+  stack.setAttribute('aria-atomic','false');
+  document.body.appendChild(stack);
+  return stack;
+}
+
+function pushDangerToast(stage){
+  const stack=ensureDangerStack();
+  const item=DANGER_MESSAGES[dangerToastIndex%DANGER_MESSAGES.length];
+  dangerToastIndex++;
+
+  const toast=document.createElement('div');
+  toast.className='cascade-notify-toast';
+  toast.innerHTML=
+    '<div class="cascade-notify-icon">!</div>'+
+    '<div class="cascade-notify-copy">'+
+      '<div class="cascade-notify-head"><strong>'+item[0]+'</strong><span>'+item[1]+' · STAGE '+stage+'/5</span></div>'+
+      '<p>'+item[2]+'</p>'+
+    '</div>';
+
+  stack.prepend(toast);
+
+  while(stack.children.length>6){
+    stack.lastElementChild?.remove();
+  }
+
+  requestAnimationFrame(()=>toast.classList.add('show'));
+
+  setTimeout(()=>{
+    toast.classList.remove('show');
+    toast.classList.add('leaving');
+    setTimeout(()=>toast.remove(),300);
+  },3400);
+}
+
+function toastIntervalFor(stage){
+  return [1150,1000,880,760,640,520][Math.max(0,Math.min(5,stage))];
+}
+
+function stopDangerNotifications(){
+  if(dangerToastTimer){
+    clearTimeout(dangerToastTimer);
+    dangerToastTimer=null;
+  }
+  dangerToastStage=-1;
+  const stack=document.getElementById('cascade-notify-stack');
+  if(stack)stack.replaceChildren();
+}
+
+function startDangerNotifications(stage){
+  const normalized=Math.max(0,Math.min(5,Number(stage)||0));
+  if(dangerToastTimer && dangerToastStage===normalized)return;
+
+  if(dangerToastTimer){
+    clearTimeout(dangerToastTimer);
+    dangerToastTimer=null;
+  }
+
+  dangerToastStage=normalized;
+
+  const run=()=>{
+    if(!live.incidentActive)return;
+    pushDangerToast(dangerToastStage);
+    dangerToastTimer=setTimeout(run,toastIntervalFor(dangerToastStage));
+  };
+
+  run();
+}
+
 const COLORS={ok:'ok',warn:'warn',alarm:'alarm',off:'off',service:'service'};
 const now=()=>new Date();
 const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
@@ -265,6 +356,7 @@ function applyTelemetry(data){
       setCascadeClass(-1);
       const banner=document.getElementById('cascade-banner');
       if(banner)banner.hidden=true;
+      stopDangerNotifications();
       if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(0,false);
     }
     return;
@@ -272,6 +364,7 @@ function applyTelemetry(data){
 
   const stage=clamp(Number(incident.stage||0),0,5);
   live.incidentActive=true;
+  startDangerNotifications(stage);
   if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(stage,true);
   live.incidentData=data;
   setCascadeClass(stage);
