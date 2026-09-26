@@ -94,24 +94,122 @@ const DANGER_MESSAGES=[
 let dangerToastTimer=null;
 let dangerToastIndex=0;
 let dangerToastStage=-1;
+let dangerNotifyHost=null;
+let dangerNotifyStack=null;
 
 function ensureDangerStack(){
-  let stack=document.getElementById('cascade-notify-stack');
-  if(stack)return stack;
-  stack=document.createElement('div');
-  stack.id='cascade-notify-stack';
-  stack.className='cascade-notify-stack';
-  stack.setAttribute('aria-live','assertive');
-  stack.setAttribute('aria-atomic','false');
-  document.body.appendChild(stack);
-  return stack;
+  if(dangerNotifyStack?.isConnected)return dangerNotifyStack;
+
+  dangerNotifyHost=document.createElement('div');
+  dangerNotifyHost.id='cascade-notify-portal';
+  dangerNotifyHost.style.setProperty('all','initial','important');
+  dangerNotifyHost.style.setProperty('position','fixed','important');
+  dangerNotifyHost.style.setProperty('top','86px','important');
+  dangerNotifyHost.style.setProperty('right','18px','important');
+  dangerNotifyHost.style.setProperty('width','360px','important');
+  dangerNotifyHost.style.setProperty('max-width','calc(100vw - 36px)','important');
+  dangerNotifyHost.style.setProperty('height','246px','important');
+  dangerNotifyHost.style.setProperty('z-index','2147483647','important');
+  dangerNotifyHost.style.setProperty('pointer-events','none','important');
+  dangerNotifyHost.style.setProperty('overflow','visible','important');
+
+  const shadow=dangerNotifyHost.attachShadow({mode:'open'});
+  shadow.innerHTML=`
+    <style>
+      :host{all:initial}
+      #stack{
+        position:relative;
+        width:100%;
+        height:246px;
+        overflow:visible;
+        pointer-events:none;
+        font-family:Inter,Segoe UI,Arial,sans-serif;
+      }
+      .toast{
+        position:absolute;
+        top:0;
+        right:0;
+        width:360px;
+        max-width:100%;
+        box-sizing:border-box;
+        display:grid;
+        grid-template-columns:38px minmax(0,1fr);
+        gap:10px;
+        align-items:center;
+        min-height:66px;
+        padding:10px 12px 10px 10px;
+        border:1px solid #ff6068;
+        border-left:4px solid #ff2633;
+        border-radius:7px;
+        background:linear-gradient(90deg,rgba(165,10,18,.98),rgba(77,5,10,.98));
+        color:#fff;
+        box-shadow:0 12px 32px rgba(0,0,0,.50),0 0 16px rgba(255,31,45,.22);
+        opacity:0;
+        transform:translate3d(112%,calc(var(--slot,0) * 78px),0) scale(.985);
+        transition:transform .24s cubic-bezier(.2,.8,.2,1),opacity .20s ease;
+        pointer-events:none;
+      }
+      .toast.show{
+        opacity:1;
+        transform:translate3d(0,calc(var(--slot,0) * 78px),0) scale(1);
+      }
+      .toast.leaving{
+        opacity:0;
+        transform:translate3d(116%,calc(var(--slot,0) * 78px),0) scale(.98);
+      }
+      .icon{
+        width:32px;
+        height:32px;
+        display:grid;
+        place-items:center;
+        border:2px solid #fff;
+        border-radius:50%;
+        font:900 21px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+      }
+      .copy{min-width:0}
+      .head{
+        display:flex;
+        justify-content:space-between;
+        align-items:center;
+        gap:8px;
+        margin-bottom:4px;
+      }
+      .head strong{
+        overflow:hidden;
+        text-overflow:ellipsis;
+        white-space:nowrap;
+        font-size:12px;
+        letter-spacing:.07em;
+      }
+      .head span{
+        flex:0 0 auto;
+        color:#ffc9cc;
+        font:800 8px ui-monospace,SFMono-Regular,Consolas,monospace;
+        letter-spacing:.04em;
+      }
+      p{
+        margin:0;
+        color:#ffe7e9;
+        font-size:10px;
+        line-height:1.3;
+        overflow:hidden;
+        display:-webkit-box;
+        -webkit-line-clamp:2;
+        -webkit-box-orient:vertical;
+      }
+    </style>
+    <div id="stack" aria-live="assertive" aria-atomic="false"></div>
+  `;
+
+  dangerNotifyStack=shadow.getElementById('stack');
+  document.documentElement.appendChild(dangerNotifyHost);
+  return dangerNotifyStack;
 }
 
 function layoutDangerToasts(){
-  const stack=document.getElementById('cascade-notify-stack');
-  if(!stack)return;
-  [...stack.children].forEach((node,index)=>{
-    node.style.setProperty('--notify-slot',String(index));
+  if(!dangerNotifyStack)return;
+  [...dangerNotifyStack.children].forEach((node,index)=>{
+    node.style.setProperty('--slot',String(index));
   });
 }
 
@@ -122,7 +220,7 @@ function removeDangerToast(toast){
   setTimeout(()=>{
     toast.remove();
     layoutDangerToasts();
-  },260);
+  },250);
 }
 
 function pushDangerToast(stage){
@@ -131,12 +229,12 @@ function pushDangerToast(stage){
   dangerToastIndex++;
 
   const toast=document.createElement('div');
-  toast.className='cascade-notify-toast';
-  toast.style.setProperty('--notify-slot','0');
+  toast.className='toast';
+  toast.style.setProperty('--slot','0');
   toast.innerHTML=
-    '<div class="cascade-notify-icon">!</div>'+
-    '<div class="cascade-notify-copy">'+
-      '<div class="cascade-notify-head"><strong>'+item[0]+'</strong><span>'+item[1]+' · STAGE '+stage+'/5</span></div>'+
+    '<div class="icon">!</div>'+
+    '<div class="copy">'+
+      '<div class="head"><strong>'+item[0]+'</strong><span>'+item[1]+' · STAGE '+stage+'/5</span></div>'+
       '<p>'+item[2]+'</p>'+
     '</div>';
 
@@ -147,15 +245,12 @@ function pushDangerToast(stage){
   }
 
   layoutDangerToasts();
-  requestAnimationFrame(()=>{
-    requestAnimationFrame(()=>toast.classList.add('show'));
-  });
-
-  setTimeout(()=>removeDangerToast(toast),2350);
+  requestAnimationFrame(()=>requestAnimationFrame(()=>toast.classList.add('show')));
+  setTimeout(()=>removeDangerToast(toast),2200);
 }
 
 function toastIntervalFor(stage){
-  return [1150,1000,880,760,640,520][Math.max(0,Math.min(5,stage))];
+  return [1250,1120,1000,900,820,740][Math.max(0,Math.min(5,stage))];
 }
 
 function stopDangerNotifications(){
@@ -164,8 +259,13 @@ function stopDangerNotifications(){
     dangerToastTimer=null;
   }
   dangerToastStage=-1;
-  const stack=document.getElementById('cascade-notify-stack');
-  if(stack)stack.replaceChildren();
+
+  if(dangerNotifyStack)dangerNotifyStack.replaceChildren();
+  if(dangerNotifyHost){
+    dangerNotifyHost.remove();
+    dangerNotifyHost=null;
+    dangerNotifyStack=null;
+  }
 }
 
 function startDangerNotifications(stage){
@@ -655,7 +755,10 @@ function applyTelemetry(data){
       stopDangerNotifications();
       sessionStorage.removeItem('INTERAFAS_V20_AUDIO_PENDING');
       sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
-      if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(0,false);
+      if(window.INTERAFAS_AUDIO){
+        window.INTERAFAS_AUDIO.broadcastStage?.(0,false);
+        if(window.name!=='INTERAFAS_HMI')window.INTERAFAS_AUDIO.setStage(0,false);
+      }
     }
     return;
   }
@@ -664,12 +767,18 @@ function applyTelemetry(data){
   live.incidentActive=true;
   startDangerNotifications(stage);
   if(window.INTERAFAS_AUDIO){
-    if(window.INTERAFAS_AUDIO.armed){
-      window.INTERAFAS_AUDIO.setStage(stage,true);
-    }else{
-      window.INTERAFAS_AUDIO.arm().then(()=>{
-        window.INTERAFAS_AUDIO?.setStage(stage,true);
-      });
+    window.INTERAFAS_AUDIO.broadcastStage?.(stage,true);
+
+    // The monitor window is visual-only. The firmware tab keeps the
+    // user-gesture-authorized AudioContext alive in the background.
+    if(window.name!=='INTERAFAS_HMI'){
+      if(window.INTERAFAS_AUDIO.armed){
+        window.INTERAFAS_AUDIO.setStage(stage,true);
+      }else{
+        window.INTERAFAS_AUDIO.arm().then(()=>{
+          window.INTERAFAS_AUDIO?.setStage(stage,true);
+        });
+      }
     }
   }
   live.incidentData=data;
