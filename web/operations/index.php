@@ -20,6 +20,7 @@ lab_event(
 $state=ot_call('/state');
 $fw=$state['firmware']??[];
 $canControl=(string)($ops['role']??'')==='operator';
+$v19FirmwareUnlocked=((string)($ops['role']??'')==='maintenance' && !empty($_SESSION['vuln19_complete']));
 
 $stations=[
     ['id'=>'EST-CP-01','city'=>'Cerro de San Pablo','name'=>'Estación Cerro Norte','function'=>'Primary pumping / distribution','supply'=>910,'demand'=>860,'reserve'=>79,'pressure'=>4.1,'quality'=>'NORMAL','alarms'=>2,'controller'=>'PLC-CP-01','gateway'=>'RTU-CP-01','status'=>'ONLINE','img'=>'station-cp.svg','population'=>1050000],
@@ -141,7 +142,7 @@ $pressureZones=18;
   <?php if($canControl): ?>
   <a class="nav-item" href="firmware.php"><span class="nav-glyph">▱</span><span>Firmware</span></a>
   <?php else: ?>
-  <button class="nav-item" data-view-target="maintenance"><span class="nav-glyph">▱</span><span>Firmware context</span></button>
+  <a class="nav-item <?=$v19FirmwareUnlocked?'':'firmware-locked'?>" id="firmware-nav" href="<?=$v19FirmwareUnlocked?'firmware.php':'#'?>" data-unlocked="<?=$v19FirmwareUnlocked?'1':'0'?>"><span class="nav-glyph">▱</span><span><?=$v19FirmwareUnlocked?'Firmware':'Firmware context'?></span></a>
   <?php endif; ?>
   <div class="nav-section">ANALYSIS</div>
   <button class="nav-item" data-view-target="events"><span class="nav-glyph">≡</span><span>Events</span></button>
@@ -833,6 +834,13 @@ function openStation(index){
 document.querySelectorAll('[data-station-open]').forEach(btn=>btn.addEventListener('click',()=>openStation(Number(btn.dataset.stationOpen))));
 document.querySelectorAll('[data-station-card]').forEach((card,i)=>{card.style.cursor='pointer';card.addEventListener('click',e=>{if(e.target.closest('button'))return;openStation(i);});});
 
+document.getElementById('firmware-nav')?.addEventListener('click',e=>{
+  const nav=e.currentTarget;
+  if(nav.dataset.unlocked==='1')return;
+  e.preventDefault();
+  showView('assets');
+});
+
 async function loadAssetContext(assetId,fallback=null){
   const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val??'—';};
   const related=document.getElementById('asset-detail-related');
@@ -895,6 +903,15 @@ async function loadAssetContext(assetId,fallback=null){
       if(ctx){
         firmwareProfile.textContent=ctx.legacy_profile+' · '+ctx.device;
         firmwareWarning.textContent=ctx.warning||'';
+
+        const firmwareNav=document.getElementById('firmware-nav');
+        if(firmwareNav){
+          firmwareNav.href='firmware.php';
+          firmwareNav.dataset.unlocked='1';
+          firmwareNav.classList.remove('firmware-locked');
+          const label=firmwareNav.querySelector('span:last-child');
+          if(label)label.textContent='Firmware';
+        }
       }
     }
   }catch(err){
