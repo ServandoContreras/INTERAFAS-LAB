@@ -169,10 +169,9 @@ echo json_encode([
   ],
   'firmware_context'=>$complete ? [
     'device'=>'RTU-GW-07',
-    'legacy_profile'=>'CASCADE',
-    'classification'=>'retired-metropolitan-stress-test',
+    'classification'=>'gateway-control-parameters',
     'channel'=>'/operations/firmware.php',
     'backup'=>'/operations/firmware.php?backup=1',
-    'warning'=>'Legacy profile must never be deployed to an operational gateway.'
+    'warning'=>'Operational setpoints must remain within the approved engineering baseline.'
   ] : null
 ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
