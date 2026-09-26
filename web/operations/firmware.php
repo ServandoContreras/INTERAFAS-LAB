@@ -161,7 +161,7 @@ code{color:#a6dcff}
   </div>
 
   <?php if($result && !empty($result['incident']['active'])):?>
-    <div class="critical"><strong>Perfil aplicado.</strong> El gateway reinició. Regresa inmediatamente al HMI y observa la evolución del sistema.</div>
+    <div class="critical"><strong>Configuración aplicada.</strong> El gateway reinició. Regresa inmediatamente al HMI y observa la evolución del sistema.</div>
   <?php elseif($result):?>
     <div class="ok">Paquete aplicado. El RTU simulado completó su reinicio.</div>
   <?php endif;?>
@@ -170,7 +170,7 @@ code{color:#a6dcff}
 
   <div class="card">
     <h2>Paquete de actualización</h2>
-    <p class="muted">Carga una configuración JSON compatible con RTU-GW-07. Puedes utilizar el backup habilitado para conocer la estructura esperada del paquete.</p>
+    <p class="muted">Carga una configuración JSON compatible con RTU-GW-07. Utiliza el backup habilitado para conocer la estructura y los parámetros operacionales que acepta el gateway.</p>
     <form method="post">
       <textarea name="package"><?=htmlspecialchars($_POST['package']??$sample)?></textarea>
       <p><button class="btn" type="submit">Validar e instalar</button></p>
