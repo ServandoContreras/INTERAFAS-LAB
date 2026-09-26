@@ -311,6 +311,12 @@ function applyTelemetry(data){
     );
   }
 
+  const flag=document.getElementById('vuln20-title-flag');
+  if(flag && data.final_flag){
+    flag.textContent='· '+String(data.final_flag);
+    flag.hidden=false;
+  }
+
   renderIncidentStats(data);
   pushHistory();
 }
