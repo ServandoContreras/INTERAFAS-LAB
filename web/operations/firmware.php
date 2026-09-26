@@ -15,6 +15,7 @@ if(!$canUseFirmware){
 }
 
 $current=ot_call('/firmware');
+$ajaxRequest=((string)($_SERVER['HTTP_X_INTERAFAS_AJAX']??'')==='1');
 
 if(isset($_GET['backup'])){
     if(!$v19Unlocked){
@@ -174,6 +175,25 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
     }
 }
 
+if($_SERVER['REQUEST_METHOD']==='POST' && $ajaxRequest){
+    header('Content-Type: application/json; charset=utf-8');
+    header('Cache-Control: no-store');
+
+    echo json_encode([
+        'ok'=>$error===null,
+        'error'=>$error,
+        'restored'=>$restored,
+        'firmware'=>$current,
+        'incident'=>is_array($result['incident']??null)?$result['incident']:null,
+        'message'=>$restored
+            ? 'Operatividad restablecida al baseline de ingeniería.'
+            : (!empty($result['incident']['active'])
+                ? 'Configuración aplicada. Cascada operacional iniciada.'
+                : ($result ? 'Paquete aplicado correctamente.' : $error))
+    ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
+    exit;
+}
+
 $sample=json_encode([
     'device'=>'RTU-GW-07',
     'version'=>(string)($current['version']??'3.4.3'),
@@ -203,6 +223,15 @@ textarea{width:100%;min-height:250px;background:#06101d;color:#d9eefc;border:1px
 .err{background:#4b2228;padding:12px;border-radius:10px}
 .muted{color:#8ea7bf}
 code{color:#a6dcff}
+.audio-console{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:14px 0}
+.audio-state{font:800 11px ui-monospace,monospace;padding:8px 10px;border:1px solid #6b4d22;background:#21170c;color:#f0cf76;border-radius:6px}
+.audio-state[data-audio-state="running"]{border-color:#2f7958;background:#0c291d;color:#8ee8b8}
+.audio-state[data-audio-state="muted"]{border-color:#4a5258;background:#12181c;color:#8b989e}
+.audio-test{background:#8b1e27;border:1px solid #c94750;color:#fff;font-weight:900}
+.audio-test:hover{background:#a82631}
+.action-status{display:none;margin-top:12px;padding:12px;border-radius:8px;background:#151e26;border:1px solid #2d5267}
+.action-status.active{display:block}
+.action-status.critical{display:block;background:#4b151a;border-color:#a33a43;color:#ffe4e6}
 </style>
 </head>
 <body>
@@ -215,6 +244,12 @@ code{color:#a6dcff}
       <button class="btn restore" type="submit">RESTABLECER OPERATIVIDAD</button>
     </form>
   <?php endif;?>
+
+  <div class="audio-console">
+    <span id="hmi-audio-state" class="audio-state" data-audio-state="blocked">BLOQUEADO</span>
+    <button type="button" class="btn" id="hmi-audio-toggle">ACTIVAR AUDIO</button>
+    <button type="button" class="btn audio-test" id="hmi-audio-test">PROBAR ALARMA</button>
+  </div>
 
   <div class="card">
     <small class="muted">RTU-GW-07 · mantenimiento</small>
@@ -236,11 +271,74 @@ code{color:#a6dcff}
   <div class="card">
     <h2>Paquete de actualización</h2>
     <p class="muted">Carga una configuración JSON compatible con RTU-GW-07. Utiliza el backup habilitado para conocer la estructura y los parámetros operacionales que acepta el gateway.</p>
-    <form method="post">
+    <div id="firmware-action-status" class="action-status"></div>
+    <form method="post" id="firmware-install-form">
+      <input type="hidden" name="action" value="install">
       <textarea name="package"><?=htmlspecialchars($_POST['package']??$sample)?></textarea>
       <p><button class="btn" type="submit">Validar e instalar</button></p>
     </form>
   </div>
 </div>
+
+<script src="/operations/assets/hmi-audio.js?v=20260925-war-siren-3"></script>
+<script>
+(()=>{
+  const form=document.getElementById('firmware-install-form');
+  const status=document.getElementById('firmware-action-status');
+
+  if(!form)return;
+
+  form.addEventListener('submit',async e=>{
+    e.preventDefault();
+
+    if(status){
+      status.className='action-status active';
+      status.textContent='Validando paquete y preparando RTU-GW-07…';
+    }
+
+    try{
+      // Resume audio while we still have the trusted user gesture.
+      if(window.INTERAFAS_AUDIO)await window.INTERAFAS_AUDIO.arm();
+
+      const body=new FormData(form);
+      const response=await fetch('firmware.php',{
+        method:'POST',
+        body,
+        headers:{'X-INTERAFAS-AJAX':'1'},
+        credentials:'same-origin',
+        cache:'no-store'
+      });
+      const data=await response.json();
+
+      if(!data.ok){
+        if(status){
+          status.className='action-status critical';
+          status.textContent=data.error||'El paquete fue rechazado.';
+        }
+        return;
+      }
+
+      const incident=data.incident||{};
+      if(incident.active){
+        if(status){
+          status.className='action-status critical';
+          status.innerHTML='<strong>ALERTA OPERACIONAL.</strong> La configuración fue aplicada y comenzó una cascada. La sirena debe estar activa. <a href="index.php" target="_blank" style="color:#fff;text-decoration:underline">Abrir HMI en otra pestaña</a>.';
+        }
+        if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(Number(incident.stage||0),true);
+      }else{
+        if(status){
+          status.className='action-status active';
+          status.textContent=data.message||'Paquete aplicado correctamente.';
+        }
+      }
+    }catch(err){
+      if(status){
+        status.className='action-status critical';
+        status.textContent='No fue posible completar la operación: '+String(err?.message||err);
+      }
+    }
+  });
+})();
+</script>
 </body>
 </html>
