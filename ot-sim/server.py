@@ -4,6 +4,7 @@ import json, os, time
 STATE={
     "plant":"Planta Metropolitana Norte","tank":78,"flow":840,"pressure":4.2,
     "p101":"ON","p102":"STANDBY","v201":"OPEN","quality":"NORMAL","alarms":[],
+    "process_state":"NORMAL","zone_a":"NORMAL",
     "firmware":{"device":"RTU-GW-07","version":"3.4.2","mode":"NORMAL","diagnostic":"LOCKED","updated_at":None}
 }
 
@@ -11,10 +12,14 @@ def refresh_process():
     if STATE["p101"] == "OFF":
         STATE["flow"] = 455
         STATE["pressure"] = 2.5
-        STATE["alarms"] = ["FLOW_LOW","PRESSURE_LOW"]
+        STATE["process_state"] = "DEGRADED"
+        STATE["zone_a"] = "DEGRADED"
+        STATE["alarms"] = ["FLOW_LOW","PRESSURE_LOW","ZONE_A_SUPPLY_RISK"]
     else:
         STATE["flow"] = 840
         STATE["pressure"] = 4.2
+        STATE["process_state"] = "NORMAL"
+        STATE["zone_a"] = "NORMAL"
         STATE["alarms"] = []
 
 class H(BaseHTTPRequestHandler):
