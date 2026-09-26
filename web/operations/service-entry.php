@@ -6,13 +6,15 @@ $state=ot_call('/state');
 $firmware=is_array($state['firmware']??null) ? $state['firmware'] : [];
 $diagnostic=strtoupper(trim((string)($firmware['diagnostic']??'')));
 
-if($diagnostic!=='SERVICE'){
+$flag18Accepted=lab_flag_is_accepted(18);
+
+if($diagnostic!=='SERVICE' && !$flag18Accepted){
     http_response_code(409);
     header('Content-Type: application/json; charset=utf-8');
     echo json_encode([
         'ok'=>false,
         'error'=>'service-mode-required',
-        'message'=>'La consola de mantenimiento sólo está disponible cuando RTU-GW-07 se encuentra en diagnóstico SERVICE.'
+        'message'=>'La consola de mantenimiento requiere diagnóstico SERVICE o que el hallazgo de firmware del reto 18 ya esté acreditado para el intento actual.'
     ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
     exit;
 }
@@ -33,6 +35,8 @@ lab_event(
     [
         'firmware_version'=>$firmware['version']??null,
         'diagnostic'=>$diagnostic,
+        'flag18_accepted'=>$flag18Accepted,
+        'session_restored_from_progress'=>($diagnostic!=='SERVICE' && $flag18Accepted),
         'role'=>'maintenance',
         'entry'=>'/operations/service-entry.php'
     ],
