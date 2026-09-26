@@ -125,7 +125,6 @@ $pressureZones=18;
     <div class="hmi-audio-console">
       <span id="hmi-audio-state" class="hmi-audio-state" data-audio-state="blocked">BLOQUEADO</span>
       <button type="button" class="hmi-audio-toggle" id="hmi-audio-toggle" title="Alarm audio">ACTIVAR AUDIO</button>
-      <button type="button" class="hmi-audio-test" id="hmi-audio-test" title="Test audible de la sirena">PROBAR ALARMA</button>
     </div>
   </div>
   <div class="hmi-operator">
@@ -817,7 +816,7 @@ $pressureZones=18;
 <script>window.INTERAFAS_STATIONS=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
 <script src="/operations/assets/hmi-v4.js"></script>
 <script src="/operations/assets/hmi-v5-live.js"></script>
-<script src="/operations/assets/hmi-audio.js?v=20260925-war-siren-2"></script>
+<script src="/operations/assets/hmi-audio.js?v=20260925-seismic-1"></script>
 <script src="/operations/assets/hmi-v6-scale.js"></script>
 <script src="/operations/assets/hmi-ru.js"></script>
 <script>
