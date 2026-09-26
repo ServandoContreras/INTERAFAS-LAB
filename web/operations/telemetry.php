@@ -36,7 +36,7 @@ if($sessionPresent){
     $opsSession=is_array($_SESSION['ops_user']??null) ? $_SESSION['ops_user'] : [];
     $maintenance=(string)($opsSession['role']??'')==='maintenance';
     $cascadeOwned=!empty($_SESSION['vuln20_cascade_loaded']);
-    $v19Complete=!empty($_SESSION['vuln19_complete']);
+    $v19Complete=lab_flag_is_accepted(19);
     $stage=(int)($incident['stage']??0);
 
     if(
