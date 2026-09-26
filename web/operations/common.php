@@ -63,7 +63,39 @@ function require_operational_network(bool $hide=false): void {
 }
 
 function operational_user(): array {
-    return isset($_SESSION['ops_user']) && is_array($_SESSION['ops_user']) ? $_SESSION['ops_user'] : [];
+    if(isset($_SESSION['ops_user']) && is_array($_SESSION['ops_user']) && !empty($_SESSION['ops_user']['id'])){
+        return $_SESSION['ops_user'];
+    }
+
+    /*
+     * Persistencia académica del acceso operacional:
+     * una vez acreditada VULN-18, la capacidad maintenance ya forma parte
+     * del progreso del intento y no debe perderse por expiración/reinicio
+     * de la sesión PHP.
+     */
+    if(lab_flag_is_accepted(18)){
+        $_SESSION['ops_user']=[
+            'id'=>1901,
+            'username'=>'service.maintenance',
+            'display_name'=>'Sesión de Mantenimiento',
+            'role'=>'maintenance',
+            'entry_origin'=>'restored-from-flag-18'
+        ];
+
+        lab_event(
+            'OT_MAINTENANCE_SESSION_RESTORED',
+            'Sesión maintenance reconstruida desde progreso acreditado',
+            'FLAG_18',
+            ['flag_number'=>18,'source'=>'accepted-progress'],
+            'ot-hmi',
+            'notice',
+            30
+        );
+
+        return $_SESSION['ops_user'];
+    }
+
+    return [];
 }
 
 function operational_is_auth(): bool {
