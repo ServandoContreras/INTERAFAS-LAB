@@ -159,4 +159,8 @@ window.INTERAFAS_AUDIO={
   get armed(){return armed},
   get state(){return ctx?ctx.state:'not-created'}
 };
+
+if(sessionStorage.getItem('INTERAFAS_V20_AUDIO_PENDING')==='1'){
+  arm();
+}
 })();
