@@ -268,7 +268,7 @@ code{color:#a6dcff}
   </div>
 </div>
 
-<script src="/operations/assets/hmi-audio.js?v=20260925-v20-4"></script>
+<script src="/operations/assets/hmi-audio.js?v=20260925-v20-5"></script>
 <script>
 (()=>{
   const form=document.getElementById('firmware-install-form');
@@ -296,10 +296,22 @@ code{color:#a6dcff}
         localUnsafe=Number.isFinite(requested) && Math.round(requested*100)!==420;
       }catch(_){}
 
-      if(window.INTERAFAS_AUDIO){
-        await window.INTERAFAS_AUDIO.arm();
-        if(localUnsafe)window.INTERAFAS_AUDIO.setStage(0,true);
+      let monitorWindow=null;
+      let armPromise=null;
+
+      if(localUnsafe){
+        // Start/resume audio while the trusted click gesture is still active.
+        if(window.INTERAFAS_AUDIO){
+          armPromise=window.INTERAFAS_AUDIO.arm();
+          window.INTERAFAS_AUDIO.setStage(0,true);
+        }
+
+        // Open the operational monitor in the same user gesture. Keeping this
+        // firmware tab alive preserves the authorized AudioContext.
+        monitorWindow=window.open('/operations/index.php','INTERAFAS_HMI');
       }
+
+      if(armPromise)await armPromise;
 
       const response=await fetch('firmware.php',{
         method:'POST',
@@ -312,6 +324,7 @@ code{color:#a6dcff}
 
       if(!data.ok){
         if(localUnsafe && window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
+        try{ if(monitorWindow && !monitorWindow.closed)monitorWindow.close(); }catch(_){}
         if(status){
           status.className='action-status critical';
           status.textContent=data.error||'El paquete fue rechazado.';
@@ -323,21 +336,29 @@ code{color:#a6dcff}
       if(incident.active){
         if(status){
           status.className='action-status critical';
-          status.innerHTML='<strong>ALERTA OPERACIONAL.</strong> Configuración aplicada. Redirigiendo al HMI…';
+          status.innerHTML='<strong>ALERTA OPERACIONAL.</strong> Cascada iniciada. El HMI se abrió en la ventana de monitor; esta pestaña permanece como fuente de la alarma audible.';
         }
-
-        sessionStorage.setItem('INTERAFAS_V20_AUDIO_PENDING','1');
 
         if(window.INTERAFAS_AUDIO){
           window.INTERAFAS_AUDIO.setStage(Number(incident.stage||0),true);
+          window.INTERAFAS_AUDIO.broadcastStage?.(Number(incident.stage||0),true);
         }
 
-        window.setTimeout(()=>{
-          window.location.replace('/operations/index.php');
-        },420);
+        try{
+          if(monitorWindow && !monitorWindow.closed){
+            monitorWindow.location.replace('/operations/index.php');
+            monitorWindow.focus();
+          }else{
+            // Fallback only if the browser blocked the monitor popup.
+            window.setTimeout(()=>window.location.replace('/operations/index.php'),1200);
+          }
+        }catch(_){
+          window.setTimeout(()=>window.location.replace('/operations/index.php'),1200);
+        }
         return;
       }else{
         if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
+        try{ if(monitorWindow && !monitorWindow.closed)monitorWindow.close(); }catch(_){}
         if(status){
           status.className='action-status active';
           status.textContent=data.message||'Paquete aplicado correctamente.';
@@ -345,6 +366,7 @@ code{color:#a6dcff}
       }
     }catch(err){
       if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
+      try{ if(typeof monitorWindow!=='undefined' && monitorWindow && !monitorWindow.closed)monitorWindow.close(); }catch(_){}
       if(status){
         status.className='action-status critical';
         status.textContent='No fue posible completar la operación: '+String(err?.message||err);
