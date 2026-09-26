@@ -34,6 +34,26 @@ function operational_source_is_internal(): bool {
 
 function require_operational_network(bool $hide=false): void {
     if(operational_source_is_internal()) return;
+
+    /*
+     * Persistencia académica del progreso:
+     * una vez acreditada VULN-16 para el intento activo, el alumno no necesita
+     * repetir el bypass de frontera de red después de perder sesión o
+     * reconstruir contenedores.
+     */
+    if(lab_flag_is_accepted(16)){
+        lab_event(
+            'OT_NETWORK_ACCESS_RESTORED',
+            'Acceso operacional restaurado desde progreso acreditado',
+            'FLAG_16',
+            ['flag_number'=>16,'source'=>'accepted-progress'],
+            'ot-hmi',
+            'notice',
+            30
+        );
+        return;
+    }
+
     if($hide){
         http_response_code(404);
         exit('404');
