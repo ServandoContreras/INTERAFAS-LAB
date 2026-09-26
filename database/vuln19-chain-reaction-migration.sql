@@ -1,9 +1,8 @@
 -- VULN 19 · CHAIN-REACTION
--- El reto no agrega una vulnerabilidad aislada: acredita el encadenamiento
--- de los hallazgos que ya cruzaron web, red operacional, telemetría y firmware.
+-- El reto explota exposición excesiva de dependencias OT a una sesión de mantenimiento.
 
 INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
-(19,1,'No busques un endpoint nuevo al azar. Después de obtener una sesión de mantenimiento mediante el estado SERVICE, vuelve al HMI y observa qué solicitudes adicionales realiza el cliente para construir el contexto de la sesión.'),
-(19,2,'El reto exige correlacionar la misma tentativa. Conserva evidencia de los eventos que demostraron el cruce del gateway, la telemetría sin sesión y la aceptación del paquete de firmware no auténtico.'),
-(19,3,'Inspecciona la respuesta y los encabezados del servicio de contexto cargado por el HMI. La validación sólo aparece cuando la sesión actual proviene del canal de mantenimiento y la bitácora de la tentativa contiene los saltos previos de la cadena.')
+(19,1,'Ya tienes una sesión de mantenimiento. Ahora trabaja dentro del HMI: abre el inventario de activos y revisa qué contexto adicional aparece al seleccionar RTU-GW-07.'),
+(19,2,'No te limites a leer el campo Related systems. Selecciona uno de los sistemas relacionados y continúa siguiendo relaciones de control, proceso y distribución. La cadena correcta parte del gateway metropolitano y atraviesa la celda de Saint Louis.'),
+(19,3,'Conserva abierta la pestaña Red de DevTools mientras recorres dependencias. Cuando alcances el extremo terminal de la cadena, revisa los encabezados de la última respuesta del servicio de contexto de activos.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
