@@ -96,8 +96,18 @@ function media_catalog(): array {
 }
 function media_info(string $asset): array {
   if($asset==='snapshot-vuln20'){
+    $version='0';
+    try{
+      $q=db()->prepare("SELECT UNIX_TIMESTAMP(captured_at) ts, MD5(image_blob) image_hash FROM scenario_snapshots WHERE snapshot_key='vuln20-final' LIMIT 1");
+      $q->execute();
+      $snap=$q->fetch();
+      if($snap){
+        $version=(string)($snap['ts']??'0').'-'.substr((string)($snap['image_hash']??''),0,12);
+      }
+    }catch(Throwable $e){}
+
     return [
-      'src'=>'/snapshot.php?key=vuln20-final',
+      'src'=>'/snapshot.php?key=vuln20-final&v='.rawurlencode($version),
       'fallback'=>'/assets/img/operations-room.svg',
       'caption'=>'Evidencia visual preservada durante el estado crítico de la contingencia operacional.',
       'credit'=>'Evidencia operacional / Pulso Metropolitano',
