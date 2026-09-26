@@ -268,7 +268,7 @@ code{color:#a6dcff}
   </div>
 </div>
 
-<script src="/operations/assets/hmi-audio.js?v=20260925-public-alert-2"></script>
+<script src="/operations/assets/hmi-audio.js?v=20260925-v20-4"></script>
 <script>
 (()=>{
   const form=document.getElementById('firmware-install-form');
