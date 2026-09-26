@@ -143,9 +143,15 @@ try{
         0
     );
 
+    $versionQuery=db()->prepare("SELECT UNIX_TIMESTAMP(captured_at) ts, MD5(image_blob) image_hash FROM scenario_snapshots WHERE snapshot_key='vuln20-final' LIMIT 1");
+    $versionQuery->execute();
+    $versionRow=$versionQuery->fetch()?:[];
+    $snapshotVersion=(string)($versionRow['ts']??'0').'-'.substr((string)($versionRow['image_hash']??''),0,12);
+
     echo json_encode([
         'ok'=>true,
         'snapshot'=>'vuln20-final',
+        'snapshot_version'=>$snapshotVersion,
         'news_event'=>'VULN20_SNAPSHOT'
     ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES);
 }catch(Throwable $e){
