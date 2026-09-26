@@ -4,6 +4,15 @@ require_operational_network(true);
 $ops=require_operational_auth();
 
 $role=(string)($ops['role']??'');
+$labCtx=lab_context()??[];
+$auditorName=trim(implode(' ',array_filter([
+    (string)($labCtx['nombre']??''),
+    (string)($labCtx['apellido_paterno']??''),
+    (string)($labCtx['apellido_materno']??'')
+])));
+if($auditorName==='')$auditorName='Auditor';
+$auditorMatricula=(string)($labCtx['matricula']??'—');
+
 $v19Unlocked=($role==='maintenance' && lab_flag_is_accepted(19));
 $canUseFirmware=($role==='operator' || $v19Unlocked);
 
@@ -226,6 +235,20 @@ code{color:#a6dcff}
 .action-status{display:none;margin-top:12px;padding:12px;border-radius:8px;background:#151e26;border:1px solid #2d5267}
 .action-status.active{display:block}
 .action-status.critical{display:block;background:#4b151a;border-color:#a33a43;color:#ffe4e6}
+.evidence-card{border-color:#315875;background:linear-gradient(135deg,#0d1b2d,#10263a)}
+.evidence-title{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap}
+.evidence-title h2{margin:0}
+.evidence-badge{padding:5px 9px;border:1px solid #3e779a;border-radius:999px;background:#0a1623;color:#9fd8f5;font:800 10px ui-monospace,monospace;letter-spacing:.07em}
+.evidence-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:16px 0}
+.evidence-field{background:#081522;border:1px solid #1c4058;border-radius:10px;padding:11px}
+.evidence-field span{display:block;color:#7996aa;font-size:10px;text-transform:uppercase;letter-spacing:.07em;margin-bottom:3px}
+.evidence-field strong{font-size:14px}
+.btn.evidence{background:#1d6f52;border:1px solid #318c6b;font-weight:800}
+.btn.evidence:hover{background:#27825f}
+.evidence-status{margin-top:12px;padding:10px 12px;border:1px solid #35566b;border-radius:9px;background:#091621;color:#9eb4c3;font-size:12px}
+.evidence-status.ready{border-color:#2f7659;background:#0b261c;color:#9be6bd}
+.evidence-status.warn{border-color:#8b6830;background:#2a1e0b;color:#f0d38a}
+@media(max-width:680px){.evidence-grid{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
@@ -256,6 +279,21 @@ code{color:#a6dcff}
 
   <?php if($error):?><div class="err"><?=htmlspecialchars($error)?></div><?php endif;?>
 
+  <div class="card evidence-card">
+    <div class="evidence-title">
+      <h2>Preparar evidencia ampliada</h2>
+      <span class="evidence-badge">VULN-20 · EVIDENCIA FINAL</span>
+    </div>
+    <p>Antes de modificar el firmware puedes autorizar una captura de <strong>tu pantalla completa</strong>. Cuando el sistema alcance el estado catastrófico se tomará un único frame para documentar el momento final del ejercicio.</p>
+    <div class="evidence-grid">
+      <div class="evidence-field"><span>Auditor</span><strong><?=htmlspecialchars($auditorName)?></strong></div>
+      <div class="evidence-field"><span>Matrícula</span><strong><?=htmlspecialchars($auditorMatricula)?></strong></div>
+    </div>
+    <p class="muted">El navegador mostrará su propio selector de compartición. Para la evidencia ampliada selecciona <strong>Pantalla completa</strong>. La captura incluirá únicamente lo que esté visible en ese monitor en ese instante; puedes detener la compartición cuando quieras.</p>
+    <button class="btn evidence" id="prepare-screen-evidence" type="button">PREPARAR CAPTURA DE PANTALLA</button>
+    <div id="screen-evidence-status" class="evidence-status">Evidencia ampliada no preparada. Si continúas así, se conservará únicamente la captura interna del HMI.</div>
+  </div>
+
   <div class="card">
     <h2>Paquete de actualización</h2>
     <p class="muted">Carga una configuración JSON compatible con RTU-GW-07. Utiliza el backup habilitado para conocer la estructura y los parámetros operacionales que acepta el gateway.</p>
@@ -273,6 +311,222 @@ code{color:#a6dcff}
 (()=>{
   const form=document.getElementById('firmware-install-form');
   const status=document.getElementById('firmware-action-status');
+  const prepareEvidenceBtn=document.getElementById('prepare-screen-evidence');
+  const evidenceStatus=document.getElementById('screen-evidence-status');
+
+  const AUDITOR_NAME=<?=json_encode($auditorName,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;
+  const AUDITOR_MATRICULA=<?=json_encode($auditorMatricula,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;
+  const EVIDENCE_READY_KEY='INTERAFAS_V20_SCREEN_READY';
+  const EVIDENCE_CHANNEL='interafas-v20-evidence';
+
+  let evidenceStream=null;
+  let evidenceChannel=null;
+  let evidenceCaptureBusy=false;
+
+  try{
+    if('BroadcastChannel' in window)evidenceChannel=new BroadcastChannel(EVIDENCE_CHANNEL);
+  }catch(_){}
+
+  function clearEvidenceReady(){
+    try{localStorage.removeItem(EVIDENCE_READY_KEY)}catch(_){}
+  }
+
+  function stopEvidenceStream(){
+    if(evidenceStream){
+      evidenceStream.getTracks().forEach(track=>{try{track.stop()}catch(_){}});
+      evidenceStream=null;
+    }
+    clearEvidenceReady();
+  }
+
+  function setEvidenceStatus(kind,text){
+    if(!evidenceStatus)return;
+    evidenceStatus.className='evidence-status'+(kind?' '+kind:'');
+    evidenceStatus.textContent=text;
+  }
+
+  async function prepareScreenEvidence(){
+    if(!navigator.mediaDevices?.getDisplayMedia){
+      setEvidenceStatus('warn','Este navegador no admite captura de pantalla mediante Screen Capture API.');
+      return;
+    }
+
+    stopEvidenceStream();
+
+    try{
+      const stream=await navigator.mediaDevices.getDisplayMedia({
+        video:{displaySurface:'monitor'},
+        audio:false
+      });
+
+      const track=stream.getVideoTracks()[0];
+      const settings=track?.getSettings?.()||{};
+      const surface=String(settings.displaySurface||'unknown');
+
+      if(surface!=='unknown' && surface!=='monitor'){
+        stream.getTracks().forEach(t=>t.stop());
+        setEvidenceStatus('warn','Seleccionaste una ventana o pestaña. Vuelve a intentarlo y elige Pantalla completa.');
+        return;
+      }
+
+      evidenceStream=stream;
+      const ready={
+        ts:Date.now(),
+        surface,
+        width:Number(settings.width||0),
+        height:Number(settings.height||0)
+      };
+      try{localStorage.setItem(EVIDENCE_READY_KEY,JSON.stringify(ready))}catch(_){}
+
+      track?.addEventListener('ended',()=>{
+        evidenceStream=null;
+        clearEvidenceReady();
+        setEvidenceStatus('warn','La compartición de pantalla se detuvo. La evidencia final usará el snapshot interno del HMI.');
+      },{once:true});
+
+      const size=(settings.width&&settings.height)?' · '+settings.width+'×'+settings.height:'';
+      setEvidenceStatus('ready','LISTO · Pantalla completa preparada'+size+'. La captura final se tomará automáticamente al alcanzar CATASTROPHIC STATE.');
+    }catch(err){
+      clearEvidenceReady();
+      setEvidenceStatus('warn','No se autorizó la captura de pantalla. Se utilizará la evidencia interna del HMI.');
+    }
+  }
+
+  function fitCaptureSize(width,height){
+    const maxW=2560;
+    const maxH=1440;
+    const scale=Math.min(1,maxW/width,maxH/height);
+    return {
+      width:Math.max(1,Math.round(width*scale)),
+      height:Math.max(1,Math.round(height*scale))
+    };
+  }
+
+  function drawEvidenceStamp(ctx,width,height,capturedAt){
+    const pad=Math.max(14,Math.round(width*.012));
+    const boxH=Math.max(96,Math.round(height*.105));
+    const y=height-boxH-pad;
+    const x=pad;
+    const boxW=Math.min(width-pad*2,Math.max(620,Math.round(width*.64)));
+
+    ctx.save();
+    ctx.fillStyle='rgba(7,12,18,.90)';
+    ctx.strokeStyle='rgba(255,77,84,.95)';
+    ctx.lineWidth=Math.max(2,Math.round(width/1100));
+    ctx.fillRect(x,y,boxW,boxH);
+    ctx.strokeRect(x,y,boxW,boxH);
+
+    const titleSize=Math.max(17,Math.round(width/88));
+    const textSize=Math.max(13,Math.round(width/118));
+
+    ctx.fillStyle='#ff666d';
+    ctx.font='800 '+titleSize+'px Arial, sans-serif';
+    ctx.fillText('INTERAFAS · EVIDENCIA OPERACIONAL · VULN-20',x+16,y+28);
+
+    ctx.fillStyle='#ffffff';
+    ctx.font='700 '+textSize+'px Arial, sans-serif';
+    ctx.fillText('AUDITOR: '+AUDITOR_NAME,x+16,y+54);
+    ctx.fillText('MATRÍCULA: '+AUDITOR_MATRICULA,x+16,y+77);
+
+    ctx.fillStyle='#c9d3da';
+    ctx.textAlign='right';
+    ctx.fillText('CATASTROPHIC STATE',x+boxW-16,y+54);
+    ctx.fillText(capturedAt,x+boxW-16,y+77);
+    ctx.restore();
+  }
+
+  async function capturePreparedScreen(message){
+    if(evidenceCaptureBusy||!evidenceStream)return false;
+
+    const track=evidenceStream.getVideoTracks()[0];
+    if(!track||track.readyState!=='live'){
+      stopEvidenceStream();
+      return false;
+    }
+
+    evidenceCaptureBusy=true;
+
+    try{
+      const video=document.createElement('video');
+      video.srcObject=evidenceStream;
+      video.muted=true;
+      video.playsInline=true;
+
+      await video.play();
+      if(!video.videoWidth||!video.videoHeight){
+        await new Promise((resolve,reject)=>{
+          const timer=setTimeout(()=>reject(new Error('screen-metadata-timeout')),1800);
+          video.onloadedmetadata=()=>{clearTimeout(timer);resolve();};
+        });
+      }
+
+      const sourceW=video.videoWidth||Number(track.getSettings?.().width||1920);
+      const sourceH=video.videoHeight||Number(track.getSettings?.().height||1080);
+      const size=fitCaptureSize(sourceW,sourceH);
+
+      const canvas=document.createElement('canvas');
+      canvas.width=size.width;
+      canvas.height=size.height;
+
+      const ctx=canvas.getContext('2d');
+      ctx.drawImage(video,0,0,size.width,size.height);
+
+      const capturedAt=new Intl.DateTimeFormat('es-MX',{
+        year:'numeric',month:'2-digit',day:'2-digit',
+        hour:'2-digit',minute:'2-digit',second:'2-digit',
+        hour12:false
+      }).format(new Date());
+
+      drawEvidenceStamp(ctx,size.width,size.height,capturedAt);
+
+      const payload={
+        image:canvas.toDataURL('image/jpeg',.86),
+        width:size.width,
+        height:size.height,
+        captured_at:new Date().toISOString(),
+        stage:Number(message?.stage||5),
+        stage_label:String(message?.stage_label||'CATASTROPHIC STATE'),
+        source:'full-screen',
+        display_surface:String(track.getSettings?.().displaySurface||'monitor'),
+        source_width:sourceW,
+        source_height:sourceH
+      };
+
+      const response=await fetch('/operations/snapshot.php',{
+        method:'POST',
+        headers:{'Content-Type':'application/json'},
+        credentials:'same-origin',
+        cache:'no-store',
+        body:JSON.stringify(payload)
+      });
+      const result=await response.json();
+
+      if(!response.ok||!result.ok)throw new Error(result.error||'snapshot-publication-failed');
+
+      evidenceChannel?.postMessage({type:'capture-complete',source:'full-screen'});
+      setEvidenceStatus('ready','EVIDENCIA CAPTURADA · '+capturedAt+' · Publicada en Pulso Metropolitano.');
+
+      stopEvidenceStream();
+      return true;
+    }catch(err){
+      evidenceChannel?.postMessage({type:'capture-failed'});
+      setEvidenceStatus('warn','No fue posible capturar la pantalla completa. El HMI generará su snapshot interno.');
+      stopEvidenceStream();
+      return false;
+    }finally{
+      evidenceCaptureBusy=false;
+    }
+  }
+
+  prepareEvidenceBtn?.addEventListener('click',prepareScreenEvidence);
+
+  evidenceChannel?.addEventListener('message',event=>{
+    const message=event.data||{};
+    if(message.type==='capture-request'){
+      capturePreparedScreen(message);
+    }
+  });
+
   if(!form)return;
 
   form.addEventListener('submit',async e=>{
