@@ -753,7 +753,6 @@ function applyTelemetry(data){
       const banner=document.getElementById('cascade-banner');
       if(banner)banner.hidden=true;
       stopDangerNotifications();
-      sessionStorage.removeItem('INTERAFAS_V20_AUDIO_PENDING');
       sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
       if(window.INTERAFAS_AUDIO){
         window.INTERAFAS_AUDIO.broadcastStage?.(0,false);
