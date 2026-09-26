@@ -527,104 +527,62 @@ function renderIncidentStats(data){
 }
 
 let vuln20SnapshotInFlight=false;
-let vuln20EvidenceRequestPending=false;
-let vuln20EvidenceFallbackTimer=null;
-let vuln20FlagRevealTimer=null;
-let vuln20EvidenceChannel=null;
 
-try{
-  if('BroadcastChannel' in window){
-    vuln20EvidenceChannel=new BroadcastChannel('interafas-v20-evidence');
-  }
-}catch(_){}
-
-function preparedFullScreenEvidence(){
-  try{
-    const raw=localStorage.getItem('INTERAFAS_V20_SCREEN_READY');
-    if(!raw)return false;
-    const info=JSON.parse(raw);
-    const age=Date.now()-Number(info?.ts||0);
-    return age>=0 && age<45*60*1000;
-  }catch(_){
-    return false;
-  }
-}
-
-function markSnapshotComplete(source='internal'){
+function markSnapshotComplete(){
   sessionStorage.setItem('INTERAFAS_V20_SNAPSHOT_SENT','1');
-  vuln20EvidenceRequestPending=false;
-
-  if(vuln20EvidenceFallbackTimer){
-    clearTimeout(vuln20EvidenceFallbackTimer);
-    vuln20EvidenceFallbackTimer=null;
-  }
-
   pushLog(
     'INFO',
     'EVIDENCE-01',
-    source==='full-screen'
-      ? 'Full-screen operational evidence preserved and released to Pulso Metropolitano.'
-      : 'Operational HMI snapshot preserved and released to Pulso Metropolitano.'
+    'Personalized HMI snapshot preserved and released to Pulso Metropolitano.'
   );
 }
 
-vuln20EvidenceChannel?.addEventListener('message',event=>{
-  const msg=event.data||{};
-
-  if(msg.type==='capture-complete'){
-    markSnapshotComplete(String(msg.source||'full-screen'));
-  }else if(msg.type==='capture-failed'){
-    vuln20EvidenceRequestPending=false;
-  }
-});
-
-function requestFullScreenEvidence(data){
-  if(!preparedFullScreenEvidence())return false;
-  if(vuln20EvidenceRequestPending)return true;
-  if(sessionStorage.getItem('INTERAFAS_V20_SNAPSHOT_SENT')==='1')return true;
-
-  vuln20EvidenceRequestPending=true;
-
-  try{
-    vuln20EvidenceChannel?.postMessage({
-      type:'capture-request',
-      stage:Number(data?.incident?.stage||5),
-      stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE'),
-      alarm_count:Number(data?.alarm_count||0),
-      availability:Number(data?.availability??0),
-      requested_at:new Date().toISOString()
-    });
-  }catch(_){}
-
-  // If the firmware tab was closed, permission expired or capture fails,
-  // preserve the existing internal HMI snapshot as a fallback.
-  vuln20EvidenceFallbackTimer=setTimeout(()=>{
-    if(sessionStorage.getItem('INTERAFAS_V20_SNAPSHOT_SENT')==='1')return;
-    vuln20EvidenceRequestPending=false;
-    publishFinalHmiSnapshot(data);
-  },2600);
-
-  return true;
+function evidenceIdentity(data){
+  return {
+    name:String(data?.auditor?.name||'Auditor'),
+    matricula:String(data?.auditor?.matricula||'—')
+  };
 }
 
-function revealFinalFlag(flag,value,delayMs=0){
-  if(!flag||!value)return;
+function drawEvidenceStamp(ctx,width,height,data){
+  const identity=evidenceIdentity(data);
+  const capturedAt=new Intl.DateTimeFormat('es-MX',{
+    year:'numeric',month:'2-digit',day:'2-digit',
+    hour:'2-digit',minute:'2-digit',second:'2-digit',
+    hour12:false
+  }).format(new Date());
 
-  if(delayMs<=0){
-    flag.textContent='· '+String(value);
-    flag.hidden=false;
-    return;
-  }
+  const pad=Math.max(14,Math.round(width*.012));
+  const boxH=Math.max(92,Math.round(height*.105));
+  const boxW=Math.min(width-pad*2,Math.max(610,Math.round(width*.66)));
+  const x=pad;
+  const y=height-boxH-pad;
 
-  if(vuln20FlagRevealTimer)return;
+  ctx.save();
+  ctx.fillStyle='rgba(7,12,18,.90)';
+  ctx.strokeStyle='rgba(255,77,84,.95)';
+  ctx.lineWidth=Math.max(2,Math.round(width/1100));
+  ctx.fillRect(x,y,boxW,boxH);
+  ctx.strokeRect(x,y,boxW,boxH);
 
-  vuln20FlagRevealTimer=setTimeout(()=>{
-    flag.textContent='· '+String(value);
-    flag.hidden=false;
-    vuln20FlagRevealTimer=null;
-  },delayMs);
+  const titleSize=Math.max(17,Math.round(width/88));
+  const textSize=Math.max(13,Math.round(width/118));
+
+  ctx.fillStyle='#ff666d';
+  ctx.font='800 '+titleSize+'px Arial, sans-serif';
+  ctx.fillText('INTERAFAS · EVIDENCIA OPERACIONAL · VULN-20',x+16,y+27);
+
+  ctx.fillStyle='#ffffff';
+  ctx.font='700 '+textSize+'px Arial, sans-serif';
+  ctx.fillText('AUDITOR: '+identity.name,x+16,y+52);
+  ctx.fillText('MATRÍCULA: '+identity.matricula,x+16,y+75);
+
+  ctx.fillStyle='#c9d3da';
+  ctx.textAlign='right';
+  ctx.fillText('CATASTROPHIC STATE',x+boxW-16,y+52);
+  ctx.fillText(capturedAt,x+boxW-16,y+75);
+  ctx.restore();
 }
-
 
 function replaceCanvasCopies(sourceRoot,cloneRoot){
   const sourceCanvases=[...sourceRoot.querySelectorAll('canvas')];
@@ -726,6 +684,7 @@ async function renderViewportSnapshot(data){
     ctx.fillStyle='#260606';
     ctx.fillRect(0,0,outWidth,outHeight);
     ctx.drawImage(image,0,0,outWidth,outHeight);
+    drawEvidenceStamp(ctx,outWidth,outHeight,data);
 
     return {
       image:canvas.toDataURL('image/jpeg',.88),
@@ -784,6 +743,8 @@ function fallbackOperationalSnapshot(data){
   ctx.font='800 17px Arial';
   ctx.fillText('OPERATIONAL SNAPSHOT · RTU-GW-07 · AUTOMATED EVIDENCE CAPTURE',42,704);
 
+  drawEvidenceStamp(ctx,1280,720,data);
+
   return {
     image:canvas.toDataURL('image/jpeg',.9),
     width:1280,
@@ -822,7 +783,7 @@ async function publishFinalHmiSnapshot(data){
     const result=await response.json();
 
     if(response.ok&&result.ok){
-      markSnapshotComplete('internal');
+      markSnapshotComplete();
     }else{
       throw new Error(result.error||'snapshot-publication-failed');
     }
@@ -847,15 +808,6 @@ function applyTelemetry(data){
       if(banner)banner.hidden=true;
       stopDangerNotifications();
       sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
-      vuln20EvidenceRequestPending=false;
-      if(vuln20EvidenceFallbackTimer){
-        clearTimeout(vuln20EvidenceFallbackTimer);
-        vuln20EvidenceFallbackTimer=null;
-      }
-      if(vuln20FlagRevealTimer){
-        clearTimeout(vuln20FlagRevealTimer);
-        vuln20FlagRevealTimer=null;
-      }
       if(window.INTERAFAS_AUDIO){
         window.INTERAFAS_AUDIO.broadcastStage?.(0,false);
         if(window.name!=='INTERAFAS_HMI')window.INTERAFAS_AUDIO.setStage(0,false);
@@ -923,18 +875,15 @@ function applyTelemetry(data){
   }
 
   const flag=document.getElementById('vuln20-title-flag');
-  const preparedEvidence=(stage>=5 && !!data.final_flag && preparedFullScreenEvidence());
-
   if(flag && data.final_flag){
-    revealFinalFlag(flag,data.final_flag,preparedEvidence?1500:0);
+    flag.textContent='· '+String(data.final_flag);
+    flag.hidden=false;
   }
 
   renderIncidentStats(data);
 
   if(stage>=5 && data.final_flag){
-    if(!requestFullScreenEvidence(data)){
-      publishFinalHmiSnapshot(data);
-    }
+    publishFinalHmiSnapshot(data);
   }
 
   pushHistory();
