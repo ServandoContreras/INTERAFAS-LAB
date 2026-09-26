@@ -29,6 +29,7 @@ STATE={
         "version":"3.4.2",
         "mode":"NORMAL",
         "diagnostic":"LOCKED",
+        "pressure_setpoint_bar":4.2,
         "updated_at":None
     }
 }
@@ -48,7 +49,7 @@ CASCADE=[
         "alarm_names":["FIRMWARE_STATE_MISMATCH","RTU_COMMAND_RATE_HIGH"]
     },
     {
-        "after":5,
+        "after":3,
         "label":"CONTROL INSTABILITY",
         "flow":1080,
         "pressure":5.3,
@@ -61,7 +62,7 @@ CASCADE=[
         "alarm_names":["PRESSURE_HIGH","FLOW_DEVIATION","PUMP_SEQUENCE_CONFLICT","RTU_COMMAND_RATE_HIGH"]
     },
     {
-        "after":10,
+        "after":6,
         "label":"PROCESS CASCADE",
         "flow":1320,
         "pressure":6.1,
@@ -74,7 +75,7 @@ CASCADE=[
         "alarm_names":["PRESSURE_HIGH_HIGH","FLOW_HIGH","VALVE_POSITION_CONFLICT","PUMP_INTERLOCK_BYPASS","QUALITY_SAMPLE_LOSS"]
     },
     {
-        "after":15,
+        "after":9,
         "label":"METROPOLITAN PROPAGATION",
         "flow":1560,
         "pressure":7.0,
@@ -87,7 +88,7 @@ CASCADE=[
         "alarm_names":["PRESSURE_HIGH_HIGH","FLOW_HIGH_HIGH","PLC_STATE_CONFLICT","RTU_TIMEOUT_STORM","ZONE_A_SUPPLY_RISK","ZONE_B_SUPPLY_RISK"]
     },
     {
-        "after":20,
+        "after":12,
         "label":"SYSTEMIC FAILURE",
         "flow":1810,
         "pressure":7.9,
@@ -100,7 +101,7 @@ CASCADE=[
         "alarm_names":["PRESSURE_HIGH_HIGH","PUMP_OVERSPEED","VALVE_COMMAND_STORM","PLC_WATCHDOG","RTU_TIMEOUT_STORM","QUALITY_UNSAFE"]
     },
     {
-        "after":25,
+        "after":15,
         "label":"CATASTROPHIC STATE",
         "flow":1980,
         "pressure":8.7,
@@ -237,21 +238,32 @@ class H(BaseHTTPRequestHandler):
                 return self._send(400,{"ok":False,"error":"version_required"})
 
             previous=dict(STATE['firmware'])
-            mode=str(pkg.get('mode','NORMAL'))[:32].upper()
-            diagnostic=str(pkg.get('diagnostic','LOCKED'))[:32].upper()
+            mode=str(pkg.get('mode',previous.get('mode','NORMAL')))[:32].upper()
+            diagnostic=str(pkg.get('diagnostic',previous.get('diagnostic','LOCKED')))[:32].upper()
+
+            try:
+                pressure_setpoint=float(pkg.get('pressure_setpoint_bar',previous.get('pressure_setpoint_bar',4.2)))
+            except Exception:
+                return self._send(400,{"ok":False,"error":"invalid_pressure_setpoint"})
 
             STATE['firmware']={
                 "device":"RTU-GW-07",
                 "version":version,
                 "mode":mode,
                 "diagnostic":diagnostic,
+                "pressure_setpoint_bar":round(pressure_setpoint,2),
                 "updated_at":int(time.time())
             }
 
-            if mode=="CASCADE":
+            unsafe_setpoint=abs(pressure_setpoint-4.2)>=0.1
+
+            if unsafe_setpoint:
                 STATE["incident"]={
                     "active":True,
                     "profile":"CASCADE",
+                    "trigger":"pressure_setpoint_bar",
+                    "requested_value":round(pressure_setpoint,2),
+                    "baseline_value":4.2,
                     "started_at":time.time(),
                     "stage":0,
                     "stage_label":"INITIALIZATION ANOMALY",
@@ -259,13 +271,14 @@ class H(BaseHTTPRequestHandler):
                     "elapsed_seconds":0
                 }
                 refresh_process()
-            elif previous.get("mode")=="CASCADE":
+            elif STATE.get("incident",{}).get("active"):
                 reset_process()
                 STATE['firmware']={
                     "device":"RTU-GW-07",
                     "version":version,
                     "mode":mode,
                     "diagnostic":diagnostic,
+                    "pressure_setpoint_bar":round(pressure_setpoint,2),
                     "updated_at":int(time.time())
                 }
 
