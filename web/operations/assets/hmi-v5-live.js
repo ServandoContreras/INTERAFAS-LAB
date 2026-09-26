@@ -265,12 +265,14 @@ function applyTelemetry(data){
       setCascadeClass(-1);
       const banner=document.getElementById('cascade-banner');
       if(banner)banner.hidden=true;
+      if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(0,false);
     }
     return;
   }
 
   const stage=clamp(Number(incident.stage||0),0,5);
   live.incidentActive=true;
+  if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(stage,true);
   live.incidentData=data;
   setCascadeClass(stage);
 
