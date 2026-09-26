@@ -2151,16 +2151,17 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
 }
 .asset-chain-state{
   margin-top:12px;
-  padding:8px 10px;
+  padding:9px 10px 10px;
   border:1px solid #375463;
   background:#07161e;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+}
+.asset-chain-head{
   display:flex;
   align-items:center;
   justify-content:space-between;
-  gap:10px;
-  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
+  gap:10px
 }
-.asset-chain-state[hidden]{display:none!important}
 .asset-chain-state span{
   color:#7e99a6;
   font-size:8px;
@@ -2171,8 +2172,35 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   color:#c8dae2;
   font-size:9px
 }
+.asset-chain-track{
+  display:grid;
+  grid-template-columns:repeat(6,1fr);
+  gap:4px;
+  margin-top:8px
+}
+.asset-chain-track i{
+  display:block;
+  height:5px;
+  border:1px solid #294653;
+  background:#10242d;
+  transition:background .16s ease,border-color .16s ease
+}
+.asset-chain-track i.active{
+  border-color:#4c8c72;
+  background:#3f765f
+}
 .asset-chain-state.complete{
   border-color:#3d745d;
   background:#0a2019
 }
 .asset-chain-state.complete strong{color:#72dca4}
+.asset-chain-state.error{
+  border-color:#8c4040;
+  background:#271010
+}
+.asset-chain-state.error strong{color:#ff7777}
+.asset-chain-state.error .asset-chain-track i,
+.asset-chain-track i.error{
+  border-color:#9d4949;
+  background:#6d2727
+}
