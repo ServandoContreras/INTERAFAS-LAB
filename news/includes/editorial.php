@@ -99,8 +99,8 @@ function media_info(string $asset): array {
     return [
       'src'=>'/snapshot.php?key=vuln20-final',
       'fallback'=>'/assets/img/operations-room.svg',
-      'caption'=>'Captura técnica del HMI metropolitano durante el estado crítico de la contingencia.',
-      'credit'=>'Captura operacional / Pulso Metropolitano',
+      'caption'=>'Evidencia visual preservada durante el estado crítico de la contingencia operacional.',
+      'credit'=>'Evidencia operacional / Pulso Metropolitano',
       'source'=>''
     ];
   }
