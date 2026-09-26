@@ -620,7 +620,7 @@ $pressureZones=18;
         </div>
       </div>
       <div class="asset-firmware-context" id="asset-firmware-context" hidden>
-        <span>Legacy firmware profile</span>
+        <span>Firmware parameters</span>
         <strong id="asset-firmware-profile">—</strong>
         <small id="asset-firmware-warning">—</small>
       </div>
