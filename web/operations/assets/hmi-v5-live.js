@@ -9,7 +9,10 @@ const live = {
   tags: {},
   history: {},
   alarms: new Map(),
-  stats: {}
+  stats: {},
+  incidentActive: false,
+  incidentData: null,
+  incidentStage: -1
 };
 
 const COLORS={ok:'ok',warn:'warn',alarm:'alarm',off:'off',service:'service'};
@@ -191,8 +194,96 @@ function renderLogs(){
   }
 }
 
+function setCascadeClass(stage){
+  document.body.classList.remove('cascade-active','cascade-stage-0','cascade-stage-1','cascade-stage-2','cascade-stage-3','cascade-stage-4','cascade-stage-5');
+  if(stage<0)return;
+  document.body.classList.add('cascade-active','cascade-stage-'+stage);
+}
+
+function renderIncidentStats(data){
+  const active=Number(data.alarm_count||0);
+  const availability=Number(data.availability??99.82);
+  const critical=Number(data.stations_critical||0);
+
+  live.stats.active=active;
+  live.stats.availability=availability;
+
+  document.querySelectorAll('[data-live-stat="active"]').forEach(el=>el.textContent=String(active));
+  document.querySelectorAll('[data-live-stat="availability"]').forEach(el=>el.textContent=availability.toFixed(2));
+  document.querySelectorAll('[data-live-updated]').forEach(el=>el.textContent=fmtTime(now()));
+
+  const count=document.getElementById('cascade-alarm-count');
+  const av=document.getElementById('cascade-availability');
+  if(count)count.textContent=active.toLocaleString();
+  if(av)av.textContent=availability.toFixed(2)+'%';
+
+  document.querySelectorAll('[data-cascade-critical]').forEach(el=>el.textContent=String(critical));
+}
+
+function applyTelemetry(data){
+  const incident=data?.incident||{};
+  const active=!!incident.active && String(incident.profile||'').toUpperCase()==='CASCADE';
+
+  if(!active){
+    if(live.incidentActive){
+      live.incidentActive=false;
+      live.incidentData=null;
+      live.incidentStage=-1;
+      setCascadeClass(-1);
+      const banner=document.getElementById('cascade-banner');
+      if(banner)banner.hidden=true;
+    }
+    return;
+  }
+
+  const stage=clamp(Number(incident.stage||0),0,5);
+  live.incidentActive=true;
+  live.incidentData=data;
+  setCascadeClass(stage);
+
+  const banner=document.getElementById('cascade-banner');
+  if(banner)banner.hidden=false;
+  const stageLabel=document.getElementById('cascade-stage-label');
+  if(stageLabel)stageLabel.textContent=String(incident.stage_label||'CASCADE');
+
+  if(live.tags.FLOW)live.tags.FLOW.value=Number(data.flow||0);
+  if(live.tags.PRESS)live.tags.PRESS.value=Number(data.pressure||0);
+  if(live.tags.LEVEL)live.tags.LEVEL.value=Number(data.tank||0);
+  if(live.tags.P101)live.tags.P101.value=String(data.p101||'').toUpperCase()==='ON'?1:0;
+  if(live.tags.P102)live.tags.P102.value=String(data.p102||'').toUpperCase()==='ON'?1:0;
+  if(live.tags.V201)live.tags.V201.value=String(data.v201||'').toUpperCase()==='CLOSED'?0:1;
+  if(live.tags.MODE)live.tags.MODE.value=stage>=4?'EMERGENCY':'CASCADE';
+
+  if(stage>=1){
+    if(live.tags.MOTOR_A)live.tags.MOTOR_A.value=96+stage;
+    if(live.tags.CURRENT_A)live.tags.CURRENT_A.value=174+stage*4;
+    if(live.tags.LATENCY)live.tags.LATENCY.value=68+stage*11;
+  }
+  if(stage>=2){
+    if(live.tags.CHLORINE)live.tags.CHLORINE.value=Math.max(.15,.48-stage*.05);
+    if(live.tags.TURBIDITY)live.tags.TURBIDITY.value=.82+stage*.14;
+    if(live.tags.TEMP)live.tags.TEMP.value=39+stage*1.7;
+  }
+
+  renderTags();
+  renderIncidentStats(data);
+  pushHistory();
+
+  if(stage!==live.incidentStage){
+    live.incidentStage=stage;
+    const sev=stage>=3?'ALARM':'WARN';
+    pushLog(
+      sev,
+      'RTU-GW-07',
+      'Firmware cascade stage '+stage+'/5 · '+String(incident.stage_label||'CASCADE')+
+      ' · '+Number(data.alarm_count||0).toLocaleString()+' active alarms.'
+    );
+  }
+}
+
 function hydraulicTick(){
   live.tick++;
+  if(live.incidentActive){renderTags();pushHistory();return;}
   driftTag(live.tags.FLOW, Math.sin(live.tick/13)*.45);
   driftTag(live.tags.PRESS, Math.sin(live.tick/17)*.003);
   driftTag(live.tags.LEVEL, -.015 + Math.sin(live.tick/60)*.01);
@@ -204,6 +295,7 @@ function hydraulicTick(){
   renderTags();
 }
 function qualityTick(){
+  if(live.incidentActive){renderTags();return;}
   driftTag(live.tags.CHLORINE);
   driftTag(live.tags.TURBIDITY);
   driftTag(live.tags.TEMP);
@@ -212,17 +304,18 @@ function qualityTick(){
   renderTags();
 }
 function commsTick(){
+  if(live.incidentActive){renderTags();return;}
   driftTag(live.tags.LATENCY, Math.sin(live.tick/11)*.4);
   detectAlarms();
   renderTags();
 }
 function statsTick(){
-  recalcStats();
+  if(live.incidentActive){renderIncidentStats(live.incidentData||{});}else{recalcStats();}
   if(document.querySelector('[data-view="trends"].active') && window.INTERAFAS_HMI?.renderTrends){
     window.INTERAFAS_HMI.renderTrends();
   }
 }
-function eventTick(){ maybeEvent(); }
+function eventTick(){ if(!live.incidentActive)maybeEvent(); }
 function jitterLoop(fn,min,max){
   const run=()=>{
     fn();
@@ -257,7 +350,7 @@ function seedLogs(){
   renderLogs();
 }
 
-window.INTERAFAS_LIVE={setStation,pushLog,get tags(){return live.tags;},get history(){return live.history;},get stats(){return live.stats;}};
+window.INTERAFAS_LIVE={setStation,pushLog,applyTelemetry,get tags(){return live.tags;},get history(){return live.history;},get stats(){return live.stats;}};
 document.addEventListener('DOMContentLoaded',()=>{
   buildTags();
   seedLogs();
