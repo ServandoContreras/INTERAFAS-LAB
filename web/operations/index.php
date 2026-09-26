@@ -122,6 +122,7 @@ $pressureZones=18;
     <div class="status-cluster"><span class="status-dot"></span> OPS-NET-20</div>
     <div class="status-cluster"><span class="status-dot"></span> 12 / 12 STATIONS ONLINE</div>
     <div class="status-cluster"><span class="status-dot <?=strtoupper((string)($fw['diagnostic']??''))==='SERVICE'?'warn':''?>"></span> <?=htmlspecialchars((string)($fw['diagnostic']??'NORMAL'))?></div>
+    <button type="button" class="hmi-audio-toggle" id="hmi-audio-toggle" title="Alarm audio">ЗВУК · НАЖАТЬ</button>
   </div>
   <div class="hmi-operator">
     <div class="who"><strong><?=htmlspecialchars((string)($ops['display_name']??$ops['username']??'Operador'))?></strong><span><?=htmlspecialchars((string)($ops['role']??'operator'))?> · <b data-ops-clock>--:--:--</b></span></div>
@@ -811,7 +812,9 @@ $pressureZones=18;
 <script src="/operations/assets/ops-client.php"></script>
 <script>window.INTERAFAS_STATIONS=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
 <script src="/operations/assets/hmi-v4.js"></script>
-<script src="/operations/assets/hmi-v5-live.js"></script>\n<script src="/operations/assets/hmi-v6-scale.js"></script>
+<script src="/operations/assets/hmi-v5-live.js"></script>
+<script src="/operations/assets/hmi-audio.js"></script>
+<script src="/operations/assets/hmi-v6-scale.js"></script>
 <script src="/operations/assets/hmi-ru.js"></script>
 <script>
 const stations=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;
