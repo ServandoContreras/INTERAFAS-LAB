@@ -2205,62 +2205,210 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   background:#6d2727
 }
 
-
-/* VULN-20 — commissioning loop test */
-.asset-maintenance-action{
+/* VULN-20 — malicious firmware cascade */
+.asset-firmware-context{
   margin-top:10px;
-  padding:9px 10px;
-  border:1px solid #625a31;
-  background:#201d0d;
-  display:flex;
-  align-items:center;
-  justify-content:space-between;
-  gap:10px
+  padding:10px;
+  border:1px solid #77582f;
+  background:#21170c;
+  display:grid;
+  gap:4px;
+  font-family:ui-monospace,SFMono-Regular,Consolas,monospace
 }
-.asset-maintenance-action[hidden]{display:none!important}
-.asset-maintenance-action>div{
-  display:flex;
-  flex-direction:column;
-  gap:3px
-}
-.asset-maintenance-action span{
-  color:#968d58;
+.asset-firmware-context[hidden]{display:none!important}
+.asset-firmware-context span{
+  color:#b18c54;
   font-size:8px;
   text-transform:uppercase;
-  letter-spacing:.06em
+  letter-spacing:.07em
 }
-.asset-maintenance-action strong{
-  color:#ded6a0;
-  font:700 9px ui-monospace,SFMono-Regular,Consolas,monospace
+.asset-firmware-context strong{
+  color:#ffd28a;
+  font-size:11px
 }
-.asset-maintenance-action button{
-  appearance:none;
-  border:1px solid #847a3b;
-  background:#302b10;
-  color:#f0e7a7;
-  padding:6px 9px;
-  cursor:pointer;
-  font:700 9px ui-monospace,SFMono-Regular,Consolas,monospace;
-  letter-spacing:.03em
+.asset-firmware-context small{
+  color:#bfa98a;
+  font-size:8px;
+  line-height:1.45
 }
-.asset-maintenance-action button:hover{
-  background:#403916;
-  border-color:#b0a34e
+.firmware-locked{opacity:.48}
+.firmware-locked:hover{opacity:.7}
+
+.cascade-banner{
+  position:fixed;
+  left:218px;
+  right:0;
+  top:58px;
+  z-index:9999;
+  min-height:34px;
+  padding:7px 18px;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:16px;
+  border-bottom:1px solid #8b3030;
+  background:#421010;
+  color:#ffd8d8;
+  font:800 11px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.06em;
+  text-transform:uppercase;
+  box-shadow:0 6px 18px rgba(0,0,0,.42)
 }
-.loop-test-actions{
-  display:grid;
-  grid-template-columns:1fr 1fr;
-  gap:8px;
-  margin:14px 0 10px
+.cascade-banner[hidden]{display:none!important}
+.cascade-banner strong{color:#ff7777}
+.cascade-banner b{color:#fff}
+.cascade-active .hmi-main{padding-top:34px}
+
+.cascade-active .hmi-topbar{
+  border-bottom-color:#6f2c2c
 }
-.loop-test-result{
-  margin:0;
-  max-height:220px;
-  overflow:auto;
-  padding:10px;
-  border:1px solid #29434f;
-  background:#06141a;
-  color:#a9c4cf;
-  white-space:pre-wrap;
-  font:9px/1.5 ui-monospace,SFMono-Regular,Consolas,monospace
+.cascade-active .status-dot{
+  background:#d84949!important;
+  box-shadow:0 0 8px rgba(216,73,73,.75)!important
+}
+.cascade-active .live-event-ticker{
+  border-color:#6c2929!important
+}
+.cascade-active .sev-badge{
+  border-color:#8f3535
+}
+
+.cascade-stage-1 .metric,
+.cascade-stage-1 .process-status-strip>div,
+.cascade-stage-1 .pid-panel{
+  border-color:#6a3535!important
+}
+.cascade-stage-1 [data-live-stat="active"],
+.cascade-stage-1 [data-live-tag="PRESS"]{
+  color:#ff9a9a!important
+}
+
+.cascade-stage-2 .metric,
+.cascade-stage-2 .panel,
+.cascade-stage-2 .pid-panel,
+.cascade-stage-2 .process-status-strip>div{
+  border-color:#803737!important
+}
+.cascade-stage-2 .pid-canvas{
+  box-shadow:inset 0 0 42px rgba(120,22,22,.16)
+}
+.cascade-stage-2 .pilot{
+  background:#d14a4a!important;
+  box-shadow:0 0 8px rgba(209,74,74,.65)!important
+}
+
+.cascade-stage-3 .hmi-sidebar,
+.cascade-stage-3 .panel,
+.cascade-stage-3 .metric,
+.cascade-stage-3 .pid-panel,
+.cascade-stage-3 .tech-strip>div,
+.cascade-stage-3 .station-card{
+  border-color:#963a3a!important
+}
+.cascade-stage-3 .nav-item{
+  color:#ffc2c2
+}
+.cascade-stage-3 .nav-glyph,
+.cascade-stage-3 .warn-text,
+.cascade-stage-3 .state-warn{
+  color:#ff7777!important
+}
+.cascade-stage-3 .pipe.flow-active{
+  filter:hue-rotate(125deg) saturate(2.5)
+}
+
+.cascade-stage-4 .hmi-topbar,
+.cascade-stage-4 .hmi-sidebar,
+.cascade-stage-4 .workspace,
+.cascade-stage-4 .panel,
+.cascade-stage-4 .metric,
+.cascade-stage-4 .pid-panel,
+.cascade-stage-4 .process-status-strip>div,
+.cascade-stage-4 .tech-strip>div,
+.cascade-stage-4 .station-card,
+.cascade-stage-4 .analytics-card{
+  border-color:#b43c3c!important
+}
+.cascade-stage-4 .panel,
+.cascade-stage-4 .metric,
+.cascade-stage-4 .pid-panel,
+.cascade-stage-4 .station-card,
+.cascade-stage-4 .analytics-card{
+  background-image:linear-gradient(rgba(95,13,13,.20),rgba(95,13,13,.20))!important
+}
+.cascade-stage-4 .state-ok,
+.cascade-stage-4 .ok-text{
+  color:#ff8d8d!important
+}
+.cascade-stage-4 .pilot,
+.cascade-stage-4 .status-dot{
+  background:#ef4444!important
+}
+
+.cascade-stage-5{
+  background:#260606!important
+}
+.cascade-stage-5 .hmi-app,
+.cascade-stage-5 .workspace,
+.cascade-stage-5 .hmi-main{
+  background:#260606!important
+}
+.cascade-stage-5 .hmi-topbar,
+.cascade-stage-5 .hmi-sidebar{
+  background:#310808!important;
+  border-color:#d44848!important
+}
+.cascade-stage-5 .panel,
+.cascade-stage-5 .metric,
+.cascade-stage-5 .pid-panel,
+.cascade-stage-5 .pid-canvas,
+.cascade-stage-5 .process-status-strip>div,
+.cascade-stage-5 .tech-strip>div,
+.cascade-stage-5 .station-card,
+.cascade-stage-5 .analytics-card,
+.cascade-stage-5 .zone,
+.cascade-stage-5 .node,
+.cascade-stage-5 .job-card,
+.cascade-stage-5 .maintenance-kpis>div{
+  background:#3a0909!important;
+  border-color:#df4b4b!important;
+  box-shadow:inset 0 0 20px rgba(255,0,0,.08)!important
+}
+.cascade-stage-5 .nav-item,
+.cascade-stage-5 .panel-head,
+.cascade-stage-5 .page-head,
+.cascade-stage-5 .breadcrumb,
+.cascade-stage-5 .metric label,
+.cascade-stage-5 .metric strong,
+.cascade-stage-5 .metric small,
+.cascade-stage-5 .pid-kv,
+.cascade-stage-5 .instrument-list,
+.cascade-stage-5 .process-status-strip,
+.cascade-stage-5 .tech-strip,
+.cascade-stage-5 .data-table,
+.cascade-stage-5 .muted{
+  color:#ffd2d2!important
+}
+.cascade-stage-5 .state-ok,
+.cascade-stage-5 .ok-text,
+.cascade-stage-5 .state-warn,
+.cascade-stage-5 .warn-text,
+.cascade-stage-5 [class*="state-"]{
+  color:#ff6262!important
+}
+.cascade-stage-5 .pilot,
+.cascade-stage-5 .status-dot,
+.cascade-stage-5 .legend-dot,
+.cascade-stage-5 .rack-modules i{
+  background:#ff3d3d!important;
+  box-shadow:0 0 10px rgba(255,61,61,.85)!important
+}
+.cascade-stage-5 .cascade-banner{
+  background:#8f1010;
+  border-bottom-color:#ff5b5b;
+  animation:cascadePulse .7s ease-in-out infinite alternate
+}
+@keyframes cascadePulse{
+  from{box-shadow:0 4px 14px rgba(255,0,0,.2)}
+  to{box-shadow:0 4px 28px rgba(255,0,0,.65)}
 }
