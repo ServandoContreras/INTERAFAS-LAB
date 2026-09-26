@@ -2506,21 +2506,94 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   background:#11181c;
   color:#839198
 }
-.hmi-audio-test{
-  appearance:none;
-  border:1px solid #b13f48;
-  background:#791b23;
+
+
+/* VULN-20 — multilingual danger notification cascade */
+.cascade-notify-stack{
+  position:fixed;
+  top:102px;
+  right:18px;
+  z-index:12000;
+  width:min(390px,calc(100vw - 36px));
+  display:flex;
+  flex-direction:column;
+  gap:8px;
+  pointer-events:none
+}
+.cascade-notify-toast{
+  display:grid;
+  grid-template-columns:42px 1fr;
+  gap:10px;
+  align-items:center;
+  min-height:66px;
+  padding:10px 12px 10px 10px;
+  border:1px solid #ff5a63;
+  border-left:4px solid #ff2936;
+  border-radius:5px;
+  background:
+    linear-gradient(90deg,rgba(160,9,18,.97),rgba(89,7,13,.97));
   color:#fff;
-  padding:5px 8px;
-  border-radius:3px;
-  cursor:pointer;
-  font:900 9px ui-monospace,SFMono-Regular,Consolas,monospace;
-  letter-spacing:.07em;
+  box-shadow:0 10px 32px rgba(0,0,0,.52),0 0 18px rgba(255,24,38,.18);
+  transform:translateX(34px) scale(.985);
+  opacity:0;
+  transition:transform .22s ease,opacity .22s ease;
+  font-family:Inter,Segoe UI,Arial,sans-serif
+}
+.cascade-notify-toast.show{
+  transform:translateX(0) scale(1);
+  opacity:1
+}
+.cascade-notify-toast.leaving{
+  transform:translateX(46px) scale(.98);
+  opacity:0
+}
+.cascade-notify-icon{
+  width:36px;
+  height:36px;
+  display:grid;
+  place-items:center;
+  border:2px solid #fff;
+  border-radius:50%;
+  color:#fff;
+  font:900 24px/1 ui-monospace,SFMono-Regular,Consolas,monospace;
+  box-shadow:0 0 12px rgba(255,255,255,.16)
+}
+.cascade-notify-copy{min-width:0}
+.cascade-notify-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:10px;
+  margin-bottom:4px
+}
+.cascade-notify-head strong{
+  font-size:13px;
+  letter-spacing:.08em;
   text-transform:uppercase
 }
-.hmi-audio-test:hover{background:#98232d}
-.cascade-active .hmi-audio-test{
-  border-color:#ff626a;
-  background:#9b101c;
-  box-shadow:0 0 12px rgba(255,45,58,.36)
+.cascade-notify-head span{
+  color:#ffc7ca;
+  font:800 8px ui-monospace,SFMono-Regular,Consolas,monospace;
+  letter-spacing:.06em;
+  white-space:nowrap
+}
+.cascade-notify-copy p{
+  margin:0;
+  color:#ffe9ea;
+  font-size:10px;
+  line-height:1.35;
+  letter-spacing:.025em
+}
+.cascade-stage-4 .cascade-notify-toast,
+.cascade-stage-5 .cascade-notify-toast{
+  border-color:#ff858b;
+  background:linear-gradient(90deg,rgba(197,8,20,.99),rgba(112,4,12,.99));
+  box-shadow:0 12px 36px rgba(0,0,0,.56),0 0 24px rgba(255,24,38,.30)
+}
+.cascade-stage-5 .cascade-notify-icon{
+  animation:cascadeNotifyPulse .52s ease-in-out infinite alternate
+}
+@keyframes cascadeNotifyPulse{
+  from{transform:scale(.96);box-shadow:0 0 5px rgba(255,255,255,.18)}
+  to{transform:scale(1.06);box-shadow:0 0 15px rgba(255,255,255,.48)}
 }
