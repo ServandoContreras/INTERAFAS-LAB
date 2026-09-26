@@ -248,7 +248,6 @@ code{color:#a6dcff}
   <div class="audio-console">
     <span id="hmi-audio-state" class="audio-state" data-audio-state="blocked">BLOQUEADO</span>
     <button type="button" class="btn" id="hmi-audio-toggle">ACTIVAR AUDIO</button>
-    <button type="button" class="btn audio-test" id="hmi-audio-test">PROBAR ALARMA</button>
   </div>
 
   <div class="card">
@@ -280,7 +279,7 @@ code{color:#a6dcff}
   </div>
 </div>
 
-<script src="/operations/assets/hmi-audio.js?v=20260925-war-siren-3"></script>
+<script src="/operations/assets/hmi-audio.js?v=20260925-seismic-1"></script>
 <script>
 (()=>{
   const form=document.getElementById('firmware-install-form');
@@ -297,10 +296,23 @@ code{color:#a6dcff}
     }
 
     try{
-      // Resume audio while we still have the trusted user gesture.
-      if(window.INTERAFAS_AUDIO)await window.INTERAFAS_AUDIO.arm();
-
       const body=new FormData(form);
+
+      // Determine locally whether this package requests a non-baseline setpoint.
+      // If so, start the audible warning in the same trusted user gesture,
+      // before waiting for the HTTP round trip.
+      let localUnsafe=false;
+      try{
+        const pkg=JSON.parse(String(body.get('package')||''));
+        const requested=Number(pkg?.pressure_setpoint_bar);
+        localUnsafe=Number.isFinite(requested) && Math.round(requested*100)!==420;
+      }catch(_){}
+
+      if(window.INTERAFAS_AUDIO){
+        await window.INTERAFAS_AUDIO.enable();
+        if(localUnsafe)window.INTERAFAS_AUDIO.setStage(0,true);
+      }
+
       const response=await fetch('firmware.php',{
         method:'POST',
         body,
@@ -311,6 +323,7 @@ code{color:#a6dcff}
       const data=await response.json();
 
       if(!data.ok){
+        if(localUnsafe && window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
         if(status){
           status.className='action-status critical';
           status.textContent=data.error||'El paquete fue rechazado.';
@@ -326,6 +339,7 @@ code{color:#a6dcff}
         }
         if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.setStage(Number(incident.stage||0),true);
       }else{
+        if(window.INTERAFAS_AUDIO)window.INTERAFAS_AUDIO.stop();
         if(status){
           status.className='action-status active';
           status.textContent=data.message||'Paquete aplicado correctamente.';
