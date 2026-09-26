@@ -12,21 +12,21 @@ let armed=false;
 let stage=-1;
 let active=false;
 let loopTimer=null;
-let lastPatternAt=0;
+let bedNodes=[];
 
 function ensureContext(){
   if(ctx)return ctx;
   ctx=new AudioCtx();
 
   compressor=ctx.createDynamicsCompressor();
-  compressor.threshold.value=-18;
-  compressor.knee.value=12;
-  compressor.ratio.value=5;
-  compressor.attack.value=.003;
-  compressor.release.value=.22;
+  compressor.threshold.value=-20;
+  compressor.knee.value=8;
+  compressor.ratio.value=7;
+  compressor.attack.value=.002;
+  compressor.release.value=.28;
 
   master=ctx.createGain();
-  master.gain.value=.17;
+  master.gain.value=.23;
 
   master.connect(compressor);
   compressor.connect(ctx.destination);
@@ -41,150 +41,285 @@ async function arm(){
     if(armed){
       sessionStorage.setItem('INTERAFAS_AUDIO','1');
       updateButton();
-      if(active && enabled)scheduleStage(true);
+      if(active&&enabled){
+        syncEmergencyBed();
+        scheduleStage(true);
+      }
     }
   }catch(e){}
 }
 
-function envGain(at,duration,peak=.16){
+function connectGain(at,duration,peak=.16,attack=.018,release=.12){
   const g=ctx.createGain();
   g.gain.setValueAtTime(.0001,at);
-  g.gain.exponentialRampToValueAtTime(Math.max(.001,peak),at+.018);
+  g.gain.exponentialRampToValueAtTime(Math.max(.001,peak),at+attack);
+  g.gain.setValueAtTime(Math.max(.001,peak),Math.max(at+attack,at+duration-release));
   g.gain.exponentialRampToValueAtTime(.0001,at+duration);
   g.connect(master);
   return g;
 }
 
-function tone(freq,at,duration=.18,peak=.11,type='sine',detune=0){
+function tone(freq,at,duration=.18,peak=.10,type='sine',detune=0){
   if(!armed||!enabled)return;
   const o=ctx.createOscillator();
-  const g=envGain(at,duration,peak);
+  const g=connectGain(at,duration,peak);
   o.type=type;
   o.frequency.setValueAtTime(freq,at);
   o.detune.setValueAtTime(detune,at);
   o.connect(g);
   o.start(at);
+  o.stop(at+duration+.03);
+}
+
+function horn(freq,at,duration=.34,peak=.14){
+  if(!armed||!enabled)return;
+  tone(freq,at,duration,peak,'sawtooth',-4);
+  tone(freq*1.005,at,duration,peak*.62,'sawtooth',4);
+  tone(freq*2,at+.006,duration*.86,peak*.16,'triangle');
+}
+
+function impact(at,peak=.16){
+  if(!armed||!enabled)return;
+  tone(52,at,.42,peak,'sine');
+  tone(104,at+.006,.28,peak*.40,'triangle');
+  noiseBurst(at,.13,peak*.18,420);
+}
+
+function sweep(from,to,at,duration=.42,peak=.08,type='sawtooth'){
+  if(!armed||!enabled)return;
+  const o=ctx.createOscillator();
+  const f=ctx.createBiquadFilter();
+  const g=connectGain(at,duration,peak,.025,.08);
+  o.type=type;
+  o.frequency.setValueAtTime(Math.max(1,from),at);
+  o.frequency.exponentialRampToValueAtTime(Math.max(1,to),at+duration);
+  f.type='lowpass';
+  f.frequency.value=1800;
+  f.Q.value=1.2;
+  o.connect(f);
+  f.connect(g);
+  o.start(at);
   o.stop(at+duration+.04);
 }
 
-function sweep(from,to,at,duration=.35,peak=.075,type='triangle'){
-  if(!armed||!enabled)return;
-  const o=ctx.createOscillator();
-  const g=envGain(at,duration,peak);
-  o.type=type;
-  o.frequency.setValueAtTime(from,at);
-  o.frequency.exponentialRampToValueAtTime(Math.max(1,to),at+duration);
-  o.connect(g);
-  o.start(at);
-  o.stop(at+duration+.05);
-}
-
-function noiseBurst(at,duration=.16,peak=.035,center=1250){
+function noiseBurst(at,duration=.16,peak=.035,center=1100){
   if(!armed||!enabled)return;
   const frames=Math.max(1,Math.floor(ctx.sampleRate*duration));
   const buffer=ctx.createBuffer(1,frames,ctx.sampleRate);
   const data=buffer.getChannelData(0);
   for(let i=0;i<frames;i++){
-    const taper=1-(i/frames);
-    data[i]=(Math.random()*2-1)*taper;
+    const x=Math.random()*2-1;
+    const taper=Math.pow(1-i/frames,1.7);
+    data[i]=x*taper;
   }
   const src=ctx.createBufferSource();
   const filter=ctx.createBiquadFilter();
-  const g=envGain(at,duration,peak);
+  const g=connectGain(at,duration,peak,.01,.05);
   filter.type='bandpass';
   filter.frequency.setValueAtTime(center,at);
-  filter.Q.value=4.2;
+  filter.Q.value=3.4;
   src.buffer=buffer;
   src.connect(filter);
   filter.connect(g);
   src.start(at);
 }
 
-function lowPulse(at,freq=82,duration=.28,peak=.12){
-  tone(freq,at,duration,peak,'sine');
-  tone(freq*2,at+.008,duration*.78,peak*.28,'triangle');
+function stopBed(){
+  bedNodes.forEach(n=>{
+    try{if(typeof n.stop==='function')n.stop()}catch(e){}
+    try{n.disconnect()}catch(e){}
+  });
+  bedNodes=[];
+}
+
+function makeNoiseLoop(seconds=2){
+  const frames=Math.floor(ctx.sampleRate*seconds);
+  const buffer=ctx.createBuffer(1,frames,ctx.sampleRate);
+  const data=buffer.getChannelData(0);
+  let last=0;
+  for(let i=0;i<frames;i++){
+    const white=Math.random()*2-1;
+    last=last*.93+white*.07;
+    data[i]=last;
+  }
+  const src=ctx.createBufferSource();
+  src.buffer=buffer;
+  src.loop=true;
+  return src;
+}
+
+function startEmergencyBed(level){
+  stopBed();
+  if(!armed||!enabled||!active||level<3)return;
+
+  const t=ctx.currentTime;
+  const bus=ctx.createGain();
+  bus.gain.setValueAtTime(.0001,t);
+  bus.gain.exponentialRampToValueAtTime(level>=5?.22:level===4?.15:.085,t+.35);
+  bus.connect(master);
+  bedNodes.push(bus);
+
+  // Mechanical room rumble.
+  const rumble=ctx.createOscillator();
+  const rumble2=ctx.createOscillator();
+  const low=ctx.createBiquadFilter();
+  const rumbleGain=ctx.createGain();
+  rumble.type='sawtooth';
+  rumble2.type='sawtooth';
+  rumble.frequency.value=level>=5?48:55;
+  rumble2.frequency.value=(level>=5?48:55)*1.018;
+  low.type='lowpass';
+  low.frequency.value=240;
+  low.Q.value=2.8;
+  rumbleGain.gain.value=level>=5?.24:.16;
+  rumble.connect(low);
+  rumble2.connect(low);
+  low.connect(rumbleGain);
+  rumbleGain.connect(bus);
+  rumble.start();
+  rumble2.start();
+  bedNodes.push(rumble,rumble2,low,rumbleGain);
+
+  // Sweeping emergency siren driven continuously by an LFO.
+  const siren=ctx.createOscillator();
+  const sirenGain=ctx.createGain();
+  const sirenFilter=ctx.createBiquadFilter();
+  const freqLfo=ctx.createOscillator();
+  const freqDepth=ctx.createGain();
+  siren.type='sawtooth';
+  siren.frequency.value=level>=5?510:430;
+  freqLfo.type='sine';
+  freqLfo.frequency.value=level>=5?.78:.56;
+  freqDepth.gain.value=level>=5?270:175;
+  freqLfo.connect(freqDepth);
+  freqDepth.connect(siren.frequency);
+  sirenFilter.type='bandpass';
+  sirenFilter.frequency.value=level>=5?760:680;
+  sirenFilter.Q.value=1.2;
+  sirenGain.gain.value=level>=5?.20:.12;
+  siren.connect(sirenFilter);
+  sirenFilter.connect(sirenGain);
+  sirenGain.connect(bus);
+  siren.start();
+  freqLfo.start();
+  bedNodes.push(siren,sirenGain,sirenFilter,freqLfo,freqDepth);
+
+  // Fast metallic modulation makes it feel like a real alarm annunciator.
+  if(level>=4){
+    const carrier=ctx.createOscillator();
+    const metalGain=ctx.createGain();
+    const ampLfo=ctx.createOscillator();
+    const ampDepth=ctx.createGain();
+    carrier.type='square';
+    carrier.frequency.value=level>=5?735:620;
+    metalGain.gain.value=0.0;
+    ampLfo.type='square';
+    ampLfo.frequency.value=level>=5?4.6:3.1;
+    ampDepth.gain.value=level>=5?.055:.032;
+    ampLfo.connect(ampDepth);
+    ampDepth.connect(metalGain.gain);
+    carrier.connect(metalGain);
+    metalGain.connect(bus);
+    carrier.start();
+    ampLfo.start();
+    bedNodes.push(carrier,metalGain,ampLfo,ampDepth);
+  }
+
+  // Filtered machinery-noise layer.
+  const noise=makeNoiseLoop();
+  const nf=ctx.createBiquadFilter();
+  const ng=ctx.createGain();
+  nf.type='bandpass';
+  nf.frequency.value=level>=5?980:760;
+  nf.Q.value=2.1;
+  ng.gain.value=level>=5?.065:.035;
+  noise.connect(nf);
+  nf.connect(ng);
+  ng.connect(bus);
+  noise.start();
+  bedNodes.push(noise,nf,ng);
+}
+
+function syncEmergencyBed(){
+  if(!active||!enabled||!armed||stage<3){
+    stopBed();
+    return;
+  }
+  startEmergencyBed(stage);
 }
 
 function pattern(level){
   if(!armed||!enabled||!active)return;
-  const t=ctx.currentTime+.02;
+  const t=ctx.currentTime+.025;
 
   switch(level){
     case 0:
-      // Clean engineering pre-alarm: expensive two-note acknowledgement.
-      tone(523.25,t,.16,.08,'sine');
-      tone(783.99,t+.115,.22,.07,'triangle');
-      tone(1046.5,t+.135,.16,.025,'sine');
-      noiseBurst(t+.11,.09,.018,1800);
+      // Engineering pre-alarm: clear but unmistakable.
+      impact(t,.075);
+      horn(440,t+.03,.25,.085);
+      tone(660,t+.07,.21,.065,'triangle');
+      horn(554.37,t+.42,.27,.075);
+      tone(830.61,t+.46,.21,.055,'triangle');
       break;
 
     case 1:
-      // Control instability: harmonic double pulse with a restrained low layer.
-      lowPulse(t,92,.24,.085);
-      tone(466.16,t+.02,.18,.08,'triangle');
-      tone(698.46,t+.12,.18,.07,'sine');
-      lowPulse(t+.43,92,.21,.075);
-      tone(554.37,t+.45,.17,.075,'triangle');
-      tone(830.61,t+.55,.16,.055,'sine');
+      // Control instability: three authoritative horn strikes.
+      impact(t,.11);
+      horn(370,t,.34,.12);
+      horn(494,t+.38,.32,.11);
+      horn(370,t+.76,.34,.12);
+      sweep(740,330,t+.80,.34,.055);
       break;
 
     case 2:
-      // Process cascade: three-part metallic signature.
-      lowPulse(t,78,.34,.11);
-      tone(392,t+.01,.22,.095,'sawtooth');
-      tone(587.33,t+.07,.21,.065,'triangle');
-      noiseBurst(t+.05,.12,.025,1450);
-      tone(493.88,t+.34,.18,.08,'triangle');
-      tone(740,t+.39,.18,.055,'sine');
-      sweep(260,520,t+.62,.28,.05,'triangle');
+      // Process cascade: dual klaxon with falling annunciator sweep.
+      impact(t,.145);
+      horn(330,t,.42,.145);
+      tone(660,t+.02,.34,.065,'square');
+      horn(440,t+.46,.39,.135);
+      tone(880,t+.48,.30,.055,'triangle');
+      noiseBurst(t+.43,.18,.045,1050);
+      sweep(1180,280,t+.88,.48,.09);
       break;
 
     case 3:
-      // Metropolitan propagation: asymmetric urgent motif.
-      lowPulse(t,72,.38,.13);
-      tone(349.23,t,.2,.1,'sawtooth');
-      tone(523.25,t+.055,.2,.065,'triangle');
-      tone(698.46,t+.11,.18,.045,'sine');
-      noiseBurst(t+.08,.14,.035,1120);
-      lowPulse(t+.38,86,.25,.09);
-      tone(440,t+.39,.18,.09,'square');
-      tone(659.25,t+.47,.18,.055,'triangle');
-      sweep(820,310,t+.68,.32,.055,'sawtooth');
+      // Metropolitan propagation: urgent asymmetric master alarm.
+      impact(t,.18);
+      horn(294,t,.46,.16);
+      horn(392,t+.31,.42,.15);
+      horn(523,t+.64,.38,.14);
+      noiseBurst(t+.28,.18,.055,860);
+      sweep(980,245,t+.94,.52,.105);
       break;
 
     case 4:
-      // Systemic failure: denser, lower, harder-edged.
-      lowPulse(t,62,.46,.15);
-      tone(311.13,t,.19,.11,'square');
-      tone(466.16,t+.045,.19,.075,'sawtooth');
-      noiseBurst(t+.02,.16,.045,920);
-      tone(622.25,t+.22,.16,.075,'triangle');
-      lowPulse(t+.39,74,.31,.115);
-      tone(370,t+.40,.17,.105,'square');
-      tone(554.37,t+.47,.17,.07,'triangle');
-      sweep(980,245,t+.67,.34,.065,'sawtooth');
+      // Systemic failure: heavy klaxon over continuous siren bed.
+      impact(t,.21);
+      horn(262,t,.48,.18);
+      horn(349,t+.28,.46,.17);
+      horn(466,t+.56,.43,.16);
+      tone(698,t+.58,.37,.075,'square');
+      sweep(1250,220,t+.92,.56,.12);
+      noiseBurst(t+.16,.25,.065,720);
       break;
 
     default:
-      // Catastrophic signature: low impact + dissonant precision tones.
-      lowPulse(t,55,.52,.17);
-      tone(293.66,t,.22,.12,'square');
-      tone(440,t+.035,.22,.085,'sawtooth');
-      tone(622.25,t+.07,.19,.06,'triangle');
-      noiseBurst(t+.02,.18,.052,760);
-      sweep(1180,210,t+.27,.42,.075,'sawtooth');
-      lowPulse(t+.52,69,.33,.13);
-      tone(329.63,t+.53,.17,.105,'square');
-      tone(493.88,t+.59,.17,.075,'triangle');
-      tone(739.99,t+.65,.14,.048,'sine');
+      // Catastrophic: master emergency signature.
+      impact(t,.24);
+      horn(220,t,.52,.20);
+      horn(330,t+.21,.48,.19);
+      horn(440,t+.43,.45,.18);
+      horn(587,t+.65,.41,.17);
+      tone(880,t+.67,.34,.085,'square');
+      noiseBurst(t+.10,.31,.075,620);
+      sweep(1450,190,t+.94,.62,.14);
+      impact(t+1.18,.17);
       break;
   }
-
-  lastPatternAt=performance.now();
 }
 
 function intervalFor(level){
-  return [4200,3200,2350,1700,1200,900][Math.max(0,Math.min(5,level))];
+  return [3600,2700,2050,1600,1250,1050][Math.max(0,Math.min(5,level))];
 }
 
 function clearLoop(){
@@ -197,37 +332,40 @@ function clearLoop(){
 function scheduleStage(immediate=false){
   clearLoop();
   if(!active||!enabled||!armed)return;
+
   const run=()=>{
     if(!active||!enabled||!armed)return;
     pattern(stage);
     loopTimer=setTimeout(run,intervalFor(stage));
   };
+
   if(immediate)run();
-  else loopTimer=setTimeout(run,Math.min(700,intervalFor(stage)));
+  else loopTimer=setTimeout(run,260);
 }
 
 function transition(level){
   if(!armed||!enabled)return;
   const t=ctx.currentTime+.015;
-  // Short escalation cue distinct from repeating alarm motif.
-  tone(330+level*42,t,.10,.055,'sine');
-  tone(495+level*58,t+.075,.13,.05,'triangle');
-  sweep(210+level*30,520+level*75,t+.14,.22,.035,'triangle');
+  impact(t,.12+level*.018);
+  sweep(260+level*38,780+level*95,t+.04,.32,.065+level*.008,'sawtooth');
+  tone(392+level*36,t+.09,.24,.065,'square');
 }
 
 function setStage(nextStage,isActive=true){
   const ns=Math.max(0,Math.min(5,Number(nextStage)||0));
-  const changed=ns!==stage || isActive!==active;
+  const changed=ns!==stage||isActive!==active;
   stage=ns;
   active=!!isActive;
 
   if(!active){
     clearLoop();
+    stopBed();
     return;
   }
 
-  if(changed && armed && enabled){
+  if(changed&&armed&&enabled){
     transition(stage);
+    syncEmergencyBed();
     scheduleStage(false);
   }
 }
@@ -236,6 +374,7 @@ function silence(){
   enabled=false;
   sessionStorage.setItem('INTERAFAS_AUDIO','0');
   clearLoop();
+  stopBed();
   updateButton();
 }
 
@@ -244,11 +383,14 @@ async function enable(){
   sessionStorage.setItem('INTERAFAS_AUDIO','1');
   await arm();
   updateButton();
-  if(active && armed)scheduleStage(true);
+  if(active&&armed){
+    syncEmergencyBed();
+    scheduleStage(true);
+  }
 }
 
 function toggle(){
-  if(enabled && armed)silence();
+  if(enabled&&armed)silence();
   else enable();
 }
 
@@ -265,10 +407,10 @@ function updateButton(){
     btn.title='Alarm audio silenced';
   }else if(armed){
     btn.textContent='ЗВУК · ВКЛ';
-    btn.title='Alarm audio enabled — click to silence';
+    btn.title='Industrial master alarm enabled — click to silence';
   }else{
     btn.textContent='ЗВУК · НАЖАТЬ';
-    btn.title='Click once to enable industrial alarm audio';
+    btn.title='Click once to arm industrial master alarm';
   }
 }
 
@@ -277,7 +419,15 @@ function gestureArm(){
   arm();
 }
 
-window.INTERAFAS_AUDIO={setStage,toggle,enable,silence,arm,get enabled(){return enabled},get armed(){return armed}};
+window.INTERAFAS_AUDIO={
+  setStage,
+  toggle,
+  enable,
+  silence,
+  arm,
+  get enabled(){return enabled},
+  get armed(){return armed}
+};
 
 document.addEventListener('DOMContentLoaded',()=>{
   updateButton();
@@ -289,11 +439,9 @@ document.addEventListener('DOMContentLoaded',()=>{
     toggle();
   });
 
-  // Browsers require a user gesture before unmuted Web Audio can start.
   document.addEventListener('pointerdown',gestureArm,{passive:true});
   document.addEventListener('keydown',gestureArm,{passive:true});
 
-  // Try immediately for browsers/origins where autoplay is already allowed.
   if(enabled)arm();
 });
 })();
