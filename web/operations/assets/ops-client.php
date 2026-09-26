@@ -9,7 +9,7 @@ window.INTERAFAS_OPS = Object.freeze({
   telemetryEndpoint: '/operations/telemetry.php',
   firmwareStatusEndpoint: '/operations/firmware-status.php',
   assetContextEndpoint: '/operations/asset-context.php',
-  refreshInterval: 5000,
+  refreshInterval: 1000,
   firmwareRefreshInterval: 30000
 });
 
