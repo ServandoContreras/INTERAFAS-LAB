@@ -4,7 +4,7 @@ require_operational_network(true);
 $ops=require_operational_auth();
 
 $role=(string)($ops['role']??'');
-$v19Unlocked=($role==='maintenance' && !empty($_SESSION['vuln19_complete']));
+$v19Unlocked=($role==='maintenance' && lab_flag_is_accepted(19));
 $canUseFirmware=($role==='operator' || $v19Unlocked);
 
 if(!$canUseFirmware){
@@ -36,7 +36,7 @@ if(isset($_GET['backup'])){
         'VULN20_FIRMWARE_BACKUP_EXPORTED',
         'Backup de firmware exportado desde la sesión de mantenimiento',
         'RTU-GW-07',
-        ['challenge'=>20,'role'=>$role,'vuln19_complete'=>true,'firmware'=>$backup],
+        ['challenge'=>20,'role'=>$role,'flag19_accepted'=>true,'firmware'=>$backup],
         'ot-hmi',
         'notice',
         0
@@ -58,7 +58,7 @@ lab_event(
     'OT_FIRMWARE_PANEL',
     'Acceso al administrador de firmware',
     'RTU-GW-07',
-    ['role'=>$role,'vuln19_complete'=>$v19Unlocked],
+    ['role'=>$role,'flag19_accepted'=>$v19Unlocked],
     'ot-hmi',
     'notice',
     8
@@ -106,7 +106,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
                         'challenge'=>20,
                         'role'=>$role,
                         'firmware'=>$current,
-                        'vuln19_complete'=>$v19Unlocked
+                        'flag19_accepted'=>$v19Unlocked
                     ],
                     'ot-sim',
                     'critical',
