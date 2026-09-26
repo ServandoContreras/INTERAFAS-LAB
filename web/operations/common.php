@@ -73,7 +73,7 @@ function operational_user(): array {
      * del progreso del intento y no debe perderse por expiración/reinicio
      * de la sesión PHP.
      */
-    if(lab_flag_is_accepted(18)){
+    if(empty($_SESSION['ops_restore_suppressed']) && lab_flag_is_accepted(18)){
         $_SESSION['ops_user']=[
             'id'=>1901,
             'username'=>'service.maintenance',
