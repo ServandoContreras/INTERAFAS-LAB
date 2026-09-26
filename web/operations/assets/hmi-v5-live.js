@@ -692,7 +692,8 @@ async function renderViewportSnapshot(data){
       height:outHeight,
       captured_at:new Date().toISOString(),
       stage:Number(data?.incident?.stage||5),
-      stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE')
+      stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE'),
+      source:'hmi'
     };
   }finally{
     URL.revokeObjectURL(url);
@@ -751,7 +752,8 @@ function fallbackOperationalSnapshot(data){
     height:720,
     captured_at:new Date().toISOString(),
     stage:Number(data?.incident?.stage||5),
-    stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE')
+    stage_label:String(data?.incident?.stage_label||'CATASTROPHIC STATE'),
+    source:'hmi'
   };
 }
 
@@ -817,6 +819,13 @@ function applyTelemetry(data){
   }
 
   const stage=clamp(Number(incident.stage||0),0,5);
+
+  // A new active cascade must be allowed to publish fresh evidence even if
+  // the previous run ended while this HMI window was closed.
+  if(stage<5){
+    sessionStorage.removeItem('INTERAFAS_V20_SNAPSHOT_SENT');
+  }
+
   live.incidentActive=true;
   startDangerNotifications(stage);
   if(window.INTERAFAS_AUDIO){
