@@ -2079,8 +2079,9 @@ INSERT INTO flag_hints(flag_number,hint_order,hint_text) VALUES
 (18,3,'Para un SHA-1 crudo, Hashcat utiliza el modo 100. Guarda únicamente el digest hexadecimal en hash.txt y prueba primero un diccionario controlado: hashcat -m 100 -a 0 hash.txt candidatos.txt. Consulta los resultados con hashcat -m 100 hash.txt --show. John ofrece una alternativa con el formato raw-sha1.'),
 (18,4,'Si el diccionario básico no resuelve el verificador, construye candidatos a partir del contexto observado: función del usuario, dispositivo, versión, build y números asociados. Después aplica reglas de mutación en lugar de saltar directamente a fuerza bruta exhaustiva. Valida cualquier candidato recalculando SHA-1 antes de usarlo.'),
 (18,5,'Valida el candidato recalculando SHA-1 y úsalo únicamente contra el canal de mantenimiento declarado en el manifiesto. Respeta el esquema de autenticación indicado por support y no intentes reutilizar la identidad en el HMI. Después modifica sólo el payload del paquete, recalcula SHA-256 y comprueba si el instalador acepta contenido no aprobado sin verificar una firma del emisor.'),
-(19,1,'Esta bandera no depende de un solo fallo.'),
-(19,2,'Relaciona lo descubierto en web, arquitectura, HMI y mantenimiento para reconstruir una cadena completa.'),
+(19,1,'No busques un endpoint nuevo al azar. Después de obtener una sesión de mantenimiento mediante el estado SERVICE, vuelve al HMI y observa qué solicitudes adicionales realiza el cliente para construir el contexto de la sesión.'),
+(19,2,'El reto exige correlacionar la misma tentativa. Conserva evidencia del cruce del gateway, la telemetría sin sesión y la aceptación del paquete de firmware no auténtico.'),
+(19,3,'Inspecciona la respuesta y los encabezados del servicio de contexto cargado por el HMI. La validación sólo aparece cuando la sesión actual proviene del canal de mantenimiento y la bitácora de la tentativa contiene los saltos previos de la cadena.'),
 (20,1,'El objetivo final es demostrar impacto operacional simulado, no solo acceso.'),
 (20,2,'Busca qué acción autorizada por la cadena previa modifica el estado de P-101 dentro del simulador.')
 ON DUPLICATE KEY UPDATE hint_text=VALUES(hint_text);
