@@ -308,7 +308,8 @@ code{color:#a6dcff}
 
         // Open the operational monitor in the same user gesture. Keeping this
         // firmware tab alive preserves the authorized AudioContext.
-        monitorWindow=window.open('/operations/index.php','INTERAFAS_HMI');
+        monitorWindow=window.open('/operations/index.php','_blank');
+        try{ if(monitorWindow)monitorWindow.name='INTERAFAS_HMI_MONITOR'; }catch(_){}
       }
 
       if(armPromise)await armPromise;
