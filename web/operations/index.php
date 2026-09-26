@@ -160,7 +160,7 @@ $pressureZones=18;
 <section class="view active" data-view="overview">
   <div class="page-head">
     <div><div class="breadcrumb">Operations / Metropolitan Overview</div><h1>Red Metropolitana de Abastecimiento</h1><p>Cerro de San Pablo · Saint Louis · Soledade · supervisión operacional consolidada</p></div>
-    <div class="page-tools"><span class="tool-chip">MODE AUTO</span><span class="tool-chip"><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></span><span class="tool-chip"><?=$totalAlarms?> ACTIVE ALARMS</span></div>
+    <div class="page-tools"><span class="tool-chip">MODE AUTO</span><span class="tool-chip"><?=htmlspecialchars(strtoupper((string)($ops['role']??'operator')))?></span><span class="tool-chip"><b data-live-stat="active" data-decimals="0"><?=$totalAlarms?></b> ACTIVE ALARMS</span></div>
   </div>
 
   <div class="metrics metro-metrics dense">
@@ -578,11 +578,11 @@ $pressureZones=18;
 </section>
 
 <section class="view" data-view="alarms">
-  <div class="page-head"><div><div class="breadcrumb">Process / Alarms</div><h1>Metropolitan Alarm Management</h1><p>Condiciones activas, reconocidas y recientes por estación y servicio OT.</p></div><div class="page-tools"><span class="tool-chip"><?=$totalAlarms?> ACTIVE</span><span class="tool-chip"><?=$unackAlarms?> UNACK</span><span class="tool-chip">0 CRITICAL</span></div></div>
-  <div class="alarm-filter-strip"><span>ALL 12</span><span>HIGH 1</span><span>MEDIUM 3</span><span>LOW 3</span><span>INFO 5</span><span>UNACK <?=$unackAlarms?></span></div>
+  <div class="page-head"><div><div class="breadcrumb">Process / Alarms</div><h1>Metropolitan Alarm Management</h1><p>Condiciones activas, reconocidas y recientes por estación y servicio OT.</p></div><div class="page-tools"><span class="tool-chip"><b data-live-stat="active" data-decimals="0"><?=$totalAlarms?></b> ACTIVE</span><span class="tool-chip"><b id="cascade-unack"><?=$unackAlarms?></b> UNACK</span><span class="tool-chip"><b id="cascade-critical-count">0</b> CRITICAL</span></div></div>
+  <div class="alarm-filter-strip"><span>ALL <b id="cascade-filter-all">12</b></span><span>CRITICAL <b id="cascade-filter-critical">0</b></span><span>HIGH <b id="cascade-filter-high">1</b></span><span>MEDIUM <b id="cascade-filter-medium">3</b></span><span>LOW 3</span><span>UNACK <b id="cascade-filter-unack"><?=$unackAlarms?></b></span></div>
   <div class="panel"><div class="panel-head"><h2>Alarm & Event Queue</h2><span>Priority ordered</span></div><div class="table-wrap"><table class="data-table">
     <thead><tr><th>Time</th><th>Priority</th><th>Station</th><th>Source</th><th>Condition</th><th>State</th></tr></thead>
-    <tbody>
+    <tbody id="cascade-alarm-body">
       <tr><td>11:46:03</td><td class="warn-text">HIGH</td><td>Cerro de San Pablo</td><td>TK-CP-01</td><td>Reservoir level approaching low operating threshold</td><td>UNACK</td></tr>
       <tr><td>11:39:12</td><td class="warn-text">MEDIUM</td><td>Saint Louis</td><td>PRESS-SL-01</td><td>Header pressure high deviation +0.4 bar</td><td>UNACK</td></tr>
       <tr><td>11:28:51</td><td class="warn-text">MEDIUM</td><td>Saint Louis</td><td>RTU-SL-02</td><td>Communication quality degraded</td><td>UNACK</td></tr>
