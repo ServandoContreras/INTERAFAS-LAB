@@ -6,7 +6,9 @@ if(!AudioCtx)return;
 
 let ctx=null;
 let master=null;
+let limiter=null;
 let compressor=null;
+let output=null;
 let enabled=sessionStorage.getItem('INTERAFAS_AUDIO')!=='0';
 let armed=false;
 let stage=-1;
@@ -14,22 +16,47 @@ let active=false;
 let loopTimer=null;
 let bedNodes=[];
 
+function makeSoftClipCurve(amount=4){
+  const n=65536;
+  const curve=new Float32Array(n);
+  for(let i=0;i<n;i++){
+    const x=(i*2/(n-1))-1;
+    curve[i]=Math.tanh(amount*x)/Math.tanh(amount);
+  }
+  return curve;
+}
+
 function ensureContext(){
   if(ctx)return ctx;
   ctx=new AudioCtx();
 
-  compressor=ctx.createDynamicsCompressor();
-  compressor.threshold.value=-20;
-  compressor.knee.value=8;
-  compressor.ratio.value=7;
-  compressor.attack.value=.002;
-  compressor.release.value=.28;
-
+  /*
+   * Internal alarm gain intentionally runs at ~2x nominal level.
+   * The waveshaper + compressor act as a limiter so the signal is dense
+   * rather than simply clipping. Physical loudness is still governed by
+   * browser/OS/device volume.
+   */
   master=ctx.createGain();
-  master.gain.value=.23;
+  master.gain.value=2.0;
 
-  master.connect(compressor);
-  compressor.connect(ctx.destination);
+  limiter=ctx.createWaveShaper();
+  limiter.curve=makeSoftClipCurve(3.2);
+  limiter.oversample='4x';
+
+  compressor=ctx.createDynamicsCompressor();
+  compressor.threshold.value=-8;
+  compressor.knee.value=3;
+  compressor.ratio.value=20;
+  compressor.attack.value=.001;
+  compressor.release.value=.18;
+
+  output=ctx.createGain();
+  output.gain.value=.98;
+
+  master.connect(limiter);
+  limiter.connect(compressor);
+  compressor.connect(output);
+  output.connect(ctx.destination);
   return ctx;
 }
 
@@ -49,20 +76,21 @@ async function arm(){
   }catch(e){}
 }
 
-function connectGain(at,duration,peak=.16,attack=.018,release=.12){
+function env(at,duration,peak=.12,attack=.008,release=.08){
   const g=ctx.createGain();
+  const hold=Math.max(at+attack,at+duration-release);
   g.gain.setValueAtTime(.0001,at);
   g.gain.exponentialRampToValueAtTime(Math.max(.001,peak),at+attack);
-  g.gain.setValueAtTime(Math.max(.001,peak),Math.max(at+attack,at+duration-release));
+  g.gain.setValueAtTime(Math.max(.001,peak),hold);
   g.gain.exponentialRampToValueAtTime(.0001,at+duration);
   g.connect(master);
   return g;
 }
 
-function tone(freq,at,duration=.18,peak=.10,type='sine',detune=0){
+function tone(freq,at,duration=.22,peak=.11,type='sine',detune=0){
   if(!armed||!enabled)return;
   const o=ctx.createOscillator();
-  const g=connectGain(at,duration,peak);
+  const g=env(at,duration,peak);
   o.type=type;
   o.frequency.setValueAtTime(freq,at);
   o.detune.setValueAtTime(detune,at);
@@ -71,57 +99,33 @@ function tone(freq,at,duration=.18,peak=.10,type='sine',detune=0){
   o.stop(at+duration+.03);
 }
 
-function horn(freq,at,duration=.34,peak=.14){
-  if(!armed||!enabled)return;
-  tone(freq,at,duration,peak,'sawtooth',-4);
-  tone(freq*1.005,at,duration,peak*.62,'sawtooth',4);
-  tone(freq*2,at+.006,duration*.86,peak*.16,'triangle');
+function warHorn(freq,at,duration=.55,peak=.13){
+  tone(freq,at,duration,peak,'sawtooth',-7);
+  tone(freq*1.012,at,duration,peak*.78,'sawtooth',7);
+  tone(freq*2.01,at+.01,duration*.88,peak*.22,'square');
 }
 
-function impact(at,peak=.16){
-  if(!armed||!enabled)return;
-  tone(52,at,.42,peak,'sine');
-  tone(104,at+.006,.28,peak*.40,'triangle');
-  noiseBurst(at,.13,peak*.18,420);
+function impact(at,peak=.15){
+  tone(42,at,.55,peak,'sine');
+  tone(84,at+.005,.38,peak*.48,'triangle');
+  tone(126,at+.01,.24,peak*.18,'sawtooth');
 }
 
-function sweep(from,to,at,duration=.42,peak=.08,type='sawtooth'){
+function sweep(from,to,at,duration=.7,peak=.09,type='sawtooth'){
   if(!armed||!enabled)return;
   const o=ctx.createOscillator();
   const f=ctx.createBiquadFilter();
-  const g=connectGain(at,duration,peak,.025,.08);
+  const g=env(at,duration,peak,.02,.09);
   o.type=type;
   o.frequency.setValueAtTime(Math.max(1,from),at);
   o.frequency.exponentialRampToValueAtTime(Math.max(1,to),at+duration);
-  f.type='lowpass';
-  f.frequency.value=1800;
-  f.Q.value=1.2;
+  f.type='bandpass';
+  f.frequency.value=900;
+  f.Q.value=.8;
   o.connect(f);
   f.connect(g);
   o.start(at);
   o.stop(at+duration+.04);
-}
-
-function noiseBurst(at,duration=.16,peak=.035,center=1100){
-  if(!armed||!enabled)return;
-  const frames=Math.max(1,Math.floor(ctx.sampleRate*duration));
-  const buffer=ctx.createBuffer(1,frames,ctx.sampleRate);
-  const data=buffer.getChannelData(0);
-  for(let i=0;i<frames;i++){
-    const x=Math.random()*2-1;
-    const taper=Math.pow(1-i/frames,1.7);
-    data[i]=x*taper;
-  }
-  const src=ctx.createBufferSource();
-  const filter=ctx.createBiquadFilter();
-  const g=connectGain(at,duration,peak,.01,.05);
-  filter.type='bandpass';
-  filter.frequency.setValueAtTime(center,at);
-  filter.Q.value=3.4;
-  src.buffer=buffer;
-  src.connect(filter);
-  filter.connect(g);
-  src.start(at);
 }
 
 function stopBed(){
@@ -132,194 +136,180 @@ function stopBed(){
   bedNodes=[];
 }
 
-function makeNoiseLoop(seconds=2){
-  const frames=Math.floor(ctx.sampleRate*seconds);
-  const buffer=ctx.createBuffer(1,frames,ctx.sampleRate);
-  const data=buffer.getChannelData(0);
-  let last=0;
-  for(let i=0;i<frames;i++){
-    const white=Math.random()*2-1;
-    last=last*.93+white*.07;
-    data[i]=last;
-  }
-  const src=ctx.createBufferSource();
-  src.buffer=buffer;
-  src.loop=true;
-  return src;
-}
-
-function startEmergencyBed(level){
+function continuousAirRaid(level){
   stopBed();
-  if(!armed||!enabled||!active||level<3)return;
+  if(!armed||!enabled||!active)return;
 
   const t=ctx.currentTime;
   const bus=ctx.createGain();
+  const levelGain=[.15,.17,.19,.22,.25,.28][Math.max(0,Math.min(5,level))];
   bus.gain.setValueAtTime(.0001,t);
-  bus.gain.exponentialRampToValueAtTime(level>=5?.22:level===4?.15:.085,t+.35);
+  bus.gain.exponentialRampToValueAtTime(levelGain,t+.06);
   bus.connect(master);
   bedNodes.push(bus);
 
-  // Mechanical room rumble.
-  const rumble=ctx.createOscillator();
-  const rumble2=ctx.createOscillator();
-  const low=ctx.createBiquadFilter();
-  const rumbleGain=ctx.createGain();
-  rumble.type='sawtooth';
-  rumble2.type='sawtooth';
-  rumble.frequency.value=level>=5?48:55;
-  rumble2.frequency.value=(level>=5?48:55)*1.018;
-  low.type='lowpass';
-  low.frequency.value=240;
-  low.Q.value=2.8;
-  rumbleGain.gain.value=level>=5?.24:.16;
-  rumble.connect(low);
-  rumble2.connect(low);
-  low.connect(rumbleGain);
-  rumbleGain.connect(bus);
-  rumble.start();
-  rumble2.start();
-  bedNodes.push(rumble,rumble2,low,rumbleGain);
-
-  // Sweeping emergency siren driven continuously by an LFO.
+  // Main civil-defense / air-raid wail: slow rising/falling sweep.
   const siren=ctx.createOscillator();
-  const sirenGain=ctx.createGain();
   const sirenFilter=ctx.createBiquadFilter();
-  const freqLfo=ctx.createOscillator();
-  const freqDepth=ctx.createGain();
+  const sirenGain=ctx.createGain();
+  const lfo=ctx.createOscillator();
+  const depth=ctx.createGain();
+
   siren.type='sawtooth';
-  siren.frequency.value=level>=5?510:430;
-  freqLfo.type='sine';
-  freqLfo.frequency.value=level>=5?.78:.56;
-  freqDepth.gain.value=level>=5?270:175;
-  freqLfo.connect(freqDepth);
-  freqDepth.connect(siren.frequency);
+  siren.frequency.value=590+level*18;
+  lfo.type='sine';
+  lfo.frequency.value=.20+level*.018;
+  depth.gain.value=330+level*28;
+
+  lfo.connect(depth);
+  depth.connect(siren.frequency);
+
   sirenFilter.type='bandpass';
-  sirenFilter.frequency.value=level>=5?760:680;
-  sirenFilter.Q.value=1.2;
-  sirenGain.gain.value=level>=5?.20:.12;
+  sirenFilter.frequency.value=790;
+  sirenFilter.Q.value=.75;
+  sirenGain.gain.value=.21+level*.012;
+
   siren.connect(sirenFilter);
   sirenFilter.connect(sirenGain);
   sirenGain.connect(bus);
   siren.start();
-  freqLfo.start();
-  bedNodes.push(siren,sirenGain,sirenFilter,freqLfo,freqDepth);
+  lfo.start();
 
-  // Fast metallic modulation makes it feel like a real alarm annunciator.
-  if(level>=4){
-    const carrier=ctx.createOscillator();
-    const metalGain=ctx.createGain();
-    const ampLfo=ctx.createOscillator();
-    const ampDepth=ctx.createGain();
-    carrier.type='square';
-    carrier.frequency.value=level>=5?735:620;
-    metalGain.gain.value=0.0;
-    ampLfo.type='square';
-    ampLfo.frequency.value=level>=5?4.6:3.1;
-    ampDepth.gain.value=level>=5?.055:.032;
-    ampLfo.connect(ampDepth);
-    ampDepth.connect(metalGain.gain);
-    carrier.connect(metalGain);
-    metalGain.connect(bus);
-    carrier.start();
-    ampLfo.start();
-    bedNodes.push(carrier,metalGain,ampLfo,ampDepth);
+  bedNodes.push(siren,sirenFilter,sirenGain,lfo,depth);
+
+  // Second slightly detuned siren produces the unsettling "multiple sirens" effect.
+  const siren2=ctx.createOscillator();
+  const siren2Gain=ctx.createGain();
+  const lfo2=ctx.createOscillator();
+  const depth2=ctx.createGain();
+
+  siren2.type='square';
+  siren2.frequency.value=430+level*14;
+  lfo2.type='sine';
+  lfo2.frequency.value=.235+level*.015;
+  depth2.gain.value=205+level*20;
+
+  lfo2.connect(depth2);
+  depth2.connect(siren2.frequency);
+  siren2Gain.gain.value=.065+level*.008;
+  siren2.connect(siren2Gain);
+  siren2Gain.connect(bus);
+  siren2.start();
+  lfo2.start();
+
+  bedNodes.push(siren2,siren2Gain,lfo2,depth2);
+
+  // Sub-bass machinery / distant blast bed.
+  const drone=ctx.createOscillator();
+  const drone2=ctx.createOscillator();
+  const low=ctx.createBiquadFilter();
+  const dg=ctx.createGain();
+  drone.type='sawtooth';
+  drone2.type='sawtooth';
+  drone.frequency.value=46;
+  drone2.frequency.value=47.3;
+  low.type='lowpass';
+  low.frequency.value=170;
+  low.Q.value=2;
+  dg.gain.value=.10+level*.012;
+  drone.connect(low);
+  drone2.connect(low);
+  low.connect(dg);
+  dg.connect(bus);
+  drone.start();
+  drone2.start();
+
+  bedNodes.push(drone,drone2,low,dg);
+
+  // At critical stages add a rapid mechanical warning chopper.
+  if(level>=3){
+    const chopper=ctx.createOscillator();
+    const cg=ctx.createGain();
+    const gate=ctx.createOscillator();
+    const gd=ctx.createGain();
+
+    chopper.type='square';
+    chopper.frequency.value=720+level*35;
+    cg.gain.value=.0001;
+    gate.type='square';
+    gate.frequency.value=3.2+(level-3)*.65;
+    gd.gain.value=.055+level*.006;
+
+    gate.connect(gd);
+    gd.connect(cg.gain);
+    chopper.connect(cg);
+    cg.connect(bus);
+    chopper.start();
+    gate.start();
+
+    bedNodes.push(chopper,cg,gate,gd);
   }
-
-  // Filtered machinery-noise layer.
-  const noise=makeNoiseLoop();
-  const nf=ctx.createBiquadFilter();
-  const ng=ctx.createGain();
-  nf.type='bandpass';
-  nf.frequency.value=level>=5?980:760;
-  nf.Q.value=2.1;
-  ng.gain.value=level>=5?.065:.035;
-  noise.connect(nf);
-  nf.connect(ng);
-  ng.connect(bus);
-  noise.start();
-  bedNodes.push(noise,nf,ng);
 }
 
 function syncEmergencyBed(){
-  if(!active||!enabled||!armed||stage<3){
+  if(!active||!enabled||!armed){
     stopBed();
     return;
   }
-  startEmergencyBed(stage);
+  continuousAirRaid(stage);
 }
 
 function pattern(level){
   if(!armed||!enabled||!active)return;
-  const t=ctx.currentTime+.025;
+  const t=ctx.currentTime+.01;
+
+  // Every stage has an immediate "master alarm" hit on top of the continuous siren.
+  impact(t,.14+level*.015);
 
   switch(level){
     case 0:
-      // Engineering pre-alarm: clear but unmistakable.
-      impact(t,.075);
-      horn(440,t+.03,.25,.085);
-      tone(660,t+.07,.21,.065,'triangle');
-      horn(554.37,t+.42,.27,.075);
-      tone(830.61,t+.46,.21,.055,'triangle');
+      warHorn(220,t+.02,.62,.12);
+      warHorn(330,t+.36,.55,.11);
+      sweep(980,260,t+.72,.72,.075);
       break;
-
     case 1:
-      // Control instability: three authoritative horn strikes.
-      impact(t,.11);
-      horn(370,t,.34,.12);
-      horn(494,t+.38,.32,.11);
-      horn(370,t+.76,.34,.12);
-      sweep(740,330,t+.80,.34,.055);
+      warHorn(196,t+.02,.68,.13);
+      warHorn(294,t+.30,.62,.125);
+      warHorn(392,t+.59,.54,.115);
+      sweep(1150,240,t+.90,.76,.085);
       break;
-
     case 2:
-      // Process cascade: dual klaxon with falling annunciator sweep.
-      impact(t,.145);
-      horn(330,t,.42,.145);
-      tone(660,t+.02,.34,.065,'square');
-      horn(440,t+.46,.39,.135);
-      tone(880,t+.48,.30,.055,'triangle');
-      noiseBurst(t+.43,.18,.045,1050);
-      sweep(1180,280,t+.88,.48,.09);
+      warHorn(174,t+.02,.72,.14);
+      warHorn(261,t+.27,.68,.135);
+      warHorn(349,t+.54,.62,.13);
+      tone(698,t+.60,.45,.065,'square');
+      sweep(1320,220,t+.94,.80,.095);
       break;
-
     case 3:
-      // Metropolitan propagation: urgent asymmetric master alarm.
-      impact(t,.18);
-      horn(294,t,.46,.16);
-      horn(392,t+.31,.42,.15);
-      horn(523,t+.64,.38,.14);
-      noiseBurst(t+.28,.18,.055,860);
-      sweep(980,245,t+.94,.52,.105);
+      warHorn(164,t+.02,.78,.15);
+      warHorn(246,t+.24,.72,.145);
+      warHorn(329,t+.48,.68,.14);
+      warHorn(493,t+.72,.55,.12);
+      sweep(1450,205,t+1.00,.84,.105);
       break;
-
     case 4:
-      // Systemic failure: heavy klaxon over continuous siren bed.
-      impact(t,.21);
-      horn(262,t,.48,.18);
-      horn(349,t+.28,.46,.17);
-      horn(466,t+.56,.43,.16);
-      tone(698,t+.58,.37,.075,'square');
-      sweep(1250,220,t+.92,.56,.12);
-      noiseBurst(t+.16,.25,.065,720);
+      warHorn(147,t+.02,.84,.16);
+      warHorn(220,t+.22,.80,.155);
+      warHorn(294,t+.44,.74,.15);
+      warHorn(440,t+.66,.66,.135);
+      sweep(1580,190,t+1.02,.88,.115);
+      impact(t+1.12,.17);
       break;
-
     default:
-      // Catastrophic: master emergency signature.
-      impact(t,.24);
-      horn(220,t,.52,.20);
-      horn(330,t+.21,.48,.19);
-      horn(440,t+.43,.45,.18);
-      horn(587,t+.65,.41,.17);
-      tone(880,t+.67,.34,.085,'square');
-      noiseBurst(t+.10,.31,.075,620);
-      sweep(1450,190,t+.94,.62,.14);
-      impact(t+1.18,.17);
+      warHorn(130,t+.02,.90,.18);
+      warHorn(196,t+.20,.86,.17);
+      warHorn(261,t+.40,.82,.165);
+      warHorn(392,t+.61,.74,.15);
+      warHorn(523,t+.82,.66,.135);
+      sweep(1720,175,t+1.05,.95,.13);
+      impact(t+1.16,.19);
+      impact(t+1.55,.17);
       break;
   }
 }
 
 function intervalFor(level){
-  return [3600,2700,2050,1600,1250,1050][Math.max(0,Math.min(5,level))];
+  return [2800,2450,2100,1750,1450,1200][Math.max(0,Math.min(5,level))];
 }
 
 function clearLoop(){
@@ -340,15 +330,14 @@ function scheduleStage(immediate=false){
   };
 
   if(immediate)run();
-  else loopTimer=setTimeout(run,260);
+  else run();
 }
 
 function transition(level){
   if(!armed||!enabled)return;
-  const t=ctx.currentTime+.015;
-  impact(t,.12+level*.018);
-  sweep(260+level*38,780+level*95,t+.04,.32,.065+level*.008,'sawtooth');
-  tone(392+level*36,t+.09,.24,.065,'square');
+  const t=ctx.currentTime+.005;
+  impact(t,.16+level*.012);
+  sweep(210,920+level*90,t+.01,.58,.09+level*.006);
 }
 
 function setStage(nextStage,isActive=true){
@@ -364,9 +353,10 @@ function setStage(nextStage,isActive=true){
   }
 
   if(changed&&armed&&enabled){
+    // No delay: continuous air-raid tone and master hit begin immediately.
     transition(stage);
     syncEmergencyBed();
-    scheduleStage(false);
+    scheduleStage(true);
   }
 }
 
@@ -404,13 +394,13 @@ function updateButton(){
 
   if(!enabled){
     btn.textContent='ЗВУК · ТИШИНА';
-    btn.title='Alarm audio silenced';
+    btn.title='Emergency siren silenced';
   }else if(armed){
     btn.textContent='ЗВУК · ВКЛ';
-    btn.title='Industrial master alarm enabled — click to silence';
+    btn.title='Air-raid master alarm armed — click to silence';
   }else{
     btn.textContent='ЗВУК · НАЖАТЬ';
-    btn.title='Click once to arm industrial master alarm';
+    btn.title='Click once to arm emergency siren';
   }
 }
 
