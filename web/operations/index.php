@@ -604,8 +604,10 @@ $pressureZones=18;
       <div class="kv"><span>Zone</span><strong id="asset-detail-zone">OT Services</strong></div>
       <div class="kv"><span>Function</span><strong id="asset-detail-function">Process data services</strong></div>
       <div class="kv"><span>Platform</span><strong id="asset-detail-vendor">Industrial historian</strong></div>
-      <div class="kv"><span>Related systems</span><strong id="asset-detail-related">PLC-CP-01 · PLC-SL-01 · PLC-SO-01</strong></div>
-      <p class="muted asset-research-note">El inventario expone contexto operativo, no definiciones. La función de cada clase de activo forma parte del análisis técnico del entorno.</p>
+      <div class="kv"><span>Dependency class</span><strong id="asset-detail-class">—</strong></div>
+      <div class="asset-related-block"><span class="asset-related-label">Related systems</span><div id="asset-detail-related" class="asset-related-list">PLC-CP-01 · PLC-SL-01 · PLC-SO-01</div></div>
+      <div class="asset-chain-state" id="asset-chain-state" hidden><span>Dependency path</span><strong id="asset-chain-progress">—</strong></div>
+      <p class="muted asset-research-note">El inventario expone contexto operativo y relaciones observadas entre activos. Selecciona un sistema relacionado para consultar su dependencia.</p>
     </div></aside>
   </div>
 </section>
@@ -821,16 +823,71 @@ function openStation(index){
 document.querySelectorAll('[data-station-open]').forEach(btn=>btn.addEventListener('click',()=>openStation(Number(btn.dataset.stationOpen))));
 document.querySelectorAll('[data-station-card]').forEach((card,i)=>{card.style.cursor='pointer';card.addEventListener('click',e=>{if(e.target.closest('button'))return;openStation(i);});});
 
-document.querySelectorAll('[data-asset-row]').forEach(row=>row.addEventListener('click',()=>{
+async function loadAssetContext(assetId,fallback=null){
+  const set=(id,val)=>{const el=document.getElementById(id);if(el)el.textContent=val??'—';};
+  const related=document.getElementById('asset-detail-related');
+  const chainState=document.getElementById('asset-chain-state');
+  const chainProgress=document.getElementById('asset-chain-progress');
+
+  try{
+    const url=window.INTERAFAS_OPS.assetContextEndpoint+'?asset='+encodeURIComponent(assetId);
+    const response=await fetch(url,{credentials:'same-origin',cache:'no-store'});
+    const data=await response.json();
+
+    if(!response.ok || !data.ok)throw new Error(data.error||'asset-context-unavailable');
+
+    set('asset-detail-id',data.asset);
+    set('asset-detail-type',data.type);
+    set('asset-detail-station',data.station);
+    set('asset-detail-zone',data.zone);
+    set('asset-detail-function',data.function);
+    set('asset-detail-vendor','Operational dependency model');
+    set('asset-detail-class',data.dependency_class);
+
+    if(related){
+      related.innerHTML='';
+      (data.related||[]).forEach(id=>{
+        const btn=document.createElement('button');
+        btn.type='button';
+        btn.className='asset-related-link';
+        btn.dataset.relatedAsset=id;
+        btn.textContent=id;
+        related.appendChild(btn);
+      });
+      if(!(data.related||[]).length)related.textContent='—';
+    }
+
+    if(chainState && chainProgress){
+      const depth=Number(data.path?.depth||0);
+      chainState.hidden=depth===0;
+      chainProgress.textContent=data.path?.complete ? 'COMPLETE · '+depth+'/6' : depth+'/6';
+      chainState.classList.toggle('complete',!!data.path?.complete);
+    }
+  }catch(err){
+    if(!fallback)return;
+    set('asset-detail-id',fallback.id);
+    set('asset-detail-type',fallback.type);
+    set('asset-detail-station',fallback.station);
+    set('asset-detail-zone',fallback.zone);
+    set('asset-detail-function',fallback.function);
+    set('asset-detail-vendor',fallback.vendor);
+    set('asset-detail-class','—');
+    if(related)related.textContent=fallback.related||'—';
+    if(chainState){chainState.hidden=true;chainState.classList.remove('complete');}
+  }
+}
+
+document.querySelectorAll('[data-asset-row]').forEach(row=>row.addEventListener('click',e=>{
+  e.stopImmediatePropagation();
   const a=JSON.parse(row.dataset.assetRow);
-  document.getElementById('asset-detail-id').textContent=a.id;
-  document.getElementById('asset-detail-type').textContent=a.type;
-  document.getElementById('asset-detail-station').textContent=a.station;
-  document.getElementById('asset-detail-zone').textContent=a.zone;
-  document.getElementById('asset-detail-function').textContent=a.function;
-  document.getElementById('asset-detail-vendor').textContent=a.vendor;
-  document.getElementById('asset-detail-related').textContent=a.related;
+  loadAssetContext(a.id,a);
 }));
+
+document.getElementById('asset-detail-related')?.addEventListener('click',e=>{
+  const btn=e.target.closest('[data-related-asset]');
+  if(!btn)return;
+  loadAssetContext(btn.dataset.relatedAsset);
+});
 
 document.querySelectorAll('.eq-click').forEach(el=>el.addEventListener('click',()=>{
   const name=el.dataset.equipment||'Process asset';
