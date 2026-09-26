@@ -8,7 +8,7 @@ header('Cache-Control: no-store');
 window.INTERAFAS_OPS = Object.freeze({
   telemetryEndpoint: '/operations/telemetry.php',
   firmwareStatusEndpoint: '/operations/firmware-status.php',
-  sessionContextEndpoint: '/operations/session-context.php',
+  assetContextEndpoint: '/operations/asset-context.php',
   refreshInterval: 5000,
   firmwareRefreshInterval: 30000
 });
@@ -31,12 +31,6 @@ window.INTERAFAS_OPS = Object.freeze({
       window.setInterval(updateClock, 1000);
     }
 
-    if (document.querySelector('.hmi-app')) {
-      fetch(window.INTERAFAS_OPS.sessionContextEndpoint, {
-        credentials: 'same-origin',
-        cache: 'no-store'
-      }).catch(function () {});
-    }
 
     const form = document.querySelector('[data-ops-login]');
     if (form) {
