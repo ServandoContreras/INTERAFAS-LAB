@@ -18,6 +18,7 @@ if($_SERVER['REQUEST_METHOD']==='POST'){
 
     if($user && (int)$user['active']===1 && password_verify($password,(string)$user['password_hash'])){
         session_regenerate_id(true);
+        unset($_SESSION['ops_restore_suppressed']);
         $_SESSION['ops_user']=[
             'id'=>(int)$user['id'],
             'username'=>(string)$user['username'],
