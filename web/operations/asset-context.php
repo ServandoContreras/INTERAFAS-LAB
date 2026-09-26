@@ -117,9 +117,6 @@ if($role==='maintenance'){
 $complete=($role==='maintenance' && !$pathError && $progress===$sequence);
 
 if($complete){
-  $_SESSION['vuln19_complete']=true;
-  $_SESSION['vuln19_completed_at']=$_SESSION['vuln19_completed_at']??time();
-
   header('X-INTERAFAS-Dependency-Chain: complete');
   header('X-INTERAFAS-Authorization-Scope: exceeded');
   header('X-INTERAFAS-Validation: UPSLP_CNOIV-CHAIN-REACTION-19');
@@ -167,7 +164,7 @@ echo json_encode([
     'error_asset'=>$errorAsset,
     'expected_next'=>$complete ? null : ($sequence[count($progress)]??$sequence[0])
   ],
-  'firmware_context'=>$complete ? [
+  'firmware_context'=>lab_flag_is_accepted(19) ? [
     'device'=>'RTU-GW-07',
     'classification'=>'gateway-control-parameters',
     'channel'=>'/operations/firmware.php',
