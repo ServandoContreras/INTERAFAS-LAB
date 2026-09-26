@@ -172,7 +172,7 @@ echo json_encode([
     'legacy_profile'=>'CASCADE',
     'classification'=>'retired-metropolitan-stress-test',
     'channel'=>'/operations/firmware.php',
-    'backup'=>'/operations/firmware-backup.php',
+    'backup'=>'/operations/firmware.php?backup=1',
     'warning'=>'Legacy profile must never be deployed to an operational gateway.'
   ] : null
 ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
