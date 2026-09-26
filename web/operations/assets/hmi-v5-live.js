@@ -217,7 +217,40 @@ function renderIncidentStats(data){
   if(count)count.textContent=active.toLocaleString();
   if(av)av.textContent=availability.toFixed(2)+'%';
 
+  const unack=Math.floor(active*.96);
+  const criticalAlarms=Math.floor(active*Math.min(.68,.08+(Math.max(0,live.incidentStage)*.12)));
+  const high=Math.max(1,Math.floor(active*.21));
+  const medium=Math.max(3,Math.floor(active*.09));
+
+  const setText=(id,value)=>{const el=document.getElementById(id);if(el)el.textContent=Number(value).toLocaleString();};
+  setText('cascade-unack',unack);
+  setText('cascade-critical-count',criticalAlarms);
+  setText('cascade-filter-all',active);
+  setText('cascade-filter-critical',criticalAlarms);
+  setText('cascade-filter-high',high);
+  setText('cascade-filter-medium',medium);
+  setText('cascade-filter-unack',unack);
+
   document.querySelectorAll('[data-cascade-critical]').forEach(el=>el.textContent=String(critical));
+
+  const body=document.getElementById('cascade-alarm-body');
+  if(body && live.incidentData){
+    const names=Array.isArray(live.incidentData.alarms)?live.incidentData.alarms:[];
+    const stage=Number(live.incidentData.incident?.stage||0);
+    const rows=names.slice(0,8).map((name,index)=>
+      '<tr class="cascade-alarm-row">'+
+        '<td>'+fmtTime(now())+'</td>'+
+        '<td class="alarm-text">CRITICAL</td>'+
+        '<td>METROPOLITAN</td>'+
+        '<td>'+(['RTU-GW-07','PLC-SL-01','P-SL-101','V-SL-201'][index%4])+'</td>'+
+        '<td>'+String(name).replaceAll('_',' ')+' · cascade stage '+stage+'/5</td>'+
+        '<td>UNACK</td>'+
+      '</tr>'
+    ).join('');
+    const existing=body.querySelectorAll('.cascade-alarm-row');
+    existing.forEach(row=>row.remove());
+    body.insertAdjacentHTML('afterbegin',rows);
+  }
 }
 
 function applyTelemetry(data){
@@ -266,8 +299,6 @@ function applyTelemetry(data){
   }
 
   renderTags();
-  renderIncidentStats(data);
-  pushHistory();
 
   if(stage!==live.incidentStage){
     live.incidentStage=stage;
@@ -279,6 +310,9 @@ function applyTelemetry(data){
       ' · '+Number(data.alarm_count||0).toLocaleString()+' active alarms.'
     );
   }
+
+  renderIncidentStats(data);
+  pushHistory();
 }
 
 function hydraulicTick(){
