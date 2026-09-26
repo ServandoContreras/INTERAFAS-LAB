@@ -103,7 +103,7 @@ $pressureZones=18;
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Metropolitan Water Operations · INTERAFAS</title>
-<link rel="stylesheet" href="/operations/assets/hmi.css?v=20260925-v20-7">
+<link rel="stylesheet" href="/operations/assets/hmi.css?v=20260925-v20-8">
 </head>
 <body>
 <div class="hmi-app">
@@ -811,8 +811,8 @@ $pressureZones=18;
 <script src="/operations/assets/ops-client.php"></script>
 <script>window.INTERAFAS_STATIONS=<?=json_encode($stations,JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES)?>;</script>
 <script src="/operations/assets/hmi-v4.js"></script>
-<script src="/operations/assets/hmi-v5-live.js?v=20260925-v20-7"></script>
-<script src="/operations/assets/hmi-audio.js?v=20260925-v20-7"></script>
+<script src="/operations/assets/hmi-v5-live.js?v=20260925-v20-8"></script>
+<script src="/operations/assets/hmi-audio.js?v=20260925-v20-8"></script>
 <script src="/operations/assets/hmi-v6-scale.js"></script>
 <script src="/operations/assets/hmi-ru.js"></script>
 <script>
