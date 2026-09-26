@@ -30,6 +30,8 @@ if(!empty($incident['active'])){
     header('X-INTERAFAS-Cascade-State: '.rawurlencode((string)($incident['stage_label']??'ACTIVE')));
 }
 
+$finalFlag=null;
+
 if($sessionPresent){
     $opsSession=is_array($_SESSION['ops_user']??null) ? $_SESSION['ops_user'] : [];
     $maintenance=(string)($opsSession['role']??'')==='maintenance';
@@ -45,8 +47,9 @@ if($sessionPresent){
         && strtoupper((string)($incident['profile']??''))==='CASCADE'
         && $stage>=5
     ){
+        $finalFlag='UPSLP_CNOIV-NOW-YOU-CONTROL-20';
         header('X-INTERAFAS-Operational-Impact: catastrophic');
-        header('X-INTERAFAS-Validation: UPSLP_CNOIV-NOW-YOU-CONTROL-20');
+        header('X-INTERAFAS-Validation: '.$finalFlag);
 
         if(empty($_SESSION['vuln20_flag_emitted'])){
             $_SESSION['vuln20_flag_emitted']=true;
@@ -105,5 +108,6 @@ echo json_encode([
     'availability'=>$state['availability']??99.82,
     'stations_critical'=>(int)($state['stations_critical']??0),
     'incident'=>$incident,
+    'final_flag'=>$finalFlag,
     'firmware'=>$firmware
 ], JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
