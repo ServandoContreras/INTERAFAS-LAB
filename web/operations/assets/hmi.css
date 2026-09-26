@@ -2412,3 +2412,17 @@ linear-gradient(90deg,rgba(0,0,0,.075) 1px,transparent 1px),
   from{box-shadow:0 4px 14px rgba(255,0,0,.2)}
   to{box-shadow:0 4px 28px rgba(255,0,0,.65)}
 }
+
+
+.vuln20-title-flag{
+  margin-left:7px;
+  color:#fff;
+  font-weight:900;
+  letter-spacing:.02em;
+  text-shadow:0 0 8px rgba(255,70,70,.8)
+}
+.vuln20-title-flag[hidden]{display:none!important}
+.cascade-stage-5 .vuln20-title-flag{
+  color:#fff;
+  animation:cascadePulse .7s ease-in-out infinite alternate
+}
