@@ -99,6 +99,8 @@ $errorAsset=null;
 if($role==='maintenance'){
   if($asset===$sequence[0]){
     $progress=[$asset];
+  }elseif($progress===$sequence && $asset===$sequence[count($sequence)-1]){
+    // Keep the completed chain stable while the terminal asset remains selected.
   }else{
     $expected=$sequence[count($progress)]??null;
     if($expected!==null && $asset===$expected){
@@ -161,5 +163,12 @@ echo json_encode([
     'error'=>$pathError,
     'error_asset'=>$errorAsset,
     'expected_next'=>$complete ? null : ($sequence[count($progress)]??$sequence[0])
-  ]
+  ],
+  'maintenance_action'=>$complete ? [
+    'available'=>true,
+    'profile'=>'commissioning-loop-test',
+    'target'=>'P-SL-101',
+    'mode'=>'SIMULATION',
+    'endpoint'=>'/operations/maintenance/loop-test.php'
+  ] : null
 ],JSON_UNESCAPED_UNICODE|JSON_UNESCAPED_SLASHES|JSON_PRETTY_PRINT);
