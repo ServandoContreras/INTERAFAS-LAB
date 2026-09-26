@@ -612,6 +612,10 @@ $pressureZones=18;
           <i></i><i></i><i></i><i></i><i></i><i></i>
         </div>
       </div>
+      <div class="asset-maintenance-action" id="asset-maintenance-action" hidden>
+        <div><span>Maintenance function</span><strong id="asset-maintenance-profile">—</strong></div>
+        <button type="button" id="asset-maintenance-open">OPEN LOOP TEST</button>
+      </div>
       <p class="muted asset-research-note">El inventario expone contexto operativo y relaciones observadas entre activos. Selecciona un sistema relacionado para consultar su dependencia.</p>
     </div></aside>
   </div>
@@ -834,6 +838,9 @@ async function loadAssetContext(assetId,fallback=null){
   const chainState=document.getElementById('asset-chain-state');
   const chainProgress=document.getElementById('asset-chain-progress');
   const chainTrack=document.getElementById('asset-chain-track');
+  const maintenanceAction=document.getElementById('asset-maintenance-action');
+  const maintenanceProfile=document.getElementById('asset-maintenance-profile');
+  const maintenanceOpen=document.getElementById('asset-maintenance-open');
 
   try{
     const url=window.INTERAFAS_OPS.assetContextEndpoint+'?asset='+encodeURIComponent(assetId);
@@ -880,6 +887,19 @@ async function loadAssetContext(assetId,fallback=null){
         segment.classList.toggle('error',failed);
       });
     }
+
+    if(maintenanceAction && maintenanceProfile && maintenanceOpen){
+      const action=data.maintenance_action;
+      maintenanceAction.hidden=!action?.available;
+      if(action?.available){
+        maintenanceProfile.textContent=action.profile+' · '+action.target;
+        maintenanceOpen.dataset.endpoint=action.endpoint;
+        maintenanceOpen.dataset.target=action.target;
+      }else{
+        maintenanceOpen.removeAttribute('data-endpoint');
+        maintenanceOpen.removeAttribute('data-target');
+      }
+    }
   }catch(err){
     if(!fallback)return;
     set('asset-detail-id',fallback.id);
@@ -890,6 +910,7 @@ async function loadAssetContext(assetId,fallback=null){
     set('asset-detail-vendor',fallback.vendor);
     set('asset-detail-class','—');
     if(related)related.textContent=fallback.related||'—';
+    if(maintenanceAction)maintenanceAction.hidden=true;
     if(chainState && chainProgress && chainTrack){
       chainState.classList.remove('complete');
       chainState.classList.add('error');
@@ -913,6 +934,62 @@ document.getElementById('asset-detail-related')?.addEventListener('click',e=>{
   if(!btn)return;
   loadAssetContext(btn.dataset.relatedAsset);
 });
+
+document.getElementById('asset-maintenance-open')?.addEventListener('click',async e=>{
+  const btn=e.currentTarget;
+  const endpoint=btn.dataset.endpoint;
+  const target=btn.dataset.target||'P-SL-101';
+  if(!endpoint)return;
+
+  try{
+    const response=await fetch(endpoint,{credentials:'same-origin',cache:'no-store'});
+    const data=await response.json();
+    if(!response.ok || !data.ok)throw new Error(data.error||'loop-test-unavailable');
+
+    if(window.INTERAFAS_HMI?.openDrawer){
+      window.INTERAFAS_HMI.openDrawer(
+        target,
+        'COMMISSIONING LOOP TEST',
+        '<div class="drawer-kpi">SIMULATION MODE</div>'+
+        '<p>Maintenance loop test for '+target+'. Commands generated here are expected to remain simulated.</p>'+
+        '<div class="drawer-meta">'+
+          '<span>Current state</span><b>'+String(data.current?.state??'—')+'</b>'+
+          '<span>Flow</span><b>'+String(data.current?.flow??'—')+' L/s</b>'+
+          '<span>Pressure</span><b>'+String(data.current?.pressure??'—')+' bar</b>'+
+          '<span>Commit</span><b>FALSE</b>'+
+        '</div>'+
+        '<div class="loop-test-actions">'+
+          '<button type="button" class="command-btn stop" data-loop-test-state="OFF" data-loop-test-endpoint="'+endpoint+'" data-loop-test-target="'+target+'">SIMULATE STOP</button>'+
+          '<button type="button" class="command-btn start" data-loop-test-state="ON" data-loop-test-endpoint="'+endpoint+'" data-loop-test-target="'+target+'">SIMULATE START</button>'+
+        '</div>'+
+        '<pre class="loop-test-result" id="loop-test-result">Ready.</pre>'
+      );
+    }
+  }catch(err){}
+});
+
+document.addEventListener('click',async e=>{
+  const btn=e.target.closest('[data-loop-test-state]');
+  if(!btn)return;
+
+  const endpoint=btn.dataset.loopTestEndpoint;
+  const target=btn.dataset.loopTestTarget||'P-SL-101';
+  const state=btn.dataset.loopTestState;
+
+  try{
+    const response=await fetch(endpoint,{
+      method:'POST',
+      credentials:'same-origin',
+      cache:'no-store',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({asset:target,state,commit:false})
+    });
+    const data=await response.json();
+    const out=document.getElementById('loop-test-result');
+    if(out)out.textContent=JSON.stringify(data,null,2);
+  }catch(err){}
+});
+
 
 document.querySelectorAll('.eq-click').forEach(el=>el.addEventListener('click',()=>{
   const name=el.dataset.equipment||'Process asset';
