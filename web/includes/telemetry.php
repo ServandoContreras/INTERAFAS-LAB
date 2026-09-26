@@ -16,6 +16,19 @@ function lab_context(): ?array {
     } catch (Throwable $e) { $ctx = []; return null; }
 }
 
+function lab_flag_is_accepted(int $flagNumber): bool {
+    $ctx=lab_context();
+    if(!$ctx || $flagNumber<1) return false;
+
+    try {
+        $q=db()->prepare("SELECT 1 FROM flag_submissions WHERE attempt_id=? AND flag_number=? AND status='accepted' LIMIT 1");
+        $q->execute([(int)$ctx['attempt_id'],$flagNumber]);
+        return (bool)$q->fetchColumn();
+    } catch (Throwable $e) {
+        return false;
+    }
+}
+
 function lab_event(string $code, string $label, ?string $detail=null, array $metadata=[], string $source='interafas-web', string $severity='info', int $dedupSeconds=3): void {
     $ctx = lab_context();
     if (!$ctx) return;
