@@ -38,7 +38,25 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
             $q=db()->prepare("SELECT * FROM lab_attempts WHERE student_id=? ORDER BY id DESC LIMIT 1"); $q->execute([$s['id']]); $a=$q->fetch();
             if(!$a){$error='La cuenta no tiene un intento asociado.';}
             else{
-                session_regenerate_id(true); $_SESSION['student_id']=(int)$s['id']; $_SESSION['attempt_id']=(int)$a['id']; set_lab_cookie(ensure_attempt_token((int)$a['id']));
+                if(($a['status']??'')==='finalized'){
+                    $token=bin2hex(random_bytes(32));
+                    $create=db()->prepare("INSERT INTO lab_attempts(student_id,attempt_token,status) VALUES(?,?,'active')");
+                    $create->execute([(int)$s['id'],$token]);
+                    $aid=(int)db()->lastInsertId();
+
+                    session_regenerate_id(true);
+                    $_SESSION['student_id']=(int)$s['id'];
+                    $_SESSION['attempt_id']=$aid;
+                    set_lab_cookie($token);
+
+                    log_activity('LAB_RESTARTED','Nuevo intento iniciado','Se creó un intento limpio después de finalizar el anterior.');
+                    header('Location: index.php'); exit;
+                }
+
+                session_regenerate_id(true);
+                $_SESSION['student_id']=(int)$s['id'];
+                $_SESSION['attempt_id']=(int)$a['id'];
+                set_lab_cookie(ensure_attempt_token((int)$a['id']));
                 log_activity('LOGIN','Reingreso al portal','Sesión recuperada mediante matrícula.',['status'=>$a['status']]);
                 header('Location: index.php'); exit;
             }
@@ -47,6 +65,7 @@ if ($_SERVER['REQUEST_METHOD']==='POST') {
 }
 ?><!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Acceso · Auditor INTERAFAS</title><link rel="stylesheet" href="assets/style.css"></head><body class="login-body">
 <div class="login-shell">
+<?php if(isset($_GET['reset'])):?><div class="alert success" style="grid-column:1/-1">Laboratorio finalizado y entorno restablecido. El ZIP de evidencias fue enviado a tu navegador.</div><?php endif;?>
 <section class="login-card"><div class="login-mark">AI</div><p class="eyebrow">INTERAFAS · Ejercicio controlado</p><h1>Crear cuenta</h1><p class="muted">Antes de comenzar registra tus datos. Esta identidad quedará asociada a toda la bitácora del laboratorio.</p><?php if($error):?><div class="alert error"><?=h($error)?></div><?php endif;?>
 <form method="post"><input type="hidden" name="mode" value="register"><label>Nombre<input name="nombre" autocomplete="given-name" required></label><label>Apellido paterno<input name="apellido_paterno" autocomplete="family-name" required></label><label>Apellido materno<input name="apellido_materno" required></label><label>Matrícula<input name="matricula" autocomplete="username" required></label><button class="primary" type="submit">Crear cuenta e iniciar</button></form></section>
 <section class="login-card secondary-login"><p class="eyebrow">¿Ya comenzaste?</p><h2>Reingresar con matrícula</h2><p class="muted">Recupera el mismo intento y conserva banderas, eventos y bitácora.</p><form method="post"><input type="hidden" name="mode" value="resume"><label>Matrícula<input name="matricula_resume" autocomplete="username" required></label><button class="secondary wide" type="submit">Reingresar</button></form></section>
