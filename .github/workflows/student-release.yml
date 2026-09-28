@@ -1,0 +1,38 @@
+name: Publish student package
+
+on:
+  push:
+    tags:
+      - "student-v*"
+
+permissions:
+  contents: write
+
+jobs:
+  package:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Prepare package
+        shell: bash
+        run: |
+          mkdir -p dist/INTERAFAS-LAB-ESTUDIANTE
+          cp student/docker-compose.student.yml dist/INTERAFAS-LAB-ESTUDIANTE/
+          cp student/.env.example dist/INTERAFAS-LAB-ESTUDIANTE/
+          cp student/*.bat dist/INTERAFAS-LAB-ESTUDIANTE/
+          cp student/*.sh dist/INTERAFAS-LAB-ESTUDIANTE/
+          cp student/README-ESTUDIANTE.md dist/INTERAFAS-LAB-ESTUDIANTE/
+          chmod +x dist/INTERAFAS-LAB-ESTUDIANTE/*.sh
+
+          sed -i "s/^INTERAFAS_IMAGE_TAG=.*/INTERAFAS_IMAGE_TAG=${GITHUB_REF_NAME}/"             dist/INTERAFAS-LAB-ESTUDIANTE/.env.example
+
+          cd dist
+          zip -r "INTERAFAS-LAB-ESTUDIANTE-${GITHUB_REF_NAME}.zip" INTERAFAS-LAB-ESTUDIANTE
+
+      - name: Publish GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          generate_release_notes: true
+          files: dist/INTERAFAS-LAB-ESTUDIANTE-${{ github.ref_name }}.zip
