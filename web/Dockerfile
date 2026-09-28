@@ -12,3 +12,4 @@ RUN printf '%s\n' \
 && a2enconf interafas-public-docs
 RUN printf '%s\n' 'INTERAFAS document service · laboratorio autorizado' 'UPSLP_CNOIV-TOO-DEEP-09' > /etc/motd
 WORKDIR /var/www/html
+COPY . .

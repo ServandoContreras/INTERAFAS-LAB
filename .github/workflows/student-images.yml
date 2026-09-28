@@ -1,0 +1,76 @@
+name: Build student images
+
+on:
+  workflow_dispatch:
+    inputs:
+      image_tag:
+        description: "Docker image tag"
+        required: true
+        default: "student-v1.0.0"
+  push:
+    tags:
+      - "student-v*"
+
+permissions:
+  contents: read
+  packages: write
+
+jobs:
+  build:
+    name: Build ${{ matrix.image }}
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - image: interafas-web
+            context: ./web
+            dockerfile: ./web/Dockerfile
+          - image: interafas-news
+            context: ./news
+            dockerfile: ./news/Dockerfile
+          - image: interafas-auditor
+            context: ./auditor
+            dockerfile: ./auditor/Dockerfile
+          - image: interafas-db
+            context: ./database
+            dockerfile: ./database/Dockerfile.student
+          - image: interafas-ot-sim
+            context: ./ot-sim
+            dockerfile: ./ot-sim/Dockerfile
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve image tag
+        id: version
+        shell: bash
+        run: |
+          if [ "${{ github.event_name }}" = "workflow_dispatch" ]; then
+            echo "tag=${{ inputs.image_tag }}" >> "$GITHUB_OUTPUT"
+          else
+            echo "tag=${GITHUB_REF_NAME}" >> "$GITHUB_OUTPUT"
+          fi
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Sign in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build and push
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          file: ${{ matrix.dockerfile }}
+          push: true
+          tags: |
+            ghcr.io/servandocontreras/${{ matrix.image }}:${{ steps.version.outputs.tag }}
+            ghcr.io/servandocontreras/${{ matrix.image }}:student-latest
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
