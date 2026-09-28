@@ -1,38 +1,109 @@
-name: Publish student package
+name: Publish student edition
 
 on:
   push:
-    tags:
-      - "student-v*"
+    branches:
+      - "release/student-v*"
 
 permissions:
   contents: write
+  packages: write
+
+env:
+  REGISTRY: ghcr.io/servandocontreras
 
 jobs:
-  package:
+  release:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout
+      - name: Checkout release source
         uses: actions/checkout@v4
 
-      - name: Prepare package
+      - name: Resolve version
+        id: version
         shell: bash
         run: |
-          mkdir -p dist/INTERAFAS-LAB-ESTUDIANTE
-          cp student/docker-compose.student.yml dist/INTERAFAS-LAB-ESTUDIANTE/
-          cp student/.env.example dist/INTERAFAS-LAB-ESTUDIANTE/
-          cp student/*.bat dist/INTERAFAS-LAB-ESTUDIANTE/
-          cp student/*.sh dist/INTERAFAS-LAB-ESTUDIANTE/
-          cp student/README-ESTUDIANTE.md dist/INTERAFAS-LAB-ESTUDIANTE/
-          chmod +x dist/INTERAFAS-LAB-ESTUDIANTE/*.sh
+          TAG="${GITHUB_REF_NAME#release/}"
+          case "$TAG" in
+            student-v*) ;;
+            *) echo "Nombre de version invalido: $TAG"; exit 1 ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+          echo "Release: $TAG"
 
-          sed -i "s/^INTERAFAS_IMAGE_TAG=.*/INTERAFAS_IMAGE_TAG=${GITHUB_REF_NAME}/"             dist/INTERAFAS-LAB-ESTUDIANTE/.env.example
+      - name: Sign in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
 
-          cd dist
-          zip -r "INTERAFAS-LAB-ESTUDIANTE-${GITHUB_REF_NAME}.zip" INTERAFAS-LAB-ESTUDIANTE
+      - name: Build and publish student images
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          docker build -t "$REGISTRY/interafas-web:$TAG" -t "$REGISTRY/interafas-web:student-latest" ./web
+          docker build -t "$REGISTRY/interafas-news:$TAG" -t "$REGISTRY/interafas-news:student-latest" ./news
+          docker build -t "$REGISTRY/interafas-auditor:$TAG" -t "$REGISTRY/interafas-auditor:student-latest" ./auditor
+          docker build -f database/Dockerfile.student -t "$REGISTRY/interafas-db:$TAG" -t "$REGISTRY/interafas-db:student-latest" ./database
+          docker build -t "$REGISTRY/interafas-ot-sim:$TAG" -t "$REGISTRY/interafas-ot-sim:student-latest" ./ot-sim
+
+          for image in interafas-web interafas-news interafas-auditor interafas-db interafas-ot-sim; do
+            docker push "$REGISTRY/$image:$TAG"
+            docker push "$REGISTRY/$image:student-latest"
+          done
+
+      - name: Smoke-test compose model
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          cp student/.env.example student/.env.release
+          sed -i "s/^INTERAFAS_IMAGE_TAG=.*/INTERAFAS_IMAGE_TAG=$TAG/" student/.env.release
+          docker compose -f student/docker-compose.student.yml --env-file student/.env.release config >/dev/null
+          rm student/.env.release
+
+      - name: Prepare LITE and OFFLINE packages
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          set -euo pipefail
+
+          mkdir -p dist/lite/INTERAFAS-LAB-ESTUDIANTE
+          cp -a student/. dist/lite/INTERAFAS-LAB-ESTUDIANTE/
+          sed -i "s/^INTERAFAS_IMAGE_TAG=.*/INTERAFAS_IMAGE_TAG=$TAG/"             dist/lite/INTERAFAS-LAB-ESTUDIANTE/.env.example
+          chmod +x dist/lite/INTERAFAS-LAB-ESTUDIANTE/*.sh
+
+          mkdir -p dist/offline
+          cp -a dist/lite/INTERAFAS-LAB-ESTUDIANTE dist/offline/INTERAFAS-LAB-ESTUDIANTE
+
+          docker save -o dist/offline/INTERAFAS-LAB-ESTUDIANTE/interafas-images.tar             "$REGISTRY/interafas-web:$TAG"             "$REGISTRY/interafas-news:$TAG"             "$REGISTRY/interafas-auditor:$TAG"             "$REGISTRY/interafas-db:$TAG"             "$REGISTRY/interafas-ot-sim:$TAG"
+
+          (
+            cd dist/lite
+            zip -qr "../INTERAFAS-LAB-ESTUDIANTE-LITE-$TAG.zip" INTERAFAS-LAB-ESTUDIANTE
+          )
+
+          (
+            cd dist/offline
+            zip -qr "../INTERAFAS-LAB-ESTUDIANTE-OFFLINE-$TAG.zip" INTERAFAS-LAB-ESTUDIANTE
+          )
+
+          sha256sum dist/INTERAFAS-LAB-ESTUDIANTE-*.zip > dist/SHA256SUMS.txt
 
       - name: Publish GitHub Release
         uses: softprops/action-gh-release@v2
         with:
+          tag_name: ${{ steps.version.outputs.tag }}
+          target_commitish: ${{ github.sha }}
+          name: INTERAFAS-LAB Student Edition ${{ steps.version.outputs.tag }}
           generate_release_notes: true
-          files: dist/INTERAFAS-LAB-ESTUDIANTE-${{ github.ref_name }}.zip
+          make_latest: true
+          files: |
+            dist/INTERAFAS-LAB-ESTUDIANTE-LITE-${{ steps.version.outputs.tag }}.zip
+            dist/INTERAFAS-LAB-ESTUDIANTE-OFFLINE-${{ steps.version.outputs.tag }}.zip
+            dist/SHA256SUMS.txt
