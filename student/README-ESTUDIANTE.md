@@ -8,7 +8,29 @@ Este paquete ejecuta una copia local e independiente del laboratorio.
 - Docker Desktop o Docker Engine con Docker Compose.
 - Al menos 4 GB de RAM disponibles para Docker.
 - Puertos locales 8080, 8091 y 8092 disponibles.
-- Internet durante la primera descarga de imágenes, salvo que el docente entregue el paquete offline.
+
+## Qué paquete recibiste
+
+### LITE
+Requiere Internet la primera vez para descargar las imágenes Docker.
+
+### OFFLINE
+Incluye `interafas-images.tar`. Antes de verificar o iniciar el laboratorio debes cargar las imágenes:
+
+Windows:
+
+```text
+CARGAR-IMAGENES.bat
+```
+
+macOS / Linux:
+
+```bash
+chmod +x *.sh
+./cargar-imagenes.sh
+```
+
+Después el procedimiento es igual en ambas ediciones.
 
 ## Windows
 
