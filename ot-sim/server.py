@@ -216,6 +216,19 @@ class H(BaseHTTPRequestHandler):
     def do_POST(self):
         data=self._body()
 
+        if self.path=='/reset':
+            reset_process()
+            STATE['firmware']={
+                "device":"RTU-GW-07",
+                "version":"3.4.2",
+                "mode":"NORMAL",
+                "diagnostic":"LOCKED",
+                "pressure_setpoint_bar":4.2,
+                "updated_at":None
+            }
+            refresh_process()
+            return self._send(200,{"ok":True,"reset":"completed","process":STATE})
+
         if self.path=='/control':
             refresh_process()
             if STATE.get("incident",{}).get("active"):
