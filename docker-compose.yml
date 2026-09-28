@@ -45,9 +45,12 @@ services:
       DB_PASS: interafas_lab
       TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN:-}
       TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID:-}
+      OT_BASE_URL: http://ot-sim:8081
     depends_on:
       db:
         condition: service_healthy
+      ot-sim:
+        condition: service_started
     volumes:
       - ./auditor:/var/www/html
 
