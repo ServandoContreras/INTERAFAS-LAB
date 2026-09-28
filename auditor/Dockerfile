@@ -3,3 +3,5 @@ RUN apt-get update && apt-get install -y --no-install-recommends libcurl4-openss
     && docker-php-ext-install pdo pdo_mysql curl \
     && rm -rf /var/lib/apt/lists/*
 RUN a2enmod rewrite headers
+WORKDIR /var/www/html
+COPY . .
