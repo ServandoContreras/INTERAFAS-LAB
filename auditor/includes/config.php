@@ -357,7 +357,26 @@ function reset_lab_runtime(int $attemptId): array {
         );
         $q->execute();
 
-        // El intento queda archivado, pero el token ya no debe poder reutilizarse.
+        // El ZIP ya congeló la evidencia. Se limpia el progreso activo del
+        // intento para que el laboratorio no conserve residuos operativos.
+        foreach([
+            "DELETE FROM lab_checklist_state WHERE attempt_id=?",
+            "DELETE FROM lab_hint_usage WHERE attempt_id=?",
+            "DELETE FROM flag_submissions WHERE attempt_id=?",
+            "DELETE FROM lab_activity WHERE attempt_id=?"
+        ] as $sql){
+            try{
+                $q=$pdo->prepare($sql);
+                $q->execute([$attemptId]);
+            }catch(Throwable $e){
+                // Compatibilidad con instalaciones anteriores sin alguna tabla.
+                if(str_contains($e->getMessage(),'doesn\'t exist')) continue;
+                throw $e;
+            }
+        }
+
+        // Se conserva únicamente el registro administrativo del intento,
+        // sin token reutilizable ni progreso asociado.
         $q=$pdo->prepare("UPDATE lab_attempts SET attempt_token=NULL WHERE id=?");
         $q->execute([$attemptId]);
 
@@ -369,7 +388,7 @@ function reset_lab_runtime(int $attemptId): array {
 
     $ot=reset_ot_simulator();
     return [
-        'database'=>['ok'=>true,'detail'=>'Escenario, eventos y snapshots restablecidos.'],
+        'database'=>['ok'=>true,'detail'=>'Escenario, progreso, eventos, snapshots, pistas y checklist restablecidos.'],
         'ot'=>$ot
     ];
 }
