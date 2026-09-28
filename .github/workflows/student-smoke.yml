@@ -1,0 +1,84 @@
+name: Smoke test student runtime
+
+on:
+  push:
+    branches:
+      - "verify/student-v*"
+
+permissions:
+  contents: read
+  packages: read
+
+env:
+  REGISTRY: ghcr.io/servandocontreras
+
+jobs:
+  smoke:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Resolve version
+        id: version
+        shell: bash
+        run: |
+          TAG="${GITHUB_REF_NAME#verify/}"
+          case "$TAG" in
+            student-v*) ;;
+            *) echo "Nombre de version invalido: $TAG"; exit 1 ;;
+          esac
+          echo "tag=$TAG" >> "$GITHUB_OUTPUT"
+
+      - name: Sign in to GHCR
+        uses: docker/login-action@v3
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Prepare environment
+        shell: bash
+        env:
+          TAG: ${{ steps.version.outputs.tag }}
+        run: |
+          cp student/.env.example student/.env.smoke
+          sed -i "s/^INTERAFAS_IMAGE_TAG=.*/INTERAFAS_IMAGE_TAG=$TAG/" student/.env.smoke
+
+      - name: Pull and start stack
+        shell: bash
+        run: |
+          set -euo pipefail
+          docker compose -f student/docker-compose.student.yml --env-file student/.env.smoke pull
+          docker compose -f student/docker-compose.student.yml --env-file student/.env.smoke up -d
+
+      - name: Verify services
+        shell: bash
+        run: |
+          set -euo pipefail
+          ok=0
+          for i in $(seq 1 60); do
+            if curl -fsS -L http://localhost:8080/ >/dev/null               && curl -fsS -L http://localhost:8091/ >/dev/null               && curl -fsS -L http://localhost:8092/ >/dev/null; then
+              ok=1
+              break
+            fi
+            sleep 2
+          done
+
+          docker compose -f student/docker-compose.student.yml --env-file student/.env.smoke ps
+
+          if [ "$ok" -ne 1 ]; then
+            echo "Uno o mas portales no respondieron dentro del tiempo esperado."
+            docker compose -f student/docker-compose.student.yml --env-file student/.env.smoke logs --no-color
+            exit 1
+          fi
+
+          echo "Portal INTERAFAS: OK"
+          echo "Pulso Metropolitano: OK"
+          echo "Portal del Auditor: OK"
+
+      - name: Tear down
+        if: always()
+        shell: bash
+        run: |
+          docker compose -f student/docker-compose.student.yml --env-file student/.env.smoke down -v --remove-orphans || true
