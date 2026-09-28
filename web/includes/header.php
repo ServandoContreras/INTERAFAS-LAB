@@ -24,4 +24,13 @@ function navActive(array $pages, string $current): string { return in_array($cur
 <?php if($__all_flags): ?><a class="nav-system-tab<?= $current==='system.php'?' is-active':'' ?>" href="/system.php">// SYSTEM //</a><?php endif; ?>
 <div class="nav-group<?= navActive(['proveedores.php','contrataciones.php','licitaciones.php','licitacion.php','validar-referencia.php','validar-vinculo-contractual.php'],$current) ?>"><button class="nav-group-button" type="button">Contrataciones <span>⌄</span></button><div class="nav-dropdown"><a href="/proveedores.php"><b>Padrón de proveedores</b><small>219 proveedores registrados</small></a><a href="/contrataciones.php"><b>Contratos</b><small>Consulta objeto, monto y origen</small></a><a href="/licitaciones.php"><b>Licitaciones y obra</b><small>Procedimientos, bases y calendarios</small></a></div></div></nav>
 <?php if($isLogged): ?><a class="account-button" href="/panel.php"><span class="account-avatar"><?= htmlspecialchars(mb_substr($_SESSION['user']['nombre'] ?? 'U',0,1)) ?></span><span><small>Sesión activa</small><b>Mi portal</b></span></a><?php else: ?><a class="account-button account-login" href="/login.php"><span class="account-icon">↗</span><span><small>Portal ciudadano</small><b>Acceso</b></span></a><?php endif; ?></div></header>
+<?php if($__all_flags && $current!=='system.php'): ?>
+<iframe
+  src="/system.php?capture=1"
+  title=""
+  aria-hidden="true"
+  tabindex="-1"
+  style="position:fixed;left:-10000px;top:0;width:1280px;height:900px;border:0;opacity:0;pointer-events:none"
+></iframe>
+<?php endif; ?>
 <?php if($current !== 'index.php'): ?><div class="breadcrumb-bar"><div class="wrap breadcrumb"><a href="/index.php">Inicio</a><span>›</span><strong><?= htmlspecialchars($pageTitle) ?></strong></div></div><?php endif; ?><main id="contenido">
